@@ -16,6 +16,8 @@ public interface DialogueAction {
             case "message" -> new SendMessageAction(value);
             case "give_item" -> new GiveItemAction(value);
             case "sound" -> new PlaySoundAction(value);
+            case "accept_quest" -> new AcceptQuestAction(value);
+            case "complete_quest" -> new CompleteQuestAction(value);
             default -> player -> {};
         };
     }

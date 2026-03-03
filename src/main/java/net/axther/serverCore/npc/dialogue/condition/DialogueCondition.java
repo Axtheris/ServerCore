@@ -14,6 +14,10 @@ public interface DialogueCondition {
         return switch (type.toLowerCase()) {
             case "permission" -> new HasPermissionCondition(value);
             case "item" -> new HasItemCondition(value);
+            case "quest_available" -> new QuestAvailableCondition(value);
+            case "quest_active" -> new QuestActiveCondition(value);
+            case "quest_complete" -> new QuestCompleteCondition(value);
+            case "quest_finished" -> new QuestFinishedCondition(value);
             default -> player -> true;
         };
     }

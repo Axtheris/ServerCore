@@ -122,6 +122,9 @@ runs/
 .claude/
 CLAUDE.md
 
+# Git worktrees
+.worktrees/
+
 # Environment / credentials
 .env
 .env.*

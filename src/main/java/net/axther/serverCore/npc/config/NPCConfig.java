@@ -3,6 +3,8 @@ package net.axther.serverCore.npc.config;
 import net.axther.serverCore.npc.NPC;
 import net.axther.serverCore.npc.NPCManager;
 import net.axther.serverCore.npc.dialogue.DialogueTree;
+import net.axther.serverCore.quest.Quest;
+import net.axther.serverCore.quest.QuestManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -21,13 +23,15 @@ public class NPCConfig {
     private final JavaPlugin plugin;
     private final File npcsDir;
     private final Map<String, DialogueTree> dialogueTrees = new HashMap<>();
+    private QuestManager questManager;
 
     public NPCConfig(JavaPlugin plugin) {
         this.plugin = plugin;
         this.npcsDir = new File(plugin.getDataFolder(), "npcs");
     }
 
-    public void loadAll(NPCManager manager) {
+    public void loadAll(NPCManager manager, QuestManager questManager) {
+        this.questManager = questManager;
         if (!npcsDir.exists()) {
             npcsDir.mkdirs();
             saveDefaultExample();
@@ -80,6 +84,15 @@ public class NPCConfig {
             dialogueId = id;
             DialogueTree tree = DialogueTree.fromConfig(id, dialogueSec);
             dialogueTrees.put(id, tree);
+        }
+
+        // Load inline quest if present
+        ConfigurationSection questSec = yaml.getConfigurationSection("quest");
+        if (questSec != null && questManager != null) {
+            Quest quest = Quest.fromConfig(questSec, id);
+            if (quest.getId() != null && !quest.getId().isBlank()) {
+                questManager.registerQuest(quest);
+            }
         }
 
         NPC npc = new NPC(id, displayName, location, yaw, skinTexture, skinSignature, lookAtPlayer, dialogueId);

@@ -306,9 +306,10 @@ public enum EmitterPattern {
         @Override
         public List<Vector> computeOffsets(double radius, double height, int tick, int density) {
             List<Vector> offsets = new ArrayList<>(density);
+            if (density == 0) return offsets;
             double rotY = tick * 0.04;
             double tubeRadius = radius * 0.35;
-            int rings = (int) Math.sqrt(density);
+            int rings = Math.max((int) Math.sqrt(density), 1);
             int perRing = Math.max(density / rings, 1);
             for (int i = 0; i < rings; i++) {
                 double theta = 2 * Math.PI * i / rings + rotY;
@@ -568,7 +569,7 @@ public enum EmitterPattern {
         public List<Vector> computeOffsets(double radius, double height, int tick, int density) {
             List<Vector> offsets = new ArrayList<>(density);
             double flap = Math.sin(tick * 0.15) * 0.4; // gentle flap
-            int half = density / 2;
+            int half = Math.max(density / 2, 1);
             for (int side = -1; side <= 1; side += 2) {
                 for (int i = 0; i < half; i++) {
                     double t = (double) i / half;
@@ -736,7 +737,7 @@ public enum EmitterPattern {
             List<Vector> offsets = new ArrayList<>(density);
             double rotation = tick * 0.04;
             int spikes = 5;
-            int perSpike = density / spikes;
+            int perSpike = Math.max(density / spikes, 1);
             for (int s = 0; s < spikes; s++) {
                 double baseAngle = rotation + 2 * Math.PI * s / spikes;
                 double nextAngle = rotation + 2 * Math.PI * (s + 0.5) / spikes;

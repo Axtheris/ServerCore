@@ -178,7 +178,7 @@ public class NPCCommand implements TabExecutor {
     private void handleReload(Player player) {
         listener.clearAllSessions();
         manager.destroyAll();
-        config.loadAll(manager);
+        config.loadAll(manager, net.axther.serverCore.api.ServerCoreAPI.get().getQuestManager());
 
         player.sendMessage(Component.text("Reloaded " + manager.getAll().size() + " NPCs.", NamedTextColor.GREEN));
     }

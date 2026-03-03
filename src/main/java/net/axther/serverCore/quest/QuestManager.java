@@ -1,6 +1,9 @@
 package net.axther.serverCore.quest;
 
+import net.axther.serverCore.api.event.QuestCompleteEvent;
+import net.axther.serverCore.api.event.QuestStartEvent;
 import net.axther.serverCore.quest.data.QuestStore;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -61,6 +64,11 @@ public class QuestManager {
         if (!canAccept(player, questId)) return false;
         Quest quest = quests.get(questId);
 
+        // Fire event
+        QuestStartEvent event = new QuestStartEvent(player, questId);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return false;
+
         QuestProgress progress = new QuestProgress(questId, quest.getObjectives().size());
         activeQuests.computeIfAbsent(player.getUniqueId(), k -> new ArrayList<>()).add(progress);
         return true;
@@ -110,6 +118,9 @@ public class QuestManager {
         removeActiveProgress(player.getUniqueId(), questId);
         completedQuests.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>())
                 .put(questId, System.currentTimeMillis());
+
+        // Fire event
+        Bukkit.getPluginManager().callEvent(new QuestCompleteEvent(player, questId));
 
         return true;
     }

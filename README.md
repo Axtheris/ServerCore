@@ -16,7 +16,7 @@
 
 <br>
 
-A feature-rich Paper plugin that brings **cosmetic accessories** to mobs, **particle emitters** to your world, and a complete **pet system** with optional [Model Engine](https://mythiccraft.io/index.php?pages/model-engine/) support for 3D models — all driven by YAML config so server operators never need to touch code.
+A feature-rich Paper plugin that brings **cosmetic accessories** to mobs, **particle emitters** to your world, and a complete **pet system** with optional [Model Engine](https://mythiccraft.io/index.php?pages/model-engine/) support for 3D models - all driven by YAML config so server operators never need to touch code.
 
 <br>
 
@@ -32,31 +32,31 @@ A feature-rich Paper plugin that brings **cosmetic accessories** to mobs, **part
 
 Place invisible armor stands on mob heads that display held items as wearable accessories. Stands track mob movement every tick with per-mob head-offset geometry.
 
-- **Two-tier profile system** — Java profiles for custom behavior, YAML profiles for zero-code additions
-- **Live calibration** — adjust offsets in-game with the `/cosmetic calibrate` command
-- **Automatic cleanup** — cosmetics are removed on entity death, chunk unload, and server stop
-- **Equipment-locked marker stands** — invisible, no gravity, non-persistent, interaction-blocked
+- **Two-tier profile system** : Java profiles for custom behavior, YAML profiles for zero-code additions
+- **Live calibration**: adjust offsets in-game with the `/cosmetic calibrate` command
+- **Automatic cleanup**: cosmetics are removed on entity death, chunk unload, and server stop
+- **Equipment-locked marker stands**: invisible, no gravity, non-persistent, interaction-blocked
 
 ### Particle Emitters
 
 Attach configurable particle emitters to locations or entities with full control over patterns, types, and behavior.
 
-- **Multiple patterns** — customize particle shapes and emission behavior
-- **Entity-attached or static** — bind emitters to mobs/players or world coordinates
-- **Live editing** — create, modify, and remove emitters in-game
+- **Multiple patterns** : customize particle shapes and emission behavior
+- **Entity-attached or static**: bind emitters to mobs/players or world coordinates
+- **Live editing**: create, modify, and remove emitters in-game
 
 ### Pet System
 
 A complete pet system where players summon, dismiss, feed, and interact with companions.
 
-- **10 built-in pets** — Dragon, Fox, Ghost, Mushroom, Owl, Penguin, Rat, Robot, Skull, Wisp
-- **YAML-driven profiles** — each pet is a single `.yml` file, add new pets without code
-- **AI state machine** — following, sitting, and idle states with smooth transitions
-- **Combat-capable** — configurable attack range, damage, and cooldown per pet
-- **Hunger & feeding** — pets get hungry over time; players feed them to keep them happy
-- **Animations** — hover bobbing, hop animations, and configurable amplitudes/frequencies
-- **Ambient sounds** — per-pet sound effects with randomized chance and pitch
-- **Model Engine integration** — optional 3D models with idle, walk, attack, and sit animations
+- **10 built-in pets** : Dragon, Fox, Ghost, Mushroom, Owl, Penguin, Rat, Robot, Skull, Wisp
+- **YAML-driven profiles**: each pet is a single `.yml` file, add new pets without code
+- **AI state machine**: following, sitting, and idle states with smooth transitions
+- **Combat-capable**: configurable attack range, damage, and cooldown per pet
+- **Hunger & feeding**: pets get hungry over time; players feed them to keep them happy
+- **Animations**: hover bobbing, hop animations, and configurable amplitudes/frequencies
+- **Ambient sounds**: per-pet sound effects with randomized chance and pitch
+- **Model Engine integration**: optional 3D models with idle, walk, attack, and sit animations
 
 ---
 
@@ -90,7 +90,7 @@ When Model Engine is not installed, pets render as floating head items on armor 
 
 ## Commands & Permissions
 
-### `/cosmetic` — Mob Cosmetics
+### `/cosmetic` - Mob Cosmetics
 
 | Subcommand | Description | Permission |
 |:-----------|:------------|:-----------|
@@ -100,7 +100,7 @@ When Model Engine is not installed, pets render as floating head items on armor 
 | `info` | Show cosmetic info for the targeted mob | `servercore.cosmetic` |
 | `calibrate` | Enter calibration mode to adjust offsets live | `servercore.cosmetic` |
 
-### `/emitter` — Particle Emitters
+### `/emitter` - Particle Emitters
 
 | Subcommand | Description | Permission |
 |:-----------|:------------|:-----------|
@@ -110,7 +110,7 @@ When Model Engine is not installed, pets render as floating head items on armor 
 | `edit` | Edit an existing emitter | `servercore.emitter` |
 | `info` | Show emitter details | `servercore.emitter` |
 
-### `/pet` — Pet System
+### `/pet` - Pet System
 
 | Subcommand | Description | Permission |
 |:-----------|:------------|:-----------|
@@ -129,7 +129,7 @@ When Model Engine is not installed, pets render as floating head items on armor 
 
 ## Configuration
 
-### `cosmetics.yml` — Mob Cosmetic Profiles
+### `cosmetics.yml` - Mob Cosmetic Profiles
 
 Define head-offset geometry per entity type. Java profiles take priority over config entries.
 
@@ -142,7 +142,7 @@ mobs:
     use-small-stand: false
 ```
 
-### `pets/*.yml` — Pet Profiles
+### `pets/*.yml` - Pet Profiles
 
 Each pet is its own file. Add new pets by dropping in a new YAML file and running `/pet reload`.
 
@@ -176,7 +176,7 @@ sounds:
     pitch: 1.5
     chance: 400
 
-# Optional — requires Model Engine plugin
+# Optional - requires Model Engine plugin
 # model-id: "fox_pet"
 # model-animations:
 #   idle: "anim_idle"
@@ -265,16 +265,16 @@ All managers are available after `ServerCore.onEnable()`.
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch — `git checkout -b feature/my-feature`
+2. Create a feature branch: `git checkout -b feature/my-feature`
 3. Commit your changes
-4. Push to the branch — `git push origin feature/my-feature`
+4. Push to the branch: `git push origin feature/my-feature`
 5. Open a Pull Request
 
 ---
 
 ## License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
 
 ---
 

@@ -29,6 +29,12 @@ public class NPCListener implements Listener {
     }
 
     public void handleInteraction(Player player, NPC npc) {
+        // Track talk objectives for active quests
+        var questManager = net.axther.serverCore.api.ServerCoreAPI.get().getQuestManager();
+        if (questManager != null) {
+            questManager.handleTalk(player.getUniqueId(), npc.getId());
+        }
+
         String dialogueId = npc.getDialogueId();
         if (dialogueId == null) return;
 

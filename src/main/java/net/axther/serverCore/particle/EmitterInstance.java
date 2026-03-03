@@ -1,6 +1,8 @@
 package net.axther.serverCore.particle;
 
+import net.axther.serverCore.particle.script.ScriptEngine;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -40,8 +42,21 @@ public class EmitterInstance {
         double cy = blockY + 0.5;
         double cz = blockZ + 0.5;
 
-        List<Vector> offsets = data.pattern().computeOffsets(data.radius(), data.height(), tickCounter, data.count());
-        Object particleData = resolveParticleData(world);
+        List<Vector> offsets;
+        if (data.script() != null) {
+            offsets = ScriptEngine.computeOffsets(data.script(), tickCounter, data.count());
+        } else {
+            offsets = data.pattern().computeOffsets(data.radius(), data.height(), tickCounter, data.count());
+        }
+
+        // If the script provides dynamic colour, override the emitter colour for this tick
+        Color effectiveColor = data.color();
+        if (data.script() != null) {
+            Color scriptColor = ScriptEngine.computeColor(data.script(), tickCounter);
+            if (scriptColor != null) effectiveColor = scriptColor;
+        }
+
+        Object particleData = resolveParticleData(world, effectiveColor);
 
         for (Vector offset : offsets) {
             Location loc = new Location(world, cx + offset.getX(), cy + offset.getY(), cz + offset.getZ());
@@ -53,9 +68,9 @@ public class EmitterInstance {
         }
     }
 
-    private Object resolveParticleData(World world) {
+    private Object resolveParticleData(World world, Color effectiveColor) {
         Particle p = data.particle();
-        org.bukkit.Color color = data.color() != null ? data.color() : org.bukkit.Color.WHITE;
+        Color color = effectiveColor != null ? effectiveColor : Color.WHITE;
 
         // DUST — requires DustOptions(color, size)
         if (p == Particle.DUST) {

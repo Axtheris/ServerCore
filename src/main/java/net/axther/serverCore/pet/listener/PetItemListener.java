@@ -2,6 +2,7 @@ package net.axther.serverCore.pet.listener;
 
 import net.axther.serverCore.pet.PetManager;
 import net.axther.serverCore.pet.PetProfile;
+import net.axther.serverCore.pet.data.PetStore;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -44,6 +45,10 @@ public class PetItemListener implements Listener {
             manager.dismissPetType(player.getUniqueId(), petId);
             player.sendMessage(profile.getDisplayName() + " dismissed!");
         } else {
+            PetStore store = manager.getStore();
+            if (store != null) {
+                store.addPet(player.getUniqueId(), petId);
+            }
             manager.summonPet(player, profile);
             player.sendMessage(profile.getDisplayName() + " summoned!");
         }

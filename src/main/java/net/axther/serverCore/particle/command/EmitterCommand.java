@@ -1,18 +1,27 @@
 package net.axther.serverCore.particle.command;
 
+import net.axther.serverCore.gui.ConfirmationMenu;
+import net.axther.serverCore.gui.Menu;
+import net.axther.serverCore.gui.MenuItem;
+import net.axther.serverCore.gui.PaginatedMenu;
 import net.axther.serverCore.particle.*;
 import net.axther.serverCore.particle.config.EmitterConfig;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +33,7 @@ import java.util.stream.Stream;
 
 public class EmitterCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = List.of("create", "remove", "list", "edit", "info");
+    private static final List<String> SUBCOMMANDS = List.of("create", "remove", "list", "edit", "info", "gui");
     private static final List<String> EDITABLE_PROPS = List.of("particle", "pattern", "radius", "height", "speed", "count", "interval", "color", "size", "block-material");
 
     // Curated list of the most visually interesting particles for tab completion (all 115 still work by name)
@@ -66,7 +75,7 @@ public class EmitterCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage(Component.text("Usage: /emitter <create|remove|list|edit|info>", NamedTextColor.YELLOW));
+            player.sendMessage(Component.text("Usage: /emitter <create|remove|list|edit|info|gui>", NamedTextColor.YELLOW));
             return true;
         }
 
@@ -76,7 +85,8 @@ public class EmitterCommand implements TabExecutor {
             case "list" -> handleList(player);
             case "edit" -> handleEdit(player, args);
             case "info" -> handleInfo(player);
-            default -> player.sendMessage(Component.text("Unknown subcommand. Use: create, remove, list, edit, info", NamedTextColor.RED));
+            case "gui" -> handleGui(player);
+            default -> player.sendMessage(Component.text("Unknown subcommand. Use: create, remove, list, edit, info, gui", NamedTextColor.RED));
         }
         return true;
     }
@@ -187,6 +197,106 @@ public class EmitterCommand implements TabExecutor {
         }
     }
 
+    private void handleGui(Player player) {
+        MiniMessage mm = MiniMessage.miniMessage();
+
+        var emitters = manager.getAllEmitters();
+        List<MenuItem> items = new ArrayList<>();
+
+        for (EmitterInstance inst : emitters) {
+            EmitterData d = inst.getData();
+
+            ItemStack display = new ItemStack(Material.END_ROD);
+            ItemMeta meta = display.getItemMeta();
+            meta.displayName(mm.deserialize("<light_purple>" + inst.getId()));
+
+            List<Component> lore = new ArrayList<>();
+            lore.add(mm.deserialize("<gray>Particle: <aqua>" + d.particle().name()));
+            String patternLabel = d.script() != null ? "custom script" : d.pattern().name();
+            lore.add(mm.deserialize("<gray>Pattern: <aqua>" + patternLabel));
+            lore.add(mm.deserialize("<gray>Location: <white>" + inst.getWorldName() + " " + inst.getBlockX() + ", " + inst.getBlockY() + ", " + inst.getBlockZ()));
+            lore.add(mm.deserialize("<gray>Radius: <white>" + d.radius() + " <gray>| Height: <white>" + d.height()));
+            lore.add(Component.empty());
+            lore.add(mm.deserialize("<yellow>Left-click to teleport"));
+            lore.add(mm.deserialize("<red>Right-click to remove"));
+
+            meta.lore(lore);
+            display.setItemMeta(meta);
+
+            final String emitterId = inst.getId();
+            items.add(MenuItem.builder(display)
+                    .onClick(p -> {
+                        World world = Bukkit.getWorld(inst.getWorldName());
+                        if (world == null) {
+                            p.sendMessage(Component.text("World not found: " + inst.getWorldName(), NamedTextColor.RED));
+                            return;
+                        }
+                        p.closeInventory();
+                        Location loc = new Location(world, inst.getBlockX() + 0.5, inst.getBlockY() + 1, inst.getBlockZ() + 0.5);
+                        p.teleport(loc);
+                        p.sendMessage(Component.text("Teleported to emitter '", NamedTextColor.GREEN)
+                                .append(Component.text(emitterId, NamedTextColor.WHITE))
+                                .append(Component.text("'", NamedTextColor.GREEN)));
+                    })
+                    .onRightClick(p -> {
+                        Menu confirmMenu = ConfirmationMenu.create(
+                                "<red>Remove emitter '" + emitterId + "'?",
+                                () -> {
+                                    manager.removeEmitter(emitterId);
+                                    config.saveAll(manager);
+                                    p.sendMessage(Component.text("Removed emitter '", NamedTextColor.YELLOW)
+                                            .append(Component.text(emitterId, NamedTextColor.WHITE))
+                                            .append(Component.text("'", NamedTextColor.YELLOW)));
+                                    // Re-open the GUI to show updated list
+                                    handleGui(p);
+                                },
+                                () -> {
+                                    // Go back to emitter GUI
+                                    handleGui(p);
+                                },
+                                null
+                        );
+                        confirmMenu.open(p);
+                    })
+                    .build());
+        }
+
+        PaginatedMenu.PaginatedBuilder menuBuilder = PaginatedMenu.paginatedBuilder("<gradient:#A855F7:#EC4899>Emitter Manager</gradient>");
+        menuBuilder.contentItems(items);
+        PaginatedMenu menu = menuBuilder.build();
+
+        // We need to add a "Create New" button. Since PaginatedMenu uses slots 45-53 for nav,
+        // we add the create button as a content item at the beginning if no emitters exist,
+        // or we open the menu and rely on the player using the command for creation.
+        // Better approach: add a special "Create New" item at the start of the list.
+        ItemStack createItem = new ItemStack(Material.NETHER_STAR);
+        ItemMeta createMeta = createItem.getItemMeta();
+        createMeta.displayName(mm.deserialize("<green><bold>Create New Emitter"));
+        List<Component> createLore = new ArrayList<>();
+        createLore.add(mm.deserialize("<gray>Use the command to create:"));
+        createLore.add(mm.deserialize("<yellow>/emitter create <id> <particle> [pattern]"));
+        createLore.add(Component.empty());
+        createLore.add(mm.deserialize("<gray>Look at a block where the"));
+        createLore.add(mm.deserialize("<gray>emitter should be placed"));
+        createMeta.lore(createLore);
+        createItem.setItemMeta(createMeta);
+
+        // Rebuild with create item at the front
+        List<MenuItem> finalItems = new ArrayList<>();
+        finalItems.add(MenuItem.builder(createItem)
+                .onClick(p -> {
+                    p.closeInventory();
+                    p.sendMessage(Component.text("Use: /emitter create <id> <particle> [pattern]", NamedTextColor.YELLOW));
+                })
+                .build());
+        finalItems.addAll(items);
+
+        PaginatedMenu finalMenu = PaginatedMenu.paginatedBuilder("<gradient:#A855F7:#EC4899>Emitter Manager</gradient>")
+                .contentItems(finalItems)
+                .build();
+        finalMenu.open(player);
+    }
+
     private void handleEdit(Player player, String[] args) {
         if (args.length < 4) {
             player.sendMessage(Component.text("Usage: /emitter edit <id> <property> <value>", NamedTextColor.YELLOW));
@@ -260,7 +370,8 @@ public class EmitterCommand implements TabExecutor {
         player.sendMessage(Component.text("--- Emitter: " + emitter.getId() + " ---", NamedTextColor.GREEN));
         player.sendMessage(Component.text("  Location: " + emitter.getWorldName() + " " + emitter.getBlockX() + ", " + emitter.getBlockY() + ", " + emitter.getBlockZ(), NamedTextColor.GRAY));
         player.sendMessage(Component.text("  Particle: ", NamedTextColor.GRAY).append(Component.text(d.particle().name(), NamedTextColor.AQUA)));
-        player.sendMessage(Component.text("  Pattern: ", NamedTextColor.GRAY).append(Component.text(d.pattern().name(), NamedTextColor.AQUA)));
+        String patternLabel = d.script() != null ? "custom script" : d.pattern().name();
+        player.sendMessage(Component.text("  Pattern: ", NamedTextColor.GRAY).append(Component.text(patternLabel, NamedTextColor.AQUA)));
         player.sendMessage(Component.text("  Radius: " + d.radius() + " | Height: " + d.height() + " | Speed: " + d.speed(), NamedTextColor.GRAY));
         player.sendMessage(Component.text("  Count: " + d.count() + " | Interval: " + d.interval() + " ticks", NamedTextColor.GRAY));
         if (d.color() != null) {

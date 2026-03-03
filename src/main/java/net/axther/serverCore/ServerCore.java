@@ -1,9 +1,12 @@
 package net.axther.serverCore;
 
+import net.axther.serverCore.command.ServerCoreCommand;
+import net.axther.serverCore.config.ServerCoreConfig;
 import net.axther.serverCore.cosmetic.CosmeticManager;
 import net.axther.serverCore.cosmetic.calibrate.CalibrationListener;
 import net.axther.serverCore.cosmetic.command.CosmeticCommand;
 import net.axther.serverCore.cosmetic.config.CosmeticConfig;
+import net.axther.serverCore.cosmetic.data.CosmeticStore;
 import net.axther.serverCore.cosmetic.listener.CosmeticLifecycleListener;
 import net.axther.serverCore.cosmetic.profiles.PandaCosmeticProfile;
 import net.axther.serverCore.cosmetic.task.CosmeticTickTask;
@@ -13,6 +16,7 @@ import net.axther.serverCore.particle.config.EmitterConfig;
 import net.axther.serverCore.particle.listener.EmitterLifecycleListener;
 import net.axther.serverCore.particle.task.EmitterTickTask;
 import net.axther.serverCore.pet.PetManager;
+import net.axther.serverCore.pet.data.PetStore;
 import net.axther.serverCore.pet.model.ModelEngineHook;
 import net.axther.serverCore.pet.command.PetCommand;
 import net.axther.serverCore.pet.config.PetConfig;
@@ -20,93 +24,270 @@ import net.axther.serverCore.pet.listener.PetItemListener;
 import net.axther.serverCore.pet.listener.PetLifecycleListener;
 import net.axther.serverCore.pet.profiles.RatPetProfile;
 import net.axther.serverCore.pet.task.PetTickTask;
+import net.axther.serverCore.hologram.HologramManager;
+import net.axther.serverCore.hologram.command.HologramCommand;
+import net.axther.serverCore.hologram.config.HologramConfig;
+import net.axther.serverCore.hologram.listener.HologramLifecycleListener;
+import net.axther.serverCore.hologram.task.HologramTickTask;
+import net.axther.serverCore.npc.NPCManager;
+import net.axther.serverCore.npc.command.NPCCommand;
+import net.axther.serverCore.npc.config.NPCConfig;
+import net.axther.serverCore.npc.listener.NPCListener;
+import net.axther.serverCore.npc.task.NPCTickTask;
+import net.axther.serverCore.reactive.ReactiveManager;
+import net.axther.serverCore.reactive.config.ReactiveConfig;
+import net.axther.serverCore.reactive.task.ReactiveTickTask;
+import net.axther.serverCore.timeline.TimelineManager;
+import net.axther.serverCore.timeline.command.TimelineCommand;
+import net.axther.serverCore.timeline.config.TimelineConfig;
+import net.axther.serverCore.timeline.task.TimelineTickTask;
+import net.axther.serverCore.api.ServerCoreAPI;
+import net.axther.serverCore.gui.MenuListener;
+import net.axther.serverCore.gui.MenuManager;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class ServerCore extends JavaPlugin {
 
+    private ServerCoreConfig serverCoreConfig;
     private CosmeticManager cosmeticManager;
+    private CosmeticStore cosmeticStore;
     private CosmeticTickTask tickTask;
     private EmitterManager emitterManager;
     private EmitterConfig emitterConfig;
     private EmitterTickTask emitterTickTask;
     private PetManager petManager;
+    private PetStore petStore;
     private PetTickTask petTickTask;
+    private HologramManager hologramManager;
+    private HologramConfig hologramConfig;
+    private HologramTickTask hologramTickTask;
+    private NPCManager npcManager;
+    private NPCConfig npcConfig;
+    private NPCTickTask npcTickTask;
+    private NPCListener npcListener;
+    private TimelineManager timelineManager;
+    private TimelineConfig timelineConfig;
+    private TimelineTickTask timelineTickTask;
+    private ReactiveManager reactiveManager;
+    private ReactiveTickTask reactiveTickTask;
+    private MenuManager menuManager;
 
     @Override
     public void onEnable() {
-        cosmeticManager = new CosmeticManager();
+        // --- Central Config ---
+        serverCoreConfig = new ServerCoreConfig(this);
 
-        // Register Java profiles first (these take priority over config)
-        cosmeticManager.registerProfile(EntityType.PANDA, new PandaCosmeticProfile());
-
-        // Load config profiles (skips types already registered by Java)
-        CosmeticConfig cosmeticConfig = new CosmeticConfig(this);
-        cosmeticConfig.loadAndRegister(cosmeticManager);
-
-        // Register event listeners
-        CalibrationListener calibrationListener = new CalibrationListener();
-        getServer().getPluginManager().registerEvents(new CosmeticLifecycleListener(cosmeticManager), this);
-        getServer().getPluginManager().registerEvents(calibrationListener, this);
-
-        // Register command
-        PluginCommand cmd = getCommand("cosmetic");
-        if (cmd != null) {
-            CosmeticCommand cosmeticCommand = new CosmeticCommand(cosmeticManager, cosmeticConfig, calibrationListener);
-            cmd.setExecutor(cosmeticCommand);
-            cmd.setTabCompleter(cosmeticCommand);
+        // --- ServerCore admin command ---
+        PluginCommand scCmd = getCommand("servercore");
+        if (scCmd != null) {
+            ServerCoreCommand scCommand = new ServerCoreCommand(serverCoreConfig);
+            scCmd.setExecutor(scCommand);
+            scCmd.setTabCompleter(scCommand);
         }
 
-        // Start tick task (runs every tick)
-        tickTask = new CosmeticTickTask(cosmeticManager);
-        tickTask.runTaskTimer(this, 0L, 1L);
+        // --- GUI Framework ---
+        if (serverCoreConfig.isSystemEnabled("gui")) {
+            menuManager = new MenuManager();
+            getServer().getPluginManager().registerEvents(new MenuListener(menuManager), this);
+        }
+
+        // --- Cosmetic System ---
+        if (serverCoreConfig.isSystemEnabled("cosmetics")) {
+            cosmeticManager = new CosmeticManager();
+
+            // Register Java profiles first (these take priority over config)
+            cosmeticManager.registerProfile(EntityType.PANDA, new PandaCosmeticProfile());
+
+            // Load config profiles (skips types already registered by Java)
+            CosmeticConfig cosmeticConfig = new CosmeticConfig(this);
+            cosmeticConfig.loadAndRegister(cosmeticManager);
+
+            // Set up persistence
+            cosmeticStore = new CosmeticStore(this);
+            cosmeticManager.setStore(cosmeticStore);
+            cosmeticStore.load(cosmeticManager);
+
+            // Register event listeners
+            CalibrationListener calibrationListener = new CalibrationListener();
+            getServer().getPluginManager().registerEvents(new CosmeticLifecycleListener(cosmeticManager, cosmeticStore), this);
+            getServer().getPluginManager().registerEvents(calibrationListener, this);
+
+            // Register command
+            PluginCommand cmd = getCommand("cosmetic");
+            if (cmd != null) {
+                CosmeticCommand cosmeticCommand = new CosmeticCommand(cosmeticManager, cosmeticConfig, calibrationListener);
+                cmd.setExecutor(cosmeticCommand);
+                cmd.setTabCompleter(cosmeticCommand);
+            }
+
+            // Start tick task (runs every tick)
+            tickTask = new CosmeticTickTask(cosmeticManager);
+            tickTask.runTaskTimer(this, 0L, 1L);
+        }
 
         // --- Particle Emitter System ---
-        emitterManager = new EmitterManager();
-        emitterConfig = new EmitterConfig(this);
-        emitterConfig.loadAll(emitterManager);
+        if (serverCoreConfig.isSystemEnabled("emitters")) {
+            emitterManager = new EmitterManager();
+            emitterConfig = new EmitterConfig(this);
+            emitterConfig.loadAll(emitterManager);
 
-        getServer().getPluginManager().registerEvents(new EmitterLifecycleListener(emitterManager), this);
+            getServer().getPluginManager().registerEvents(new EmitterLifecycleListener(emitterManager), this);
 
-        PluginCommand emitterCmd = getCommand("emitter");
-        if (emitterCmd != null) {
-            EmitterCommand emitterCommand = new EmitterCommand(emitterManager, emitterConfig);
-            emitterCmd.setExecutor(emitterCommand);
-            emitterCmd.setTabCompleter(emitterCommand);
+            PluginCommand emitterCmd = getCommand("emitter");
+            if (emitterCmd != null) {
+                EmitterCommand emitterCommand = new EmitterCommand(emitterManager, emitterConfig);
+                emitterCmd.setExecutor(emitterCommand);
+                emitterCmd.setTabCompleter(emitterCommand);
+            }
+
+            emitterTickTask = new EmitterTickTask(emitterManager);
+            emitterTickTask.runTaskTimer(this, 0L, 1L);
         }
-
-        emitterTickTask = new EmitterTickTask(emitterManager);
-        emitterTickTask.runTaskTimer(this, 0L, 1L);
 
         // --- Pet System ---
-        boolean megEnabled = getServer().getPluginManager().getPlugin("ModelEngine") != null;
-        if (megEnabled) {
-            getLogger().info("Model Engine detected — pet models enabled");
+        if (serverCoreConfig.isSystemEnabled("pets")) {
+            boolean megEnabled = getServer().getPluginManager().getPlugin("ModelEngine") != null;
+            if (megEnabled) {
+                getLogger().info("Model Engine detected -- pet models enabled");
+            }
+            petManager = new PetManager(megEnabled);
+
+            // Register Java profiles first (take priority over config)
+            registerJavaPetProfiles();
+
+            // Load config profiles
+            PetConfig petConfig = new PetConfig(this);
+            petConfig.loadAndRegister(petManager);
+
+            // Set up pet persistence
+            petStore = new PetStore(this);
+            petManager.setStore(petStore);
+            petStore.load();
+
+            getServer().getPluginManager().registerEvents(new PetLifecycleListener(petManager), this);
+            getServer().getPluginManager().registerEvents(new PetItemListener(petManager), this);
+
+            PluginCommand petCmd = getCommand("pet");
+            if (petCmd != null) {
+                PetCommand petCommand = new PetCommand(petManager, petConfig, this::registerJavaPetProfiles);
+                petCmd.setExecutor(petCommand);
+                petCmd.setTabCompleter(petCommand);
+            }
+
+            petTickTask = new PetTickTask(petManager);
+            petTickTask.runTaskTimer(this, 0L, 1L);
         }
-        petManager = new PetManager(megEnabled);
 
-        // Register Java profiles first (take priority over config)
-        registerJavaPetProfiles();
+        // --- Hologram System ---
+        if (serverCoreConfig.isSystemEnabled("holograms")) {
+            hologramManager = new HologramManager();
+            hologramConfig = new HologramConfig(this);
+            hologramConfig.loadAll(hologramManager);
 
-        // Load config profiles
-        PetConfig petConfig = new PetConfig(this);
-        petConfig.loadAndRegister(petManager);
+            getServer().getPluginManager().registerEvents(new HologramLifecycleListener(hologramManager), this);
 
-        getServer().getPluginManager().registerEvents(new PetLifecycleListener(petManager), this);
-        getServer().getPluginManager().registerEvents(new PetItemListener(petManager), this);
+            PluginCommand hologramCmd = getCommand("hologram");
+            if (hologramCmd != null) {
+                HologramCommand hologramCommand = new HologramCommand(hologramManager, hologramConfig);
+                hologramCmd.setExecutor(hologramCommand);
+                hologramCmd.setTabCompleter(hologramCommand);
+            }
 
-        PluginCommand petCmd = getCommand("pet");
-        if (petCmd != null) {
-            PetCommand petCommand = new PetCommand(petManager, petConfig, this::registerJavaPetProfiles);
-            petCmd.setExecutor(petCommand);
-            petCmd.setTabCompleter(petCommand);
+            hologramTickTask = new HologramTickTask(hologramManager);
+            hologramTickTask.runTaskTimer(this, 0L, 1L);
+
+            hologramManager.spawnAll();
         }
 
-        petTickTask = new PetTickTask(petManager);
-        petTickTask.runTaskTimer(this, 0L, 1L);
+        // --- NPC / Dialogue System ---
+        if (serverCoreConfig.isSystemEnabled("npcs")) {
+            npcManager = new NPCManager();
+            npcConfig = new NPCConfig(this);
+            npcConfig.loadAll(npcManager);
 
-        getLogger().info("ServerCore enabled - cosmetic system loaded with " + cosmeticManager.getSupportedTypes().size() + " mob profiles, pet system loaded with " + petManager.getRegisteredPetIds().size() + " pet types");
+            npcListener = new NPCListener(npcManager, npcConfig);
+            getServer().getPluginManager().registerEvents(npcListener, this);
+
+            PluginCommand npcCmd = getCommand("npc");
+            if (npcCmd != null) {
+                NPCCommand npcCommand = new NPCCommand(npcManager, npcConfig, npcListener);
+                npcCmd.setExecutor(npcCommand);
+                npcCmd.setTabCompleter(npcCommand);
+            }
+
+            npcTickTask = new NPCTickTask(npcManager);
+            npcTickTask.runTaskTimer(this, 0L, 5L);
+
+            npcManager.spawnAll();
+        }
+
+        // --- Timeline / Event Sequencer System ---
+        if (serverCoreConfig.isSystemEnabled("timelines")) {
+            timelineManager = new TimelineManager();
+            timelineConfig = new TimelineConfig(this);
+            timelineConfig.loadAll(timelineManager);
+
+            PluginCommand timelineCmd = getCommand("timeline");
+            if (timelineCmd != null) {
+                TimelineCommand timelineCommand = new TimelineCommand(timelineManager, timelineConfig);
+                timelineCmd.setExecutor(timelineCommand);
+                timelineCmd.setTabCompleter(timelineCommand);
+            }
+
+            timelineTickTask = new TimelineTickTask(timelineManager);
+            timelineTickTask.runTaskTimer(this, 0L, 1L);
+        }
+
+        // --- Reactive / Context-Aware Cosmetics System ---
+        if (serverCoreConfig.isSystemEnabled("reactive")) {
+            reactiveManager = new ReactiveManager();
+            ReactiveConfig reactiveConfig = new ReactiveConfig(this);
+            reactiveConfig.loadAll(reactiveManager);
+
+            reactiveTickTask = new ReactiveTickTask(reactiveManager, cosmeticManager, petManager);
+            reactiveTickTask.runTaskTimer(this, 0L, 20L);
+        }
+
+        // --- PlaceholderAPI Hook ---
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            registerPlaceholderHook();
+            getLogger().info("PlaceholderAPI detected -- placeholders registered");
+        }
+
+        // --- Public API ---
+        ServerCoreAPI.init(cosmeticManager, emitterManager, petManager,
+                hologramManager, npcManager, timelineManager, reactiveManager, menuManager);
+
+        // Build startup summary
+        StringBuilder summary = new StringBuilder("ServerCore enabled");
+        if (cosmeticManager != null) {
+            summary.append(" - cosmetic system loaded with ")
+                    .append(cosmeticManager.getSupportedTypes().size())
+                    .append(" mob profiles");
+        }
+        if (petManager != null) {
+            summary.append(", pet system loaded with ")
+                    .append(petManager.getRegisteredPetIds().size())
+                    .append(" pet types");
+        }
+        getLogger().info(summary.toString());
+    }
+
+    /**
+     * Registers the PlaceholderAPI expansion. Isolated into its own method so that the
+     * PlaceholderHook class is never loaded unless PlaceholderAPI is actually present,
+     * avoiding NoClassDefFoundError on servers without PlaceholderAPI.
+     */
+    private void registerPlaceholderHook() {
+        new net.axther.serverCore.hook.PlaceholderHook(
+                this,
+                petManager,
+                cosmeticManager,
+                emitterManager,
+                hologramManager
+        ).register();
     }
 
     private void registerJavaPetProfiles() {
@@ -115,8 +296,12 @@ public final class ServerCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        ServerCoreAPI.shutdown();
         if (tickTask != null) {
             tickTask.cancel();
+        }
+        if (cosmeticStore != null && cosmeticManager != null) {
+            cosmeticStore.save(cosmeticManager);
         }
         if (cosmeticManager != null) {
             cosmeticManager.destroyAll();
@@ -130,11 +315,44 @@ public final class ServerCore extends JavaPlugin {
         if (emitterManager != null) {
             emitterManager.destroyAll();
         }
+        if (petStore != null) {
+            petStore.save();
+        }
         if (petTickTask != null) {
             petTickTask.cancel();
         }
         if (petManager != null) {
             petManager.destroyAll();
+        }
+        if (hologramConfig != null && hologramManager != null) {
+            hologramConfig.saveAll(hologramManager);
+        }
+        if (hologramTickTask != null) {
+            hologramTickTask.cancel();
+        }
+        if (hologramManager != null) {
+            hologramManager.destroyAll();
+        }
+        if (npcTickTask != null) {
+            npcTickTask.cancel();
+        }
+        if (npcListener != null) {
+            npcListener.clearAllSessions();
+        }
+        if (npcManager != null) {
+            npcManager.destroyAll();
+        }
+        if (timelineTickTask != null) {
+            timelineTickTask.cancel();
+        }
+        if (timelineManager != null) {
+            timelineManager.stopAll();
+        }
+        if (reactiveTickTask != null) {
+            reactiveTickTask.cancel();
+        }
+        if (reactiveManager != null) {
+            reactiveManager.clearAll(cosmeticManager, petManager);
         }
     }
 }

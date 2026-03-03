@@ -3,7 +3,7 @@ version: '${version}'
 main: net.axther.serverCore.ServerCore
 api-version: '1.21'
 description: Swag
-softdepend: [ModelEngine]
+softdepend: [ModelEngine, PlaceholderAPI]
 
 commands:
   cosmetic:
@@ -18,6 +18,22 @@ commands:
     description: Manage player pets
     usage: /pet <summon|dismiss|sit|follow|feed|list|give|reload>
     permission: servercore.pet
+  hologram:
+    description: Manage text display holograms
+    usage: /hologram <create|remove|addline|removeline|edit|list|near|movehere|setanimation>
+    permission: servercore.hologram
+  npc:
+    description: Manage NPCs and dialogue
+    usage: /npc <create|remove|movehere|list|reload>
+    permission: servercore.npc
+  timeline:
+    description: Manage event timelines
+    usage: /timeline <play|stop|list|reload>
+    permission: servercore.timeline
+  servercore:
+    description: ServerCore admin commands
+    usage: /servercore reload
+    permission: servercore.admin
 
 permissions:
   servercore.cosmetic:
@@ -28,4 +44,16 @@ permissions:
     default: op
   servercore.pet:
     description: Allows use of the pet command
+    default: op
+  servercore.hologram:
+    description: Allows use of the hologram command
+    default: op
+  servercore.npc:
+    description: Allows use of the NPC command
+    default: op
+  servercore.timeline:
+    description: Allows use of the timeline command
+    default: op
+  servercore.admin:
+    description: Allows use of the servercore admin command
     default: op

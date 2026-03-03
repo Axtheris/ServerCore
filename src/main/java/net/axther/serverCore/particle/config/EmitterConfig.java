@@ -1,6 +1,7 @@
 package net.axther.serverCore.particle.config;
 
 import net.axther.serverCore.particle.*;
+import net.axther.serverCore.particle.script.ParticleScript;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -62,7 +63,21 @@ public class EmitterConfig {
                     } catch (IllegalArgumentException ignored) {}
                 }
 
-                EmitterData data = new EmitterData(particle, pattern, radius, height, speed, count, interval, color, size, blockMaterial);
+                ParticleScript script = null;
+                ConfigurationSection scriptSec = sec.getConfigurationSection("script");
+                if (scriptSec != null) {
+                    String sx = scriptSec.getString("x");
+                    String sy = scriptSec.getString("y");
+                    String sz = scriptSec.getString("z");
+                    if (sx != null && sy != null && sz != null) {
+                        String sr = scriptSec.getString("r");
+                        String sg = scriptSec.getString("g");
+                        String sb = scriptSec.getString("b");
+                        script = new ParticleScript(sx, sy, sz, sr, sg, sb);
+                    }
+                }
+
+                EmitterData data = new EmitterData(particle, pattern, radius, height, speed, count, interval, color, size, blockMaterial, script);
                 EmitterInstance instance = new EmitterInstance(id, worldName, x, y, z, data);
                 manager.registerExisting(instance);
             } catch (Exception e) {
@@ -104,6 +119,16 @@ public class EmitterConfig {
             }
 
             sec.set("block-material", data.blockMaterial() != null ? data.blockMaterial().name() : null);
+
+            if (data.script() != null) {
+                ConfigurationSection scriptSec = sec.createSection("script");
+                scriptSec.set("x", data.script().xRaw());
+                scriptSec.set("y", data.script().yRaw());
+                scriptSec.set("z", data.script().zRaw());
+                if (data.script().rRaw() != null) scriptSec.set("r", data.script().rRaw());
+                if (data.script().gRaw() != null) scriptSec.set("g", data.script().gRaw());
+                if (data.script().bRaw() != null) scriptSec.set("b", data.script().bRaw());
+            }
         }
 
         try {

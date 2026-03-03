@@ -1,0 +1,20 @@
+# ServerCore Central Configuration
+# Toggle systems on/off. Changes take effect after /servercore reload.
+
+systems:
+  cosmetics:
+    enabled: true
+  emitters:
+    enabled: true
+  pets:
+    enabled: true
+  holograms:
+    enabled: true
+  npcs:
+    enabled: true
+  timelines:
+    enabled: true
+  reactive:
+    enabled: true
+  gui:
+    enabled: true

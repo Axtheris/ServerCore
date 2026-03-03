@@ -2,7 +2,7 @@
 
 # ServerCore
 
-### Mob Cosmetics, Particle Emitters & Pets for Paper 1.21
+### The All-in-One Server Enhancement Plugin for Paper 1.21
 
 [![Build](https://github.com/Axtheris/ServerCore/actions/workflows/build.yml/badge.svg)](https://github.com/Axtheris/ServerCore/actions/workflows/build.yml)
 &nbsp;
@@ -16,11 +16,11 @@
 
 <br>
 
-A feature-rich Paper plugin that brings **cosmetic accessories** to mobs, **particle emitters** to your world, and a complete **pet system** with optional [Model Engine](https://mythiccraft.io/index.php?pages/model-engine/) support for 3D models - all driven by YAML config so server operators never need to touch code.
+Eight plug-and-play systems -- **cosmetics**, **particle emitters**, **pets**, **holograms**, **NPCs with dialogue**, **event timelines**, **reactive cosmetics**, and **chest GUIs** -- all YAML-driven so server operators never need to touch code. Power users get a particle scripting language, a public API with custom Bukkit events, and PlaceholderAPI support.
 
 <br>
 
-[Features](#-features) &bull; [Installation](#-installation) &bull; [Commands](#-commands--permissions) &bull; [Configuration](#-configuration) &bull; [Building](#%EF%B8%8F-building-from-source) &bull; [API](#-api) &bull; [Contributing](#-contributing)
+[Features](#features) &bull; [Installation](#installation) &bull; [Commands](#commands--permissions) &bull; [Configuration](#configuration) &bull; [Building](#building-from-source) &bull; [API](#api) &bull; [Contributing](#contributing)
 
 </div>
 
@@ -32,31 +32,75 @@ A feature-rich Paper plugin that brings **cosmetic accessories** to mobs, **part
 
 Place invisible armor stands on mob heads that display held items as wearable accessories. Stands track mob movement every tick with per-mob head-offset geometry.
 
-- **Two-tier profile system** : Java profiles for custom behavior, YAML profiles for zero-code additions
-- **Live calibration**: adjust offsets in-game with the `/cosmetic calibrate` command
-- **Automatic cleanup**: cosmetics are removed on entity death, chunk unload, and server stop
-- **Equipment-locked marker stands**: invisible, no gravity, non-persistent, interaction-blocked
+- **Two-tier profile system**: Java profiles for custom behavior, YAML profiles for zero-code additions
+- **Live calibration**: adjust offsets in-game with `/cosmetic calibrate`
+- **Persistence**: cosmetics survive server restarts and chunk reloads
+- **GUI browser**: browse supported mobs and manage cosmetics from a chest menu
 
 ### Particle Emitters
 
-Attach configurable particle emitters to locations or entities with full control over patterns, types, and behavior.
+Attach configurable particle emitters to locations with 32 built-in patterns and a scripting language for custom effects.
 
-- **Multiple patterns** : customize particle shapes and emission behavior
-- **Entity-attached or static**: bind emitters to mobs/players or world coordinates
+- **32 patterns**: rings, helixes, galaxies, tornadoes, DNA strands, hearts, and more
+- **Particle scripting**: write mathematical expressions in YAML to define custom particle behaviors
 - **Live editing**: create, modify, and remove emitters in-game
+- **GUI manager**: browse and teleport to emitters from a chest menu
 
 ### Pet System
 
 A complete pet system where players summon, dismiss, feed, and interact with companions.
 
-- **10 built-in pets** : Dragon, Fox, Ghost, Mushroom, Owl, Penguin, Rat, Robot, Skull, Wisp
-- **YAML-driven profiles**: each pet is a single `.yml` file, add new pets without code
-- **AI state machine**: following, sitting, and idle states with smooth transitions
+- **10 built-in pets**: Dragon, Fox, Ghost, Mushroom, Owl, Penguin, Rat, Robot, Skull, Wisp
+- **Pet collection**: players own and collect pets; ownership persists across sessions
+- **AI state machine**: following, sitting, and attacking states with smooth transitions
 - **Combat-capable**: configurable attack range, damage, and cooldown per pet
-- **Hunger & feeding**: pets get hungry over time; players feed them to keep them happy
-- **Animations**: hover bobbing, hop animations, and configurable amplitudes/frequencies
-- **Ambient sounds**: per-pet sound effects with randomized chance and pitch
+- **GUI collection**: browse owned pets and summon them from a chest menu
 - **Model Engine integration**: optional 3D models with idle, walk, attack, and sit animations
+
+### Holograms
+
+Floating text using Paper 1.21 text display entities with MiniMessage formatting and animations.
+
+- **MiniMessage support**: gradients, colors, bold, italic, and all MiniMessage features
+- **Animations**: bob, rotate, and pulse effects with configurable amplitude and frequency
+- **Chunk-aware**: holograms automatically spawn and despawn with chunk loading
+
+### NPCs & Dialogue
+
+Place static NPCs with player skins and branching dialogue trees.
+
+- **Player-head NPCs**: armor stands with custom skin textures and visible names
+- **Dialogue trees**: branching conversations with conditions and actions
+- **Conditions**: permission checks, item checks for gating dialogue options
+- **Actions**: run commands, send messages, give items, play sounds
+- **Look-at-player**: NPCs turn to face nearby players
+- **Clickable choices**: dialogue options rendered as clickable chat messages
+
+### Event Timelines
+
+Schedule sequences of actions on a tick timeline for boss intros, server events, and coordinated shows.
+
+- **Keyframe system**: define actions at specific tick offsets
+- **Built-in actions**: titles, sounds, commands, mob spawning, weather, time, camera shake
+- **Looping support**: timelines can loop for continuous effects
+- **Audience targeting**: nearby players or all online players
+
+### Reactive Cosmetics
+
+Cosmetics and pets that visually change based on world state.
+
+- **Conditions**: time of day, weather, biome, player health, nearby players
+- **Effects**: glow toggle, particle trails, item swapping, color changes
+- **Automatic**: no player interaction needed; effects apply and remove themselves
+
+### GUI System
+
+Chest-based menus with pagination, confirmation dialogs, and integration across all systems.
+
+- **Paginated menus**: automatic page navigation for large lists
+- **Confirmation dialogs**: yes/no prompts before destructive actions
+- **Glass pane borders**: polished UI with no item duplication exploits
+- **MiniMessage titles**: gradient and styled menu titles
 
 ---
 
@@ -64,9 +108,8 @@ A complete pet system where players summon, dismiss, feed, and interact with com
 
 | Plugin | Required | Purpose |
 |:-------|:--------:|:--------|
-| [Model Engine](https://mythiccraft.io/index.php?pages/model-engine/) R4+ | No | Enables 3D custom models and animations for pets |
-
-When Model Engine is not installed, pets render as floating head items on armor stands.
+| [Model Engine](https://mythiccraft.io/index.php?pages/model-engine/) R4+ | No | 3D custom models and animations for pets |
+| [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) | No | Exposes ServerCore data as placeholders |
 
 ---
 
@@ -88,17 +131,52 @@ When Model Engine is not installed, pets render as floating head items on armor 
 
 ---
 
+## Central Configuration
+
+All systems can be individually enabled or disabled in `config.yml`:
+
+```yaml
+systems:
+  cosmetics:
+    enabled: true
+  emitters:
+    enabled: true
+  pets:
+    enabled: true
+  holograms:
+    enabled: true
+  npcs:
+    enabled: true
+  timelines:
+    enabled: true
+  reactive:
+    enabled: true
+  gui:
+    enabled: true
+```
+
+Use `/servercore reload` to apply changes without restarting.
+
+---
+
 ## Commands & Permissions
+
+### `/servercore` - Plugin Management
+
+| Subcommand | Description | Permission |
+|:-----------|:------------|:-----------|
+| `reload` | Reload central config | `servercore.admin` |
 
 ### `/cosmetic` - Mob Cosmetics
 
 | Subcommand | Description | Permission |
 |:-----------|:------------|:-----------|
-| `apply` | Apply a cosmetic to the targeted mob | `servercore.cosmetic` |
-| `remove` | Remove the cosmetic from the targeted mob | `servercore.cosmetic` |
+| `apply` | Apply held item as cosmetic to targeted mob | `servercore.cosmetic` |
+| `remove` | Remove cosmetic from targeted mob | `servercore.cosmetic` |
 | `clear` | Remove all active cosmetics | `servercore.cosmetic` |
-| `info` | Show cosmetic info for the targeted mob | `servercore.cosmetic` |
-| `calibrate` | Enter calibration mode to adjust offsets live | `servercore.cosmetic` |
+| `info` | Show item info for held item | `servercore.cosmetic` |
+| `calibrate` | Enter calibration mode | `servercore.cosmetic` |
+| `gui` | Open cosmetic manager GUI | `servercore.cosmetic` |
 
 ### `/emitter` - Particle Emitters
 
@@ -109,111 +187,184 @@ When Model Engine is not installed, pets render as floating head items on armor 
 | `list` | List all active emitters | `servercore.emitter` |
 | `edit` | Edit an existing emitter | `servercore.emitter` |
 | `info` | Show emitter details | `servercore.emitter` |
+| `gui` | Open emitter manager GUI | `servercore.emitter` |
 
 ### `/pet` - Pet System
 
 | Subcommand | Description | Permission |
 |:-----------|:------------|:-----------|
-| `summon` | Summon your active pet | `servercore.pet` |
-| `dismiss` | Dismiss your active pet | `servercore.pet` |
-| `sit` | Toggle pet sit/follow mode | `servercore.pet` |
-| `follow` | Make your pet follow you | `servercore.pet` |
-| `feed` | Feed your pet | `servercore.pet` |
-| `list` | List your available pets | `servercore.pet` |
-| `give` | Give a pet to a player | `servercore.pet` |
+| `summon <type>` | Summon a pet | `servercore.pet` |
+| `dismiss` | Dismiss active pets | `servercore.pet` |
+| `sit` | Toggle sit mode | `servercore.pet` |
+| `follow` | Make pets follow you | `servercore.pet` |
+| `feed` | Feed your pets | `servercore.pet` |
+| `list` | List owned pets | `servercore.pet` |
+| `give <type> [player]` | Give a pet item | `servercore.pet` |
+| `gui` | Open pet collection GUI | `servercore.pet` |
 | `reload` | Reload pet configs | `servercore.pet` |
 
-> All permissions default to **OP only**. Commands use player raycast targeting where applicable.
+### `/hologram` - Holograms
+
+| Subcommand | Description | Permission |
+|:-----------|:------------|:-----------|
+| `create <id> <text>` | Create a hologram | `servercore.hologram` |
+| `remove <id>` | Remove a hologram | `servercore.hologram` |
+| `addline <id> <text>` | Add a text line | `servercore.hologram` |
+| `removeline <id> <line#>` | Remove a text line | `servercore.hologram` |
+| `edit <id> <line#> <text>` | Edit a text line | `servercore.hologram` |
+| `list` | List all holograms | `servercore.hologram` |
+| `near [radius]` | Find nearby holograms | `servercore.hologram` |
+| `movehere <id>` | Move hologram to you | `servercore.hologram` |
+
+### `/npc` - NPCs & Dialogue
+
+| Subcommand | Description | Permission |
+|:-----------|:------------|:-----------|
+| `create <id>` | Create an NPC at your location | `servercore.npc` |
+| `remove <id>` | Remove an NPC | `servercore.npc` |
+| `movehere <id>` | Teleport NPC to you | `servercore.npc` |
+| `list` | List all NPCs | `servercore.npc` |
+| `reload` | Reload NPC configs | `servercore.npc` |
+
+### `/timeline` - Event Timelines
+
+| Subcommand | Description | Permission |
+|:-----------|:------------|:-----------|
+| `play <id>` | Play a timeline at your location | `servercore.timeline` |
+| `stop [id]` | Stop a timeline (or all) | `servercore.timeline` |
+| `list` | List all timelines | `servercore.timeline` |
+| `reload` | Reload timeline configs | `servercore.timeline` |
+
+> All permissions default to **OP only**.
 
 ---
 
 ## Configuration
 
-### `cosmetics.yml` - Mob Cosmetic Profiles
+### Particle Scripting
 
-Define head-offset geometry per entity type. Java profiles take priority over config entries.
-
-```yaml
-mobs:
-  panda:
-    head-y: 1.1          # Height of head center from feet (blocks)
-    head-forward-z: 0.9  # Forward offset from center to head
-    head-side-x: 0.0     # Side offset (positive = right)
-    use-small-stand: false
-```
-
-### `pets/*.yml` - Pet Profiles
-
-Each pet is its own file. Add new pets by dropping in a new YAML file and running `/pet reload`.
+Define custom particle behaviors with mathematical expressions:
 
 ```yaml
-display-name: "Fox"
-head-texture: "REPLACE_ME"
-item-name: "<gradient:#FF8C00:#FFDF00><bold>Fox Pet</bold></gradient>"
-item-lore:
-  - "<gold>A sly and playful fox kit."
-use-small-stand: true
-animation-type: HOP
-bob-amplitude: 0.11
-bob-frequency: 0.10
-hover-height: 1.0
-follow-speed: 0.33
-can-attack: true
-attack-range: 5.0
-attack-damage: 1.5
-attack-cooldown-ticks: 18
-feed-cooldown-ticks: 450
-heart-particle-count: 5
-sounds:
-  sniff:
-    sound: ENTITY_FOX_SNIFF
-    volume: 0.5
-    pitch: 1.3
-    chance: 180
-  yip:
-    sound: ENTITY_FOX_AMBIENT
-    volume: 0.3
-    pitch: 1.5
-    chance: 400
-
-# Optional - requires Model Engine plugin
-# model-id: "fox_pet"
-# model-animations:
-#   idle: "anim_idle"
-#   walk: "anim_walk"
-#   attack: "anim_attack"
-#   sit: "anim_sit"
+emitters:
+  my-spiral:
+    particle: FLAME
+    count: 20
+    interval: 1
+    script:
+      x: "cos(t * 0.1 + i * 2 * pi / n) * 2"
+      y: "t * 0.05 % 3"
+      z: "sin(t * 0.1 + i * 2 * pi / n) * 2"
+      r: "128 + 127 * sin(t * 0.05)"
+      g: "50"
+      b: "200"
 ```
 
-<details>
-<summary><strong>Pet config reference</strong></summary>
+**Variables:** `t` (tick), `i` (particle index), `n` (count), `pi`, `e`
 
-| Key | Type | Description |
-|:----|:-----|:------------|
-| `display-name` | String | Display name shown to players |
-| `head-texture` | String | Base64 skin texture for the pet head |
-| `item-name` | String | MiniMessage-formatted item name |
-| `item-lore` | List | MiniMessage-formatted lore lines |
-| `use-small-stand` | Boolean | Use a small armor stand (half-scale) |
-| `animation-type` | Enum | `HOP` or `BOB` |
-| `bob-amplitude` | Double | Vertical bob amplitude in blocks |
-| `bob-frequency` | Double | Bob speed multiplier |
-| `hover-height` | Double | Base hover height above ground |
-| `follow-speed` | Double | Movement speed when following |
-| `can-attack` | Boolean | Whether the pet can attack mobs |
-| `attack-range` | Double | Attack targeting range in blocks |
-| `attack-damage` | Double | Damage dealt per hit |
-| `attack-cooldown-ticks` | Integer | Ticks between attacks |
-| `feed-cooldown-ticks` | Integer | Ticks between feedings |
-| `heart-particle-count` | Integer | Heart particles on feed |
-| `sounds.<name>.sound` | String | Bukkit Sound enum value |
-| `sounds.<name>.volume` | Double | Sound volume (0.0–1.0) |
-| `sounds.<name>.pitch` | Double | Sound pitch multiplier |
-| `sounds.<name>.chance` | Integer | 1-in-N chance per tick to play |
-| `model-id` | String | Model Engine model ID (optional) |
-| `model-animations` | Map | Model Engine animation mappings (optional) |
+**Functions:** `sin`, `cos`, `tan`, `abs`, `min`, `max`, `sqrt`, `rand`, `floor`, `ceil`, `lerp`
 
-</details>
+### Holograms (`holograms.yml`)
+
+```yaml
+holograms:
+  spawn-welcome:
+    world: world
+    x: 0.5
+    y: 68.0
+    z: 0.5
+    animation: BOB
+    bob-amplitude: 0.1
+    bob-frequency: 0.08
+    lines:
+      - "<gradient:#FF6B6B:#FFE66D><bold>Welcome to the Server</bold></gradient>"
+      - "<gray>Type /help to get started"
+```
+
+### NPCs (`npcs/*.yml`)
+
+```yaml
+id: merchant
+display-name: "<gold>Merchant Bob"
+world: world
+x: 100.5
+y: 65.0
+z: -50.5
+yaw: 180.0
+look-at-player: true
+dialogue:
+  start:
+    text:
+      - "<gold>Welcome, traveler!"
+    choices:
+      - label: "<yellow>Open shop"
+        actions:
+          - type: command
+            value: "openshop merchant %player%"
+      - label: "<red>Goodbye"
+        actions:
+          - type: message
+            value: "<gold>Safe travels."
+```
+
+### Timelines (`timelines/*.yml`)
+
+```yaml
+id: boss-intro
+loop: false
+audience: nearby
+radius: 50
+keyframes:
+  0:
+    - type: title
+      title: "<red><bold>THE WARDEN AWAKENS"
+      subtitle: "<dark_gray>Prepare yourself..."
+      fade-in: 10
+      stay: 40
+      fade-out: 10
+    - type: sound
+      sound: ENTITY_WITHER_SPAWN
+      volume: 1.0
+      pitch: 0.5
+  40:
+    - type: command
+      value: "summon minecraft:warden %x% %y% %z%"
+  60:
+    - type: camera-shake
+      duration: 10
+```
+
+### Reactive Rules (`reactive.yml`)
+
+```yaml
+rules:
+  night-glow:
+    conditions:
+      - type: time-of-day
+        range: [13000, 23000]
+    targets: [pets, cosmetics]
+    effects:
+      - type: glow
+        color: AQUA
+      - type: particle
+        particle: END_ROD
+        count: 2
+```
+
+---
+
+## PlaceholderAPI
+
+If PlaceholderAPI is installed, these placeholders are available:
+
+| Placeholder | Description |
+|:------------|:------------|
+| `%servercore_pet_name%` | Active pet display name |
+| `%servercore_pet_type%` | Active pet type ID |
+| `%servercore_pet_count%` | Number of owned pets |
+| `%servercore_cosmetic_count%` | Active cosmetics count |
+| `%servercore_emitter_count%` | Active emitters count |
+| `%servercore_hologram_count%` | Total holograms count |
 
 ---
 
@@ -225,7 +376,7 @@ cd ServerCore
 ./gradlew build
 ```
 
-The output JAR will be at `build/libs/ServerCore-1.0.0.jar`.
+The output JAR will be at `build/libs/ServerCore-2.0.0.jar`.
 
 To launch a Paper test server with the plugin auto-loaded:
 
@@ -239,26 +390,42 @@ To launch a Paper test server with the plugin auto-loaded:
 
 ## API
 
-Other plugins can interact with ServerCore's systems through its manager classes:
+Other plugins can interact with ServerCore through the public API:
 
 ```java
-ServerCore plugin = ServerCore.getInstance();
-
-// Mob Cosmetics
-CosmeticManager cosmetics = plugin.getCosmeticManager();
-cosmetics.apply(mob, itemStack);
-cosmetics.remove(mob);
-
-// Particle Emitters
-EmitterManager emitters = plugin.getEmitterManager();
+ServerCoreAPI api = ServerCoreAPI.get();
 
 // Pets
-PetManager pets = plugin.getPetManager();
-pets.summonPet(player, petProfile);
-pets.dismissPet(player);
+api.getPetManager().summonPet(player, profile);
+
+// Cosmetics
+api.getCosmeticManager().applyCosmetic(mob, item);
+
+// Emitters
+api.getEmitterManager();
+
+// Holograms
+api.getHologramManager();
+
+// Timelines
+api.getTimelineManager().play("boss-intro", location);
+
+// NPCs
+api.getNPCManager();
 ```
 
-All managers are available after `ServerCore.onEnable()`.
+### Custom Events
+
+Listen for ServerCore events in your plugin:
+
+```java
+@EventHandler
+void onPetSummon(PetSummonEvent event) {
+    // Cancel, modify, or react to pet summons
+}
+```
+
+Available events: `PetSummonEvent`, `PetDismissEvent`, `CosmeticApplyEvent`, `CosmeticRemoveEvent`, `EmitterCreateEvent`, `HologramCreateEvent`, `DialogueStartEvent`, `TimelinePlayEvent`
 
 ---
 

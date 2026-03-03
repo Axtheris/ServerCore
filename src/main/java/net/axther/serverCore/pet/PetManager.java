@@ -1,10 +1,13 @@
 package net.axther.serverCore.pet;
 
+import net.axther.serverCore.api.event.PetSummonEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 
+import net.axther.serverCore.pet.data.PetStore;
 import net.axther.serverCore.pet.model.ModelEngineHook;
 
 import java.util.*;
@@ -15,9 +18,18 @@ public class PetManager {
     private final Map<String, PetProfile> profiles = new LinkedHashMap<>();
     private final Map<UUID, List<PetInstance>> activePets = new HashMap<>();
     private final Map<UUID, PetInstance> standIndex = new HashMap<>();
+    private PetStore store;
 
     public PetManager(boolean modelEngineEnabled) {
         this.modelEngineEnabled = modelEngineEnabled;
+    }
+
+    public void setStore(PetStore store) {
+        this.store = store;
+    }
+
+    public PetStore getStore() {
+        return store;
     }
 
     public void registerProfile(PetProfile profile) {
@@ -33,6 +45,12 @@ public class PetManager {
     }
 
     public PetInstance summonPet(Player player, PetProfile profile) {
+        PetSummonEvent event = new PetSummonEvent(player, profile);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return null;
+        }
+
         Location spawnLoc = player.getLocation().add(0, profile.getHoverHeight(), 0);
         boolean useModelEngine = modelEngineEnabled && profile.getModelId() != null;
 

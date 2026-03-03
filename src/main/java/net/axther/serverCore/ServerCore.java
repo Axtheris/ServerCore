@@ -44,6 +44,11 @@ import net.axther.serverCore.timeline.command.TimelineCommand;
 import net.axther.serverCore.timeline.config.TimelineConfig;
 import net.axther.serverCore.timeline.task.TimelineTickTask;
 import net.axther.serverCore.api.ServerCoreAPI;
+import net.axther.serverCore.quest.QuestManager;
+import net.axther.serverCore.quest.command.QuestCommand;
+import net.axther.serverCore.quest.config.QuestConfig;
+import net.axther.serverCore.quest.data.QuestStore;
+import net.axther.serverCore.quest.listener.QuestListener;
 import net.axther.serverCore.gui.MenuListener;
 import net.axther.serverCore.gui.MenuManager;
 import org.bukkit.command.PluginCommand;
@@ -69,6 +74,9 @@ public final class ServerCore extends JavaPlugin {
     private NPCConfig npcConfig;
     private NPCTickTask npcTickTask;
     private NPCListener npcListener;
+    private QuestManager questManager;
+    private QuestConfig questConfig;
+    private QuestStore questStore;
     private TimelineManager timelineManager;
     private TimelineConfig timelineConfig;
     private TimelineTickTask timelineTickTask;
@@ -211,7 +219,11 @@ public final class ServerCore extends JavaPlugin {
             } else {
                 npcManager = new NPCManager();
                 npcConfig = new NPCConfig(this);
-                npcConfig.loadAll(npcManager);
+
+                // Quest system must init before NPC config load (for inline quests)
+                questManager = new QuestManager();
+
+                npcConfig.loadAll(npcManager, questManager);
 
                 npcListener = new NPCListener(npcManager, npcConfig);
                 getServer().getPluginManager().registerEvents(npcListener, this);
@@ -231,6 +243,23 @@ public final class ServerCore extends JavaPlugin {
                 npcTickTask.runTaskTimer(this, 0L, 1L);
 
                 getLogger().info("NPC system enabled with PacketEvents (view distance: " + viewDistance + " blocks)");
+
+                // --- Quest System (continued) ---
+                questConfig = new QuestConfig(this);
+                questConfig.loadAll(questManager);
+
+                questStore = new QuestStore(this);
+                questManager.setStore(questStore);
+                questStore.load(questManager);
+
+                getServer().getPluginManager().registerEvents(new QuestListener(questManager), this);
+
+                PluginCommand questCmd = getCommand("quest");
+                if (questCmd != null) {
+                    QuestCommand questCommand = new QuestCommand(questManager, questConfig);
+                    questCmd.setExecutor(questCommand);
+                    questCmd.setTabCompleter(questCommand);
+                }
             }
         }
 
@@ -269,7 +298,8 @@ public final class ServerCore extends JavaPlugin {
 
         // --- Public API ---
         ServerCoreAPI.init(cosmeticManager, emitterManager, petManager,
-                hologramManager, npcManager, timelineManager, reactiveManager, menuManager);
+                hologramManager, npcManager, timelineManager, reactiveManager, menuManager,
+                questManager);
 
         // Build startup summary
         StringBuilder summary = new StringBuilder("ServerCore enabled");
@@ -359,6 +389,9 @@ public final class ServerCore extends JavaPlugin {
         }
         if (hologramManager != null) {
             hologramManager.destroyAll();
+        }
+        if (questStore != null && questManager != null) {
+            questStore.save(questManager);
         }
         if (npcTickTask != null) {
             npcTickTask.cancel();

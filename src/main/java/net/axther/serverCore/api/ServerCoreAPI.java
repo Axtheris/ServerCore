@@ -7,6 +7,7 @@ import net.axther.serverCore.npc.NPCManager;
 import net.axther.serverCore.particle.EmitterManager;
 import net.axther.serverCore.pet.PetManager;
 import net.axther.serverCore.reactive.ReactiveManager;
+import net.axther.serverCore.quest.QuestManager;
 import net.axther.serverCore.timeline.TimelineManager;
 
 /**
@@ -25,6 +26,7 @@ public final class ServerCoreAPI {
     private final TimelineManager timelineManager;
     private final ReactiveManager reactiveManager;
     private final MenuManager menuManager;
+    private final QuestManager questManager;
 
     private ServerCoreAPI(CosmeticManager cosmeticManager,
                           EmitterManager emitterManager,
@@ -33,7 +35,8 @@ public final class ServerCoreAPI {
                           NPCManager npcManager,
                           TimelineManager timelineManager,
                           ReactiveManager reactiveManager,
-                          MenuManager menuManager) {
+                          MenuManager menuManager,
+                          QuestManager questManager) {
         this.cosmeticManager = cosmeticManager;
         this.emitterManager = emitterManager;
         this.petManager = petManager;
@@ -42,6 +45,7 @@ public final class ServerCoreAPI {
         this.timelineManager = timelineManager;
         this.reactiveManager = reactiveManager;
         this.menuManager = menuManager;
+        this.questManager = questManager;
     }
 
     /**
@@ -67,9 +71,11 @@ public final class ServerCoreAPI {
                             NPCManager npcManager,
                             TimelineManager timelineManager,
                             ReactiveManager reactiveManager,
-                            MenuManager menuManager) {
+                            MenuManager menuManager,
+                            QuestManager questManager) {
         instance = new ServerCoreAPI(cosmeticManager, emitterManager, petManager,
-                hologramManager, npcManager, timelineManager, reactiveManager, menuManager);
+                hologramManager, npcManager, timelineManager, reactiveManager, menuManager,
+                questManager);
     }
 
     /**
@@ -109,5 +115,9 @@ public final class ServerCoreAPI {
 
     public MenuManager getMenuManager() {
         return menuManager;
+    }
+
+    public QuestManager getQuestManager() {
+        return questManager;
     }
 }

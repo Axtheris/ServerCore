@@ -26,6 +26,10 @@ commands:
     description: Manage NPCs and dialogue
     usage: /npc <create|remove|movehere|list|reload>
     permission: servercore.npc
+  quest:
+    description: Manage player quests
+    usage: /quest <active|completed|abandon|reload>
+    permission: servercore.quest
   timeline:
     description: Manage event timelines
     usage: /timeline <play|stop|list|reload>
@@ -51,6 +55,9 @@ permissions:
   servercore.npc:
     description: Allows use of the NPC command
     default: op
+  servercore.quest:
+    description: Allows use of the quest command
+    default: true
   servercore.timeline:
     description: Allows use of the timeline command
     default: op

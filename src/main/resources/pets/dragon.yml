@@ -1,0 +1,41 @@
+display-name: "Dragon"
+head-texture: "REPLACE_ME"
+item-name: "<gradient:#8B00FF:#FF4500><bold>Dragon Pet</bold></gradient>"
+item-lore:
+  - "<light_purple>A miniature dragon hatchling."
+  - ""
+  - "<dark_gray>Breathes tiny embers and"
+  - "<dark_gray>flaps its wings as it flies!"
+  - ""
+  - "<yellow>Right-click <gray>to summon/dismiss"
+use-small-stand: true
+animation-type: FLY
+bob-amplitude: 0.18
+bob-frequency: 0.12
+hover-height: 1.4
+follow-speed: 0.35
+can-attack: true
+attack-range: 8.0
+attack-damage: 4.0
+attack-cooldown-ticks: 30
+feed-cooldown-ticks: 800
+heart-particle-count: 3
+sounds:
+  growl:
+    sound: ENTITY_ENDER_DRAGON_GROWL
+    volume: 0.15
+    pitch: 2.0
+    chance: 800
+  flap:
+    sound: ENTITY_ENDER_DRAGON_FLAP
+    volume: 0.2
+    pitch: 1.8
+    chance: 150
+
+# Optional — requires Model Engine plugin + matching .bbmodel
+# model-id: "dragon_pet"
+# model-animations:
+#   idle: "anim_idle"
+#   walk: "anim_walk"
+#   attack: "anim_attack"
+#   sit: "anim_sit"

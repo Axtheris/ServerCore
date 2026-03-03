@@ -1,0 +1,31 @@
+name: ServerCore
+version: '${version}'
+main: net.axther.serverCore.ServerCore
+api-version: '1.21'
+description: Swag
+softdepend: [ModelEngine]
+
+commands:
+  cosmetic:
+    description: Manage mob cosmetics
+    usage: /cosmetic <apply|remove|clear|info|calibrate>
+    permission: servercore.cosmetic
+  emitter:
+    description: Manage particle emitters
+    usage: /emitter <create|remove|list|edit|info>
+    permission: servercore.emitter
+  pet:
+    description: Manage player pets
+    usage: /pet <summon|dismiss|sit|follow|feed|list|give|reload>
+    permission: servercore.pet
+
+permissions:
+  servercore.cosmetic:
+    description: Allows use of the cosmetic command
+    default: op
+  servercore.emitter:
+    description: Allows use of the emitter command
+    default: op
+  servercore.pet:
+    description: Allows use of the pet command
+    default: op

@@ -1,0 +1,41 @@
+display-name: "Penguin"
+head-texture: "REPLACE_ME"
+item-name: "<gradient:#000000:#87CEEB><bold>Penguin Pet</bold></gradient>"
+item-lore:
+  - "<aqua>A waddling little penguin."
+  - ""
+  - "<dark_gray>Splashes around cheerfully"
+  - "<dark_gray>and chirps at passing fish!"
+  - ""
+  - "<yellow>Right-click <gray>to summon/dismiss"
+use-small-stand: true
+animation-type: HOP
+bob-amplitude: 0.14
+bob-frequency: 0.07
+hover-height: 0.9
+follow-speed: 0.22
+can-attack: false
+attack-range: 0.0
+attack-damage: 0.0
+attack-cooldown-ticks: 20
+feed-cooldown-ticks: 350
+heart-particle-count: 6
+sounds:
+  chirp:
+    sound: ENTITY_CHICKEN_AMBIENT
+    volume: 0.3
+    pitch: 0.6
+    chance: 350
+  splash:
+    sound: ENTITY_GENERIC_SPLASH
+    volume: 0.15
+    pitch: 1.8
+    chance: 700
+
+# Optional — requires Model Engine plugin + matching .bbmodel
+# model-id: "penguin_pet"
+# model-animations:
+#   idle: "anim_idle"
+#   walk: "anim_walk"
+#   attack: "anim_attack"
+#   sit: "anim_sit"

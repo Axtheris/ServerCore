@@ -1,0 +1,46 @@
+display-name: "Ghost"
+head-texture: "REPLACE_ME"
+item-name: "<gradient:#FFFFFF:#B0B0B0><bold>Ghost Pet</bold></gradient>"
+item-lore:
+  - "<white>A spooky spectral companion."
+  - ""
+  - "<dark_gray>Whispers eerie sounds and"
+  - "<dark_gray>phases through the darkness!"
+  - ""
+  - "<yellow>Right-click <gray>to summon/dismiss"
+use-small-stand: true
+animation-type: ORBIT
+bob-amplitude: 0.22
+bob-frequency: 0.06
+hover-height: 1.6
+follow-speed: 0.26
+can-attack: true
+attack-range: 6.0
+attack-damage: 2.5
+attack-cooldown-ticks: 25
+feed-cooldown-ticks: 666
+heart-particle-count: 3
+sounds:
+  whisper:
+    sound: ENTITY_VEX_AMBIENT
+    volume: 0.2
+    pitch: 0.5
+    chance: 400
+  whoosh:
+    sound: ENTITY_PHANTOM_FLAP
+    volume: 0.15
+    pitch: 0.7
+    chance: 300
+  haunt:
+    sound: AMBIENT_CAVE
+    volume: 0.08
+    pitch: 1.5
+    chance: 1200
+
+# Optional — requires Model Engine plugin + matching .bbmodel
+# model-id: "ghost_pet"
+# model-animations:
+#   idle: "anim_idle"
+#   walk: "anim_walk"
+#   attack: "anim_attack"
+#   sit: "anim_sit"

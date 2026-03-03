@@ -1,0 +1,46 @@
+display-name: "Robot"
+head-texture: "REPLACE_ME"
+item-name: "<gradient:#C0C0C0:#404040><bold>Robot Pet</bold></gradient>"
+item-lore:
+  - "<gray>A tiny mechanical companion."
+  - ""
+  - "<dark_gray>Beeps and whirs as its gears"
+  - "<dark_gray>spin and pistons pump!"
+  - ""
+  - "<yellow>Right-click <gray>to summon/dismiss"
+use-small-stand: true
+animation-type: FLOAT
+bob-amplitude: 0.10
+bob-frequency: 0.08
+hover-height: 1.1
+follow-speed: 0.27
+can-attack: true
+attack-range: 5.0
+attack-damage: 2.0
+attack-cooldown-ticks: 18
+feed-cooldown-ticks: 400
+heart-particle-count: 3
+sounds:
+  beep:
+    sound: BLOCK_NOTE_BLOCK_BIT
+    volume: 0.25
+    pitch: 1.8
+    chance: 300
+  whir:
+    sound: BLOCK_PISTON_EXTEND
+    volume: 0.1
+    pitch: 2.0
+    chance: 500
+  clank:
+    sound: ENTITY_IRON_GOLEM_STEP
+    volume: 0.15
+    pitch: 1.6
+    chance: 700
+
+# Optional — requires Model Engine plugin + matching .bbmodel
+# model-id: "robot_pet"
+# model-animations:
+#   idle: "anim_idle"
+#   walk: "anim_walk"
+#   attack: "anim_attack"
+#   sit: "anim_sit"

@@ -1,0 +1,16 @@
+# Mob Cosmetic Profiles
+# Add new mobs here to support cosmetics without writing Java code.
+# Java profile classes (in profiles/) override config entries for the same mob type.
+#
+# Keys:
+#   head-y:          Height of the mob's head center from its feet (blocks)
+#   head-forward-z:  Forward offset from the mob's center to its head (blocks)
+#   head-side-x:     Side offset (positive = right, negative = left) (blocks)
+#   use-small-stand: Use a small armor stand (half-scale item rendering)
+
+mobs:
+  panda:
+    head-y: 1.1
+    head-forward-z: 0.9
+    head-side-x: 0.0
+    use-small-stand: false

@@ -1,0 +1,36 @@
+display-name: "Rat"
+head-texture: "e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjE1Yzk1YjMyOTI5MDliZjg1NjRmYmZmMTg1M2Q2MzMyOGJhN2MyOWVmMTZiMGM2MmU0ZDViM2ZjMjQ4NDYwZSJ9fX0="
+item-name: "<gradient:#8B4513:#D2691E><bold>Rat Pet</bold></gradient>"
+item-lore:
+  - "<gray>A loyal little rodent companion."
+  - ""
+  - "<dark_gray>Attacks nearby hostile mobs"
+  - "<dark_gray>and squeaks with excitement!"
+  - ""
+  - "<yellow>Right-click <gray>to summon/dismiss"
+use-small-stand: true
+animation-type: FLOAT
+bob-amplitude: 0.12
+bob-frequency: 0.1
+hover-height: 1.0
+follow-speed: 0.28
+can-attack: true
+attack-range: 5.0
+attack-damage: 1.5
+attack-cooldown-ticks: 25
+feed-cooldown-ticks: 600
+heart-particle-count: 4
+sounds:
+  squeak:
+    sound: ENTITY_SILVERFISH_AMBIENT
+    volume: 0.5
+    pitch: 1.8
+    chance: 200
+
+# Optional — requires Model Engine plugin + matching .bbmodel
+# model-id: "rat_pet"
+# model-animations:
+#   idle: "anim_idle"
+#   walk: "anim_walk"
+#   attack: "anim_attack"
+#   sit: "anim_sit"

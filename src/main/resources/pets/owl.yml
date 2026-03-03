@@ -1,0 +1,41 @@
+display-name: "Owl"
+head-texture: "REPLACE_ME"
+item-name: "<gradient:#8B4513:#DEB887><bold>Owl Pet</bold></gradient>"
+item-lore:
+  - "<gold>A wise nocturnal owl companion."
+  - ""
+  - "<dark_gray>Hoots softly in the moonlight"
+  - "<dark_gray>and watches over you silently!"
+  - ""
+  - "<yellow>Right-click <gray>to summon/dismiss"
+use-small-stand: true
+animation-type: FLY
+bob-amplitude: 0.13
+bob-frequency: 0.09
+hover-height: 1.5
+follow-speed: 0.28
+can-attack: true
+attack-range: 6.0
+attack-damage: 2.0
+attack-cooldown-ticks: 20
+feed-cooldown-ticks: 500
+heart-particle-count: 4
+sounds:
+  hoot:
+    sound: ENTITY_PARROT_AMBIENT
+    volume: 0.3
+    pitch: 0.5
+    chance: 350
+  wing_flap:
+    sound: ENTITY_PARROT_FLY
+    volume: 0.2
+    pitch: 0.8
+    chance: 200
+
+# Optional — requires Model Engine plugin + matching .bbmodel
+# model-id: "owl_pet"
+# model-animations:
+#   idle: "anim_idle"
+#   walk: "anim_walk"
+#   attack: "anim_attack"
+#   sit: "anim_sit"

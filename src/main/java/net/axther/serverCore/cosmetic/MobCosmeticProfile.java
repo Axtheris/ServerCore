@@ -18,30 +18,44 @@ public class MobCosmeticProfile {
         this.headForwardZ = headForwardZ;
         this.headSideX = headSideX;
         this.useSmallStand = useSmallStand;
+        this.renderHeight = useSmallStand ? SMALL_RENDER_HEIGHT : NORMAL_RENDER_HEIGHT;
     }
+
+    // Pre-computed render height — avoids branch every tick
+    private final double renderHeight;
 
     /**
      * Computes the armor stand location so the helmet item sits at the mob's head.
-     * Uses the mob's look yaw (getLocation().getYaw()) for both the forward offset
-     * and the stand's facing direction, so the cosmetic follows where the head looks.
+     * Allocates a new Location — use for one-off calls like initial spawn placement.
      */
     public Location computeStandLocation(LivingEntity mob) {
         Location loc = mob.getLocation();
-        // getLocation().getYaw() returns where the entity is looking (head yaw for mobs)
-        float headYawDeg = loc.getYaw();
+        Location out = new Location(loc.getWorld(), 0, 0, 0);
+        computeStandLocation(mob, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), out);
+        return out;
+    }
+
+    /**
+     * Writes the computed stand position into {@code out}, avoiding allocation.
+     * This is the hot-path variant called every tick.
+     */
+    public void computeStandLocation(LivingEntity mob, double mobX, double mobY, double mobZ, float headYawDeg, Location out) {
         double headYawRad = Math.toRadians(headYawDeg);
 
         double sinYaw = Math.sin(headYawRad);
         double cosYaw = Math.cos(headYawRad);
 
-        // Rotate the forward (Z) and side (X) offsets by the mob's head yaw
         double offsetX = -headForwardZ * sinYaw + headSideX * cosYaw;
         double offsetZ = headForwardZ * cosYaw + headSideX * sinYaw;
 
-        double renderHeight = useSmallStand ? SMALL_RENDER_HEIGHT : NORMAL_RENDER_HEIGHT;
-        double standY = loc.getY() + headY - renderHeight;
+        double standY = mobY + headY - renderHeight;
 
-        return new Location(loc.getWorld(), loc.getX() + offsetX, standY, loc.getZ() + offsetZ, headYawDeg, 0);
+        out.setWorld(mob.getWorld());
+        out.setX(mobX + offsetX);
+        out.setY(standY);
+        out.setZ(mobZ + offsetZ);
+        out.setYaw(headYawDeg);
+        out.setPitch(0);
     }
 
     public boolean useSmallStand() {

@@ -386,6 +386,14 @@ To launch a Paper test server with the plugin auto-loaded:
 
 > Requires **Gradle 8.8+** and **Java 21**.
 
+### Testing
+
+```bash
+./gradlew test
+```
+
+The test suite includes 275 tests covering particle emitter patterns, the scripting engine, and GUI pagination. All particle patterns are benchmarked for stability and performance under sustained load.
+
 ---
 
 ## API

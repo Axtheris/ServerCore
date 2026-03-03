@@ -4,6 +4,7 @@ import net.axther.serverCore.npc.NPC;
 import net.axther.serverCore.npc.NPCManager;
 import net.axther.serverCore.npc.config.NPCConfig;
 import net.axther.serverCore.npc.listener.NPCListener;
+import net.axther.serverCore.npc.render.NPCViewTracker;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -89,11 +90,10 @@ public class NPCCommand implements TabExecutor {
 
         NPC npc = new NPC(id, displayName, loc, loc.getYaw(), null, null, true, null);
         manager.register(npc);
-        npc.spawn();
 
-        // Update entity index after spawn
-        if (npc.getEntityUuid() != null) {
-            manager.register(npc);
+        NPCViewTracker viewTracker = manager.getViewTracker();
+        if (viewTracker != null) {
+            viewTracker.spawnForAllViewers(npc);
         }
 
         config.save(npc);
@@ -141,6 +141,11 @@ public class NPCCommand implements TabExecutor {
         npc.setLocation(player.getLocation());
         config.save(npc);
 
+        NPCViewTracker viewTracker = manager.getViewTracker();
+        if (viewTracker != null) {
+            viewTracker.teleportForAllViewers(npc);
+        }
+
         player.sendMessage(Component.text("Moved NPC '", NamedTextColor.GREEN)
                 .append(Component.text(id, NamedTextColor.WHITE))
                 .append(Component.text("' to your location", NamedTextColor.GREEN)));
@@ -156,15 +161,17 @@ public class NPCCommand implements TabExecutor {
         player.sendMessage(Component.text("--- NPCs (" + all.size() + ") ---", NamedTextColor.GREEN));
         MiniMessage mm = MiniMessage.miniMessage();
 
+        NPCViewTracker viewTracker = manager.getViewTracker();
+
         for (NPC npc : all) {
             Location loc = npc.getLocation();
+            int viewers = viewTracker != null ? viewTracker.getViewerCount(npc.getId()) : 0;
             player.sendMessage(Component.text(" " + npc.getId(), NamedTextColor.WHITE)
                     .append(Component.text(" | ", NamedTextColor.DARK_GRAY))
                     .append(mm.deserialize(npc.getDisplayName()))
                     .append(Component.text(String.format(" @ %s %.1f, %.1f, %.1f",
                             npc.getWorldName(), loc.getX(), loc.getY(), loc.getZ()), NamedTextColor.GRAY))
-                    .append(Component.text(npc.isSpawned() ? " [spawned]" : " [unloaded]",
-                            npc.isSpawned() ? NamedTextColor.GREEN : NamedTextColor.RED)));
+                    .append(Component.text(" [" + viewers + " viewers]", NamedTextColor.AQUA)));
         }
     }
 
@@ -172,7 +179,6 @@ public class NPCCommand implements TabExecutor {
         listener.clearAllSessions();
         manager.destroyAll();
         config.loadAll(manager);
-        manager.spawnAll();
 
         player.sendMessage(Component.text("Reloaded " + manager.getAll().size() + " NPCs.", NamedTextColor.GREEN));
     }

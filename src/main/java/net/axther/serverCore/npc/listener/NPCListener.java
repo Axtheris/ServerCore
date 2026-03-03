@@ -5,15 +5,13 @@ import net.axther.serverCore.npc.NPCManager;
 import net.axther.serverCore.npc.config.NPCConfig;
 import net.axther.serverCore.npc.dialogue.DialogueSession;
 import net.axther.serverCore.npc.dialogue.DialogueTree;
-import org.bukkit.entity.Entity;
+import net.axther.serverCore.npc.render.NPCViewTracker;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.world.EntitiesLoadEvent;
-import org.bukkit.event.world.EntitiesUnloadEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,25 +28,24 @@ public class NPCListener implements Listener {
         this.config = config;
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
-        Entity entity = event.getRightClicked();
-        NPC npc = manager.getByEntityUuid(entity.getUniqueId());
-        if (npc == null) return;
-
-        event.setCancelled(true);
-
-        Player player = event.getPlayer();
+    public void handleInteraction(Player player, NPC npc) {
         String dialogueId = npc.getDialogueId();
         if (dialogueId == null) return;
 
         DialogueTree tree = config.getDialogueTree(dialogueId);
         if (tree == null) return;
 
-        // Start or restart dialogue session
         DialogueSession session = new DialogueSession(player, npc, tree);
         activeSessions.put(player.getUniqueId(), session);
         session.start();
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        NPCViewTracker viewTracker = manager.getViewTracker();
+        if (viewTracker != null) {
+            viewTracker.handlePlayerJoin(event.getPlayer());
+        }
     }
 
     @EventHandler
@@ -57,35 +54,18 @@ public class NPCListener implements Listener {
         if (session != null) {
             session.end();
         }
-    }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onEntitiesLoad(EntitiesLoadEvent event) {
-        int chunkX = event.getChunk().getX();
-        int chunkZ = event.getChunk().getZ();
-        long chunkKey = ((long) chunkX << 32) | (chunkZ & 0xFFFFFFFFL);
-
-        for (NPC npc : manager.getAll()) {
-            if (npc.getChunkKey() == chunkKey && !npc.isSpawned()) {
-                npc.spawn();
-                // Update entity index after spawn
-                if (npc.getEntityUuid() != null) {
-                    manager.register(npc);
-                }
-            }
+        NPCViewTracker viewTracker = manager.getViewTracker();
+        if (viewTracker != null) {
+            viewTracker.handlePlayerQuit(event.getPlayer());
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onEntitiesUnload(EntitiesUnloadEvent event) {
-        int chunkX = event.getChunk().getX();
-        int chunkZ = event.getChunk().getZ();
-        long chunkKey = ((long) chunkX << 32) | (chunkZ & 0xFFFFFFFFL);
-
-        for (NPC npc : manager.getAll()) {
-            if (npc.getChunkKey() == chunkKey && npc.isSpawned()) {
-                npc.despawn();
-            }
+    @EventHandler
+    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+        NPCViewTracker viewTracker = manager.getViewTracker();
+        if (viewTracker != null) {
+            viewTracker.handlePlayerChangedWorld(event.getPlayer());
         }
     }
 

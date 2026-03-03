@@ -67,14 +67,15 @@ Floating text using Paper 1.21 text display entities with MiniMessage formatting
 
 ### NPCs & Dialogue
 
-Place static NPCs with player skins and branching dialogue trees.
+Place static NPCs with full player-model skins and branching dialogue trees. Powered by PacketEvents for zero TPS impact -- NPCs are purely client-side entities.
 
-- **Player-head NPCs**: armor stands with custom skin textures and visible names
+- **Full player-model NPCs**: humanoid NPCs with visible bodies, arms, legs, and custom skins via PacketEvents
 - **Dialogue trees**: branching conversations with conditions and actions
 - **Conditions**: permission checks, item checks for gating dialogue options
 - **Actions**: run commands, send messages, give items, play sounds
 - **Look-at-player**: NPCs turn to face nearby players
 - **Clickable choices**: dialogue options rendered as clickable chat messages
+- **Per-player visibility**: NPCs appear and disappear based on configurable view distance
 
 ### Event Timelines
 
@@ -110,6 +111,7 @@ Chest-based menus with pagination, confirmation dialogs, and integration across 
 |:-------|:--------:|:--------|
 | [Model Engine](https://mythiccraft.io/index.php?pages/model-engine/) R4+ | No | 3D custom models and animations for pets |
 | [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) | No | Exposes ServerCore data as placeholders |
+| [PacketEvents](https://github.com/retrooper/packetevents) 2.7+ | For NPCs | Full player-model NPCs with skins |
 
 ---
 

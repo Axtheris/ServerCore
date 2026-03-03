@@ -33,6 +33,8 @@ import net.axther.serverCore.npc.NPCManager;
 import net.axther.serverCore.npc.command.NPCCommand;
 import net.axther.serverCore.npc.config.NPCConfig;
 import net.axther.serverCore.npc.listener.NPCListener;
+import net.axther.serverCore.npc.render.NPCRenderer;
+import net.axther.serverCore.npc.render.NPCViewTracker;
 import net.axther.serverCore.npc.task.NPCTickTask;
 import net.axther.serverCore.reactive.ReactiveManager;
 import net.axther.serverCore.reactive.config.ReactiveConfig;
@@ -203,24 +205,33 @@ public final class ServerCore extends JavaPlugin {
 
         // --- NPC / Dialogue System ---
         if (serverCoreConfig.isSystemEnabled("npcs")) {
-            npcManager = new NPCManager();
-            npcConfig = new NPCConfig(this);
-            npcConfig.loadAll(npcManager);
+            boolean packetEventsPresent = getServer().getPluginManager().getPlugin("packetevents") != null;
+            if (!packetEventsPresent) {
+                getLogger().warning("PacketEvents not found -- NPC system disabled. Install PacketEvents to enable NPCs.");
+            } else {
+                npcManager = new NPCManager();
+                npcConfig = new NPCConfig(this);
+                npcConfig.loadAll(npcManager);
 
-            npcListener = new NPCListener(npcManager, npcConfig);
-            getServer().getPluginManager().registerEvents(npcListener, this);
+                npcListener = new NPCListener(npcManager, npcConfig);
+                getServer().getPluginManager().registerEvents(npcListener, this);
 
-            PluginCommand npcCmd = getCommand("npc");
-            if (npcCmd != null) {
-                NPCCommand npcCommand = new NPCCommand(npcManager, npcConfig, npcListener);
-                npcCmd.setExecutor(npcCommand);
-                npcCmd.setTabCompleter(npcCommand);
+                int viewDistance = serverCoreConfig.getNpcViewDistance();
+                initNpcPacketSystem(viewDistance);
+
+                PluginCommand npcCmd = getCommand("npc");
+                if (npcCmd != null) {
+                    NPCCommand npcCommand = new NPCCommand(npcManager, npcConfig, npcListener);
+                    npcCmd.setExecutor(npcCommand);
+                    npcCmd.setTabCompleter(npcCommand);
+                }
+
+                NPCViewTracker viewTracker = npcManager.getViewTracker();
+                npcTickTask = new NPCTickTask(npcManager, viewTracker);
+                npcTickTask.runTaskTimer(this, 0L, 1L);
+
+                getLogger().info("NPC system enabled with PacketEvents (view distance: " + viewDistance + " blocks)");
             }
-
-            npcTickTask = new NPCTickTask(npcManager);
-            npcTickTask.runTaskTimer(this, 0L, 5L);
-
-            npcManager.spawnAll();
         }
 
         // --- Timeline / Event Sequencer System ---
@@ -288,6 +299,22 @@ public final class ServerCore extends JavaPlugin {
                 emitterManager,
                 hologramManager
         ).register();
+    }
+
+    /**
+     * Initializes the PacketEvents-based NPC rendering system.
+     * Isolated into its own method so PacketEvents classes are never loaded
+     * unless the plugin is actually present, avoiding NoClassDefFoundError.
+     */
+    private void initNpcPacketSystem(int viewDistance) {
+        NPCRenderer renderer = new NPCRenderer(this);
+        NPCViewTracker viewTracker = new NPCViewTracker(npcManager, renderer, viewDistance);
+        npcManager.init(renderer, viewTracker);
+
+        // Register the packet listener for NPC interactions
+        net.axther.serverCore.npc.listener.NPCPacketListener packetListener =
+                new net.axther.serverCore.npc.listener.NPCPacketListener(this, npcManager, npcListener);
+        com.github.retrooper.packetevents.PacketEvents.getAPI().getEventManager().registerListener(packetListener);
     }
 
     private void registerJavaPetProfiles() {

@@ -20,12 +20,17 @@ repositories {
         name = "placeholderapi-repo"
         url = "https://repo.extendedclip.com/content/repositories/placeholderapi/"
     }
+    maven {
+        name = "codemc-repo"
+        url = "https://repo.codemc.io/repository/maven-releases/"
+    }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
     compileOnly("com.ticxo.modelengine:ModelEngine:R4.0.7")
     compileOnly 'me.clip:placeholderapi:2.11.6'
+    compileOnly("com.github.retrooper:packetevents-spigot:2.7.0")
 
     testImplementation("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")

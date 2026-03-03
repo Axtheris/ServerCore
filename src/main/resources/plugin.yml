@@ -3,7 +3,7 @@ version: '${version}'
 main: net.axther.serverCore.ServerCore
 api-version: '1.21'
 description: Swag
-softdepend: [ModelEngine, PlaceholderAPI]
+softdepend: [ModelEngine, PlaceholderAPI, PacketEvents]
 
 commands:
   cosmetic:

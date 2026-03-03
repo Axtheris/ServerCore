@@ -12,6 +12,7 @@ systems:
     enabled: true
   npcs:
     enabled: true
+    view-distance: 48
   timelines:
     enabled: true
   reactive:

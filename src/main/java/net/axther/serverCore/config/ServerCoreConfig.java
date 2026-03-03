@@ -24,6 +24,10 @@ public class ServerCoreConfig {
         return config.getBoolean("systems." + systemName + ".enabled", true);
     }
 
+    public int getNpcViewDistance() {
+        return config.getInt("systems.npcs.view-distance", 48);
+    }
+
     /**
      * Reload config.yml from disk.
      */

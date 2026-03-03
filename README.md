@@ -41,7 +41,7 @@ Place invisible armor stands on mob heads that display held items as wearable ac
 
 Attach configurable particle emitters to locations with 32 built-in patterns and a scripting language for custom effects.
 
-- **32 patterns**: rings, helixes, galaxies, tornadoes, DNA strands, hearts, and more
+- **33 patterns**: rings, helixes, galaxies, tornadoes, DNA strands, hearts, crowns, and more
 - **Particle scripting**: write mathematical expressions in YAML to define custom particle behaviors
 - **Live editing**: create, modify, and remove emitters in-game
 - **GUI manager**: browse and teleport to emitters from a chest menu
@@ -215,6 +215,7 @@ Use `/servercore reload` to apply changes without restarting.
 | `list` | List all holograms | `servercore.hologram` |
 | `near [radius]` | Find nearby holograms | `servercore.hologram` |
 | `movehere <id>` | Move hologram to you | `servercore.hologram` |
+| `setanimation <id> <type>` | Set hologram animation | `servercore.hologram` |
 
 ### `/npc` - NPCs & Dialogue
 

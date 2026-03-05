@@ -20,7 +20,7 @@ commands:
     usage: /hologram <create|remove|addline|removeline|edit|list|near|movehere|setanimation|gui>
   npc:
     description: Manage NPCs and dialogue
-    usage: /npc <create|remove|movehere|list|reload>
+    usage: /npc <create|remove|movehere|list|reload|gui>
   quest:
     description: Manage player quests
     usage: /quest <active|completed|abandon|gui|reload>
@@ -97,6 +97,7 @@ permissions:
       servercore.npc.movehere: true
       servercore.npc.list: true
       servercore.npc.reload: true
+      servercore.npc.gui: true
   servercore.quest.*:
     description: Grants all quest permissions
     default: op
@@ -225,6 +226,9 @@ permissions:
     default: op
   servercore.npc.reload:
     description: Reload NPC configs
+    default: op
+  servercore.npc.gui:
+    description: Open NPC browser GUI
     default: op
   servercore.quest.active:
     description: View active quests

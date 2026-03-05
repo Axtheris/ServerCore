@@ -3,6 +3,7 @@ package net.axther.serverCore.npc.command;
 import net.axther.serverCore.npc.NPC;
 import net.axther.serverCore.npc.NPCManager;
 import net.axther.serverCore.npc.config.NPCConfig;
+import net.axther.serverCore.npc.gui.NpcGUI;
 import net.axther.serverCore.npc.listener.NPCListener;
 import net.axther.serverCore.npc.render.NPCViewTracker;
 import net.kyori.adventure.text.Component;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 public class NPCCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = List.of(
-            "create", "remove", "movehere", "list", "reload"
+            "create", "remove", "movehere", "list", "reload", "gui"
     );
 
     private final NPCManager manager;
@@ -47,7 +48,7 @@ public class NPCCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage(Component.text("Usage: /npc <create|remove|movehere|list|reload>", NamedTextColor.YELLOW));
+            player.sendMessage(Component.text("Usage: /npc <create|remove|movehere|list|reload|gui>", NamedTextColor.YELLOW));
             return true;
         }
 
@@ -87,7 +88,14 @@ public class NPCCommand implements TabExecutor {
                 }
                 handleReload(player);
             }
-            default -> player.sendMessage(Component.text("Unknown subcommand. Use: create, remove, movehere, list, reload", NamedTextColor.RED));
+            case "gui" -> {
+                if (!player.hasPermission("servercore.npc.gui")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                new NpcGUI(manager).openBrowser(player);
+            }
+            default -> player.sendMessage(Component.text("Unknown subcommand. Use: create, remove, movehere, list, reload, gui", NamedTextColor.RED));
         }
         return true;
     }

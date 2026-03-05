@@ -1,0 +1,51 @@
+# Example quest showcasing all new parameters
+# Place in plugins/ServerCore/quests/ folder
+
+id: dragon_hunter
+display-name: "<gradient:#FF4500:#FFD700><bold>Dragon Hunter</bold></gradient>"
+description: "Prove your worth by crafting gear, slaying foes, and exploring the end."
+category: "combat"
+required-permission: "quests.advanced"
+prerequisites:
+  - beginner_quest
+sequential-objectives: true
+time-limit: 7200
+repeatable: true
+cooldown: 86400
+accept-npc: blacksmith
+turn-in-npc: blacksmith
+
+objectives:
+  - type: craft
+    material: DIAMOND_SWORD
+    amount: 1
+    description: "Forge a diamond blade"
+  - type: mine
+    material: OBSIDIAN
+    amount: 10
+    description: "Harvest obsidian for the portal"
+  - type: kill
+    entity: ENDERMAN
+    amount: 15
+  - type: explore
+    location: "world_the_end,0,64,0"
+    radius: 100
+    description: "Enter the End dimension"
+  - type: kill
+    entity: ENDER_DRAGON
+    amount: 1
+    description: "Slay the Ender Dragon"
+
+rewards:
+  - type: item
+    material: ELYTRA
+    amount: 1
+  - type: xp
+    amount: 1000
+  - type: money
+    amount: 5000
+  - type: pet
+    value: dragon
+  - type: permission
+    value: "cosmetics.dragon_wings"
+    duration: 0

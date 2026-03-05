@@ -7,6 +7,7 @@ import net.axther.serverCore.particle.EmitterManager;
 import net.axther.serverCore.pet.PetInstance;
 import net.axther.serverCore.pet.PetManager;
 import net.axther.serverCore.pet.data.PetStore;
+import net.axther.serverCore.quest.QuestManager;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -26,17 +27,20 @@ public class PlaceholderHook extends PlaceholderExpansion {
     private final CosmeticManager cosmeticManager;
     private final EmitterManager emitterManager;
     private final HologramManager hologramManager;
+    private final QuestManager questManager;
 
     public PlaceholderHook(JavaPlugin plugin,
                            PetManager petManager,
                            CosmeticManager cosmeticManager,
                            EmitterManager emitterManager,
-                           HologramManager hologramManager) {
+                           HologramManager hologramManager,
+                           QuestManager questManager) {
         this.plugin = plugin;
         this.petManager = petManager;
         this.cosmeticManager = cosmeticManager;
         this.emitterManager = emitterManager;
         this.hologramManager = hologramManager;
+        this.questManager = questManager;
     }
 
     @Override
@@ -98,6 +102,14 @@ public class PlaceholderHook extends PlaceholderExpansion {
             }
             case "hologram_count": {
                 return String.valueOf(hologramManager.getAll().size());
+            }
+            case "quest_active": {
+                return String.valueOf(questManager != null
+                        ? questManager.getActiveQuests(player.getUniqueId()).size() : 0);
+            }
+            case "quest_completed": {
+                return String.valueOf(questManager != null
+                        ? questManager.getCompletedQuests(player.getUniqueId()).size() : 0);
             }
             default:
                 return null;

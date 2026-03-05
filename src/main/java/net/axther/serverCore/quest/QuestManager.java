@@ -215,7 +215,7 @@ public class QuestManager {
 
     // --- Inventory helpers ---
 
-    private int countMaterial(Player player, String materialName) {
+    public int countMaterial(Player player, String materialName) {
         Material material = Material.matchMaterial(materialName);
         if (material == null) return 0;
         int count = 0;
@@ -225,10 +225,6 @@ public class QuestManager {
             }
         }
         return count;
-    }
-
-    public int countMaterialPublic(Player player, String materialName) {
-        return countMaterial(player, materialName);
     }
 
     private void removeMaterial(Player player, String materialName, int amount) {

@@ -327,7 +327,8 @@ public final class ServerCore extends JavaPlugin {
                 petManager,
                 cosmeticManager,
                 emitterManager,
-                hologramManager
+                hologramManager,
+                questManager
         ).register();
     }
 

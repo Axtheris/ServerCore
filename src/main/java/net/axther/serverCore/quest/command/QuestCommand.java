@@ -78,7 +78,7 @@ public class QuestCommand implements TabExecutor {
 
                 // For fetch objectives, show inventory count dynamically
                 if (obj.getType() == QuestObjective.Type.FETCH) {
-                    current = manager.countMaterialPublic(player, obj.getTarget());
+                    current = manager.countMaterial(player, obj.getTarget());
                 }
 
                 String desc = switch (obj.getType()) {

@@ -1,6 +1,7 @@
 package net.axther.serverCore.quest;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,7 @@ public class Quest {
         if (objList != null) {
             for (Object obj : objList) {
                 if (obj instanceof Map<?, ?> map) {
-                    ConfigurationSection objSec = section.createSection("_obj_" + System.nanoTime());
+                    MemoryConfiguration objSec = new MemoryConfiguration();
                     for (Map.Entry<String, Object> entry : ((Map<String, Object>) map).entrySet()) {
                         objSec.set(entry.getKey(), entry.getValue());
                     }
@@ -83,7 +84,7 @@ public class Quest {
         if (rewList != null) {
             for (Object obj : rewList) {
                 if (obj instanceof Map<?, ?> map) {
-                    ConfigurationSection rewSec = section.createSection("_rew_" + System.nanoTime());
+                    MemoryConfiguration rewSec = new MemoryConfiguration();
                     for (Map.Entry<String, Object> entry : ((Map<String, Object>) map).entrySet()) {
                         rewSec.set(entry.getKey(), entry.getValue());
                     }

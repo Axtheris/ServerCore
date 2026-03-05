@@ -81,8 +81,11 @@ Place static NPCs with full player-model skins and branching dialogue trees. Pow
 
 A YAML-driven quest system integrated with NPC dialogue. Players accept quests from NPCs, complete objectives, and return for rewards.
 
-- **Three objective types**: fetch items, kill mobs, talk to NPCs
-- **Three reward types**: items, XP, console commands with player placeholders
+- **11 objective types**: fetch, kill, talk, craft, mine, place, fish, breed, smelt, explore (location-based), interact
+- **6 reward types**: items, XP, commands, money (Vault), permissions (with optional duration), pet items
+- **Quest chains**: prerequisite quests, required permissions, time limits, sequential objectives
+- **Categories**: organize quests by category with grouped display in `/quest active`
+- **Action bar progress**: real-time progress notifications as players complete objectives
 - **Dialogue integration**: quest conditions and actions in NPC dialogue trees
 - **Repeatable quests**: optional cooldown timers for repeatable content
 - **Persistence**: quest progress survives server restarts
@@ -123,6 +126,7 @@ Chest-based menus with pagination, confirmation dialogs, and integration across 
 | [Model Engine](https://mythiccraft.io/index.php?pages/model-engine/) R4+ | No | 3D custom models and animations for pets |
 | [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) | No | Exposes ServerCore data as placeholders |
 | [PacketEvents](https://github.com/retrooper/packetevents) 2.7+ | For NPCs | Full player-model NPCs with skins |
+| [Vault](https://www.spigotmc.org/resources/vault.34315/) | No | Economy and permission quest rewards |
 
 ---
 
@@ -162,6 +166,8 @@ systems:
     enabled: true
   quests:
     enabled: true
+    max-active-quests: 0       # 0 = unlimited
+    action-bar-progress: true
   timelines:
     enabled: true
   reactive:
@@ -335,29 +341,49 @@ dialogue:
 ### Quests (`quests/*.yml`)
 
 ```yaml
-id: gather-wood
-display-name: "<gold>Lumberjack's Request"
-description: "Gather 16 oak logs for the merchant."
-accept-npc: merchant
-turn-in-npc: merchant
+id: dragon_hunter
+display-name: "<gradient:#FF4500:#FFD700><bold>Dragon Hunter</bold></gradient>"
+description: "Prove your worth by crafting gear and slaying foes."
+category: "combat"
+required-permission: "quests.advanced"
+prerequisites: [beginner_quest]
+sequential-objectives: true
+time-limit: 7200       # 2 hours
 repeatable: true
-cooldown: 3600
+cooldown: 86400
+accept-npc: blacksmith
+turn-in-npc: blacksmith
 objectives:
-  - type: fetch
-    material: OAK_LOG
-    amount: 16
+  - type: craft
+    material: DIAMOND_SWORD
+    amount: 1
+    description: "Forge a diamond blade"
+  - type: mine
+    material: OBSIDIAN
+    amount: 10
   - type: kill
-    entity: ZOMBIE
-    amount: 5
+    entity: ENDERMAN
+    amount: 15
+  - type: explore
+    location: "world_the_end,0,64,0"
+    radius: 100
+    description: "Enter the End dimension"
 rewards:
   - type: item
-    material: DIAMOND
-    amount: 3
-  - type: xp
-    amount: 100
-  - type: command
-    value: "eco give %player% 500"
+    material: ELYTRA
+    amount: 1
+  - type: money
+    amount: 5000
+  - type: pet
+    value: dragon
+  - type: permission
+    value: "cosmetics.dragon_wings"
+    duration: 0          # permanent
 ```
+
+**Objective types:** `fetch`, `kill`, `talk`, `craft`, `mine`, `place`, `fish`, `breed`, `smelt`, `explore`, `interact`
+
+**Reward types:** `item`, `xp`, `command`, `money` (Vault), `permission` (Vault, with optional `duration`), `pet`
 
 Quests can also be defined inline in NPC YAML files under a `quest:` key, where `accept-npc` and `turn-in-npc` default to the parent NPC.
 
@@ -432,7 +458,7 @@ cd ServerCore
 ./gradlew build
 ```
 
-The output JAR will be at `build/libs/ServerCore-2.0.0.jar`.
+The output JAR will be at `build/libs/ServerCore-2.1.0.jar`.
 
 To launch a Paper test server with the plugin auto-loaded:
 

@@ -73,13 +73,18 @@ public class QuestReward {
                         Method addPermission = vaultHook.getMethod("addPermission", Player.class, String.class);
                         addPermission.invoke(null, player, value);
                         if (amount > 0) {
-                            // Schedule permission removal after duration (amount in seconds)
+                            // Capture UUID to avoid stale Player reference on relog
+                            java.util.UUID playerUuid = player.getUniqueId();
+                            String permNode = value;
                             Bukkit.getScheduler().runTaskLater(
                                     Bukkit.getPluginManager().getPlugin("ServerCore"),
                                     () -> {
                                         try {
-                                            Method removePermission = vaultHook.getMethod("removePermission", Player.class, String.class);
-                                            removePermission.invoke(null, player, value);
+                                            Player target = Bukkit.getPlayer(playerUuid);
+                                            if (target != null && target.isOnline()) {
+                                                Method removePermission = vaultHook.getMethod("removePermission", Player.class, String.class);
+                                                removePermission.invoke(null, target, permNode);
+                                            }
                                         } catch (Exception ex) {
                                             Logger.getLogger("ServerCore").warning("Failed to remove timed permission: " + ex.getMessage());
                                         }

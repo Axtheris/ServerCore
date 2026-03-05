@@ -198,7 +198,7 @@ public class QuestCommand implements TabExecutor {
             return;
         }
 
-        String id = args[1].toLowerCase();
+        String id = args[1];
         if (!manager.isActive(player.getUniqueId(), id)) {
             player.sendMessage(Component.text("You don't have an active quest with ID '" + id + "'.",
                     NamedTextColor.RED));

@@ -136,12 +136,18 @@ public class QuestManager {
 
         // Give rewards
         for (QuestReward reward : quest.getRewards()) {
-            if (reward.getType() == QuestReward.Type.PET && petManager != null) {
-                var profile = petManager.getProfile(reward.getValue());
-                if (profile != null) {
-                    for (int i = 0; i < reward.getAmount(); i++) {
-                        player.getInventory().addItem(profile.createItem());
+            if (reward.getType() == QuestReward.Type.PET) {
+                if (petManager != null) {
+                    var profile = petManager.getProfile(reward.getValue());
+                    if (profile != null) {
+                        for (int i = 0; i < reward.getAmount(); i++) {
+                            player.getInventory().addItem(profile.createItem());
+                        }
+                    } else {
+                        Bukkit.getLogger().warning("Quest '" + questId + "' has PET reward for unknown pet: " + reward.getValue());
                     }
+                } else {
+                    Bukkit.getLogger().warning("Quest '" + questId + "' has PET reward but pet system is not enabled");
                 }
             } else {
                 reward.give(player);
@@ -313,7 +319,7 @@ public class QuestManager {
                 String[] parts = obj.getTarget().split(",");
                 if (parts.length != 4) continue;
                 String world = parts[0];
-                if (!location.getWorld().getName().equalsIgnoreCase(world)) continue;
+                if (location.getWorld() == null || !location.getWorld().getName().equalsIgnoreCase(world)) continue;
 
                 try {
                     double tx = Double.parseDouble(parts[1]);
@@ -352,7 +358,7 @@ public class QuestManager {
 
     public void destroyAll() {
         quests.clear();
-        // Don't clear player data -- that's managed by the store
+        activeQuests.clear();
     }
 
     public Map<UUID, List<QuestProgress>> getAllActiveQuests() { return activeQuests; }

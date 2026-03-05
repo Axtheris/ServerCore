@@ -187,7 +187,7 @@ public final class ServerCoreAPI {
     public void showHologramTo(Player player, String hologramId) {
         if (hologramManager == null) return;
         Hologram hologram = hologramManager.get(hologramId);
-        if (hologram == null || !hologram.isSpawned()) return;
+        if (hologram == null || !hologram.isSpawned() || hologram.getEntityUuid() == null) return;
         Entity entity = Bukkit.getEntity(hologram.getEntityUuid());
         if (entity != null) {
             player.showEntity(Bukkit.getPluginManager().getPlugin("ServerCore"), entity);
@@ -200,7 +200,7 @@ public final class ServerCoreAPI {
     public void hideHologramFrom(Player player, String hologramId) {
         if (hologramManager == null) return;
         Hologram hologram = hologramManager.get(hologramId);
-        if (hologram == null || !hologram.isSpawned()) return;
+        if (hologram == null || !hologram.isSpawned() || hologram.getEntityUuid() == null) return;
         Entity entity = Bukkit.getEntity(hologram.getEntityUuid());
         if (entity != null) {
             player.hideEntity(Bukkit.getPluginManager().getPlugin("ServerCore"), entity);

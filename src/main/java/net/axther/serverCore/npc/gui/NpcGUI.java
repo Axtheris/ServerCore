@@ -53,11 +53,14 @@ public class NpcGUI {
             meta.lore(lore);
             icon.setItemMeta(meta);
 
+            String npcId = npc.getId();
             items.add(MenuItem.builder(icon)
                     .onClick(p -> {
-                        if (loc != null) {
-                            p.teleport(loc);
-                            p.sendMessage(mm.deserialize("<green>Teleported to NPC '" + npc.getId() + "'."));
+                        NPC n = manager.get(npcId);
+                        Location freshLoc = n != null ? n.getLocation() : null;
+                        if (freshLoc != null) {
+                            p.teleport(freshLoc);
+                            p.sendMessage(mm.deserialize("<green>Teleported to NPC '" + npcId + "'."));
                         }
                         p.closeInventory();
                     })

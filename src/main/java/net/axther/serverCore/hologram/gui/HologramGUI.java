@@ -55,8 +55,10 @@ public class HologramGUI {
             String holoId = hologram.getId();
             items.add(MenuItem.builder(icon)
                     .onClick(p -> {
-                        if (loc != null) {
-                            p.teleport(loc);
+                        Hologram h = manager.get(holoId);
+                        Location freshLoc = h != null ? h.getLocation() : null;
+                        if (freshLoc != null) {
+                            p.teleport(freshLoc);
                             p.sendMessage(mm.deserialize("<green>Teleported to hologram '" + holoId + "'."));
                         }
                         p.closeInventory();

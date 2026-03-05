@@ -125,7 +125,7 @@ public class Menu {
      * @param player    the player whose inventory to refresh
      * @param tickCount global tick counter used for cycle item rotation
      */
-    public void refresh(Player player, int tickCount) {
+    public void refresh(Player player, long tickCount) {
         Inventory topInventory = player.getOpenInventory().getTopInventory();
         if (topInventory == null) return;
 
@@ -138,7 +138,7 @@ public class Menu {
             List<ItemStack> cycleItems = item.getCycleItems();
             if (cycleItems != null && !cycleItems.isEmpty()) {
                 int interval = Math.max(1, item.getCycleInterval());
-                int index = (tickCount / interval) % cycleItems.size();
+                int index = (int) ((tickCount / interval) % cycleItems.size());
                 topInventory.setItem(slot, cycleItems.get(index));
                 continue;
             }

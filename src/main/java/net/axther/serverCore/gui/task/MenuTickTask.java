@@ -16,7 +16,7 @@ import java.util.UUID;
 public class MenuTickTask extends BukkitRunnable {
 
     private final MenuManager menuManager;
-    private int tickCount = 0;
+    private long tickCount = 0;
 
     public MenuTickTask(MenuManager menuManager) {
         this.menuManager = menuManager;

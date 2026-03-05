@@ -1,6 +1,9 @@
 package net.axther.serverCore.api;
 
+import net.axther.serverCore.api.builder.EmitterBuilder;
+import net.axther.serverCore.api.builder.HologramBuilder;
 import net.axther.serverCore.cosmetic.CosmeticManager;
+import net.axther.serverCore.gui.Menu;
 import net.axther.serverCore.gui.MenuManager;
 import net.axther.serverCore.hologram.HologramManager;
 import net.axther.serverCore.npc.NPCManager;
@@ -119,5 +122,19 @@ public final class ServerCoreAPI {
 
     public QuestManager getQuestManager() {
         return questManager;
+    }
+
+    // ── Fluent builders ──────────────────────────────────────────────
+
+    public HologramBuilder hologram(String id) {
+        return new HologramBuilder(id, hologramManager);
+    }
+
+    public EmitterBuilder emitter(String id) {
+        return new EmitterBuilder(id, emitterManager);
+    }
+
+    public Menu.Builder menu(String title) {
+        return Menu.builder(title);
     }
 }

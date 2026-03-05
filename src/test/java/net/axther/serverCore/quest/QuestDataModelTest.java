@@ -73,6 +73,32 @@ class QuestDataModelTest {
             progress.increment(99);
             assertEquals(0, progress.getProgress(0));
         }
+
+        @Test
+        void newProgressHasStartedAtTimestamp() {
+            QuestProgress progress = new QuestProgress("q", 2);
+            assertTrue(progress.getStartedAt() > 0);
+            assertTrue(progress.getStartedAt() <= System.currentTimeMillis());
+        }
+
+        @Test
+        void existingProgressPreservesStartedAt() {
+            long timestamp = 1000000L;
+            QuestProgress progress = new QuestProgress("q", new int[]{1, 2}, timestamp);
+            assertEquals(timestamp, progress.getStartedAt());
+        }
+
+        @Test
+        void isExpiredReturnsFalseWhenNoLimit() {
+            QuestProgress progress = new QuestProgress("q", 2);
+            assertFalse(progress.isExpired(0));
+        }
+
+        @Test
+        void isExpiredReturnsFalseWhenWithinLimit() {
+            QuestProgress progress = new QuestProgress("q", 2);
+            assertFalse(progress.isExpired(3600));
+        }
     }
 
     // --- QuestObjective tests ---
@@ -288,6 +314,30 @@ class QuestDataModelTest {
 
             assertFalse(quest.isRepeatable());
             assertEquals(0, quest.getCooldownSeconds());
+        }
+
+        @Test
+        void questWithStructureParameters() {
+            Quest quest = new Quest("chain-2", "<gold>Chain Quest 2", "Second in chain",
+                    "npc1", "npc1", List.of(), List.of(),
+                    false, 0,
+                    "quests.advanced", List.of("chain-1"), 3600, "combat", true);
+            assertEquals("quests.advanced", quest.getRequiredPermission());
+            assertEquals(List.of("chain-1"), quest.getPrerequisites());
+            assertEquals(3600, quest.getTimeLimit());
+            assertEquals("combat", quest.getCategory());
+            assertTrue(quest.isSequentialObjectives());
+        }
+
+        @Test
+        void questDefaultStructureParameters() {
+            Quest quest = new Quest("simple", "Simple", "Desc",
+                    "npc1", "npc1", List.of(), List.of(), false, 0);
+            assertNull(quest.getRequiredPermission());
+            assertTrue(quest.getPrerequisites().isEmpty());
+            assertEquals(0, quest.getTimeLimit());
+            assertEquals("general", quest.getCategory());
+            assertFalse(quest.isSequentialObjectives());
         }
     }
 }

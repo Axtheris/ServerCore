@@ -188,9 +188,10 @@ public final class ServerCoreAPI {
         if (hologramManager == null) return;
         Hologram hologram = hologramManager.get(hologramId);
         if (hologram == null || !hologram.isSpawned() || hologram.getEntityUuid() == null) return;
+        org.bukkit.plugin.Plugin plugin = Bukkit.getPluginManager().getPlugin("ServerCore");
         Entity entity = Bukkit.getEntity(hologram.getEntityUuid());
-        if (entity != null) {
-            player.showEntity(Bukkit.getPluginManager().getPlugin("ServerCore"), entity);
+        if (entity != null && plugin != null) {
+            player.showEntity(plugin, entity);
         }
     }
 
@@ -201,9 +202,10 @@ public final class ServerCoreAPI {
         if (hologramManager == null) return;
         Hologram hologram = hologramManager.get(hologramId);
         if (hologram == null || !hologram.isSpawned() || hologram.getEntityUuid() == null) return;
+        org.bukkit.plugin.Plugin plugin = Bukkit.getPluginManager().getPlugin("ServerCore");
         Entity entity = Bukkit.getEntity(hologram.getEntityUuid());
-        if (entity != null) {
-            player.hideEntity(Bukkit.getPluginManager().getPlugin("ServerCore"), entity);
+        if (entity != null && plugin != null) {
+            player.hideEntity(plugin, entity);
         }
     }
 

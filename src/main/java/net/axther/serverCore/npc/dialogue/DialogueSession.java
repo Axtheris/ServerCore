@@ -20,6 +20,7 @@ public class DialogueSession {
     private final DialogueTree tree;
     private DialogueNode currentNode;
     private List<DialogueChoice> visibleChoices;
+    private net.axther.serverCore.hologram.DialogueHologram dialogueHologram;
 
     public DialogueSession(Player player, NPC npc, DialogueTree tree) {
         this.player = player;
@@ -80,6 +81,20 @@ public class DialogueSession {
             player.sendMessage(mm.deserialize(line));
         }
 
+        // Update dialogue hologram above NPC head
+        if (dialogueHologram != null) {
+            StringBuilder holoText = new StringBuilder();
+            for (int i = 0; i < node.getText().size(); i++) {
+                if (i > 0) holoText.append("\n");
+                holoText.append(node.getText().get(i));
+            }
+            if (dialogueHologram.isSpawned()) {
+                dialogueHologram.updateText(holoText.toString());
+            } else {
+                dialogueHologram.spawn(holoText.toString());
+            }
+        }
+
         // Build visible choices (filter by conditions)
         visibleChoices = new ArrayList<>();
         for (DialogueChoice choice : node.getChoices()) {
@@ -113,7 +128,15 @@ public class DialogueSession {
         }
     }
 
+    public void setDialogueHologram(net.axther.serverCore.hologram.DialogueHologram hologram) {
+        this.dialogueHologram = hologram;
+    }
+
     public void end() {
+        if (dialogueHologram != null) {
+            dialogueHologram.despawn();
+            dialogueHologram = null;
+        }
         this.currentNode = null;
         this.visibleChoices = null;
     }

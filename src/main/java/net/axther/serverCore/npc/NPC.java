@@ -20,6 +20,8 @@ public class NPC {
     private String skinSignature;
     private boolean lookAtPlayer;
     private String dialogueId;
+    private boolean dialogueHologram = false;
+    private double dialogueHologramOffset = 0.5;
 
     public NPC(String id, String displayName, Location location, float yaw,
                String skinTexture, String skinSignature,
@@ -59,6 +61,10 @@ public class NPC {
     public void setLookAtPlayer(boolean lookAtPlayer) { this.lookAtPlayer = lookAtPlayer; }
     public String getDialogueId() { return dialogueId; }
     public void setDialogueId(String dialogueId) { this.dialogueId = dialogueId; }
+    public boolean isDialogueHologram() { return dialogueHologram; }
+    public void setDialogueHologram(boolean dialogueHologram) { this.dialogueHologram = dialogueHologram; }
+    public double getDialogueHologramOffset() { return dialogueHologramOffset; }
+    public void setDialogueHologramOffset(double offset) { this.dialogueHologramOffset = offset; }
 
     public String getWorldName() {
         return location.getWorld() != null ? location.getWorld().getName() : "world";

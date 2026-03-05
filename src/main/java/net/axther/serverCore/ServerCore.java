@@ -196,7 +196,17 @@ public final class ServerCore extends JavaPlugin {
             hologramConfig = new HologramConfig(this);
             hologramConfig.loadAll(hologramManager);
 
-            getServer().getPluginManager().registerEvents(new HologramLifecycleListener(hologramManager), this);
+            // Visibility tracker for conditional holograms
+            double holoViewDistance = getConfig().getDouble("systems.holograms.view-distance", 48.0);
+            var visibilityTracker = new net.axther.serverCore.hologram.visibility.HologramVisibilityTracker(
+                    this, hologramManager, holoViewDistance);
+            hologramManager.setVisibilityTracker(visibilityTracker);
+
+            // Click interaction listener
+            var interactListener = new net.axther.serverCore.hologram.listener.HologramInteractListener(hologramManager);
+            getServer().getPluginManager().registerEvents(interactListener, this);
+
+            getServer().getPluginManager().registerEvents(new HologramLifecycleListener(hologramManager, visibilityTracker), this);
 
             PluginCommand hologramCmd = getCommand("hologram");
             if (hologramCmd != null) {
@@ -225,7 +235,7 @@ public final class ServerCore extends JavaPlugin {
 
                 npcConfig.loadAll(npcManager, questManager);
 
-                npcListener = new NPCListener(npcManager, npcConfig);
+                npcListener = new NPCListener(this, npcManager, npcConfig);
                 getServer().getPluginManager().registerEvents(npcListener, this);
 
                 int viewDistance = serverCoreConfig.getNpcViewDistance();

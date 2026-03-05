@@ -6,6 +6,7 @@ import net.axther.serverCore.npc.config.NPCConfig;
 import net.axther.serverCore.npc.dialogue.DialogueSession;
 import net.axther.serverCore.npc.dialogue.DialogueTree;
 import net.axther.serverCore.npc.render.NPCViewTracker;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,17 +14,21 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import org.bukkit.plugin.java.JavaPlugin;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class NPCListener implements Listener {
 
+    private final JavaPlugin plugin;
     private final NPCManager manager;
     private final NPCConfig config;
     private final Map<UUID, DialogueSession> activeSessions = new HashMap<>();
 
-    public NPCListener(NPCManager manager, NPCConfig config) {
+    public NPCListener(JavaPlugin plugin, NPCManager manager, NPCConfig config) {
+        this.plugin = plugin;
         this.manager = manager;
         this.config = config;
     }
@@ -43,6 +48,15 @@ public class NPCListener implements Listener {
 
         DialogueSession session = new DialogueSession(player, npc, tree);
         activeSessions.put(player.getUniqueId(), session);
+
+        // Spawn dialogue hologram BEFORE start so the first node can use it
+        if (npc.isDialogueHologram()) {
+            Location npcLoc = npc.getLocation().clone().add(0, 2.0, 0);
+            net.axther.serverCore.hologram.DialogueHologram dialogueHolo =
+                    new net.axther.serverCore.hologram.DialogueHologram(
+                            plugin, player, npcLoc, npc.getDialogueHologramOffset());
+            session.setDialogueHologram(dialogueHolo);
+        }
         session.start();
     }
 

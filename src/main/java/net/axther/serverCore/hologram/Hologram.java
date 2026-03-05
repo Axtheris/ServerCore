@@ -1,5 +1,7 @@
 package net.axther.serverCore.hologram;
 
+import net.axther.serverCore.hologram.action.HologramAction;
+import net.axther.serverCore.hologram.condition.HologramCondition;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -17,6 +19,8 @@ import java.util.UUID;
 
 public class Hologram {
 
+    private static final Color TRANSPARENT = Color.fromARGB(0, 0, 0, 0);
+
     private final String id;
     private Location location;
     private final List<String> lines;
@@ -25,10 +29,25 @@ public class Hologram {
     private double bobFrequency;
     private UUID entityUuid;
 
+    // Visual styling options
+    private String billboard = "CENTER";
+    private boolean textShadow = false;
+    private String background = null;
+    private int lineWidth = 200;
+    private boolean seeThrough = false;
+    private String textAlignment = "CENTER";
+    private float viewRange = 1.0f;
+
+    private int updateInterval = 20; // ticks between placeholder refreshes
+
+    private final List<HologramCondition> conditions = new ArrayList<>();
+    private final List<HologramAction> actions = new ArrayList<>();
+    private int clickCooldown = 20;
+
     public Hologram(String id, Location location, List<String> lines, HologramAnimation animation,
                     double bobAmplitude, double bobFrequency) {
         this.id = id;
-        this.location = location.clone();
+        this.location = location != null ? location.clone() : null;
         this.lines = new ArrayList<>(lines);
         this.animation = animation;
         this.bobAmplitude = bobAmplitude;
@@ -48,11 +67,44 @@ public class Hologram {
 
         TextDisplay display = world.spawn(location, TextDisplay.class, entity -> {
             entity.text(buildText());
-            entity.setBillboard(Display.Billboard.CENTER);
-            entity.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
+
+            Display.Billboard billboardEnum;
+            try {
+                billboardEnum = Display.Billboard.valueOf(billboard);
+            } catch (IllegalArgumentException e) {
+                billboardEnum = Display.Billboard.CENTER;
+            }
+            entity.setBillboard(billboardEnum);
+
+            if (background != null) {
+                try {
+                    long argb = Long.parseUnsignedLong(background.replace("#", ""), 16);
+                    int a = (int) ((argb >> 24) & 0xFF);
+                    int r = (int) ((argb >> 16) & 0xFF);
+                    int g = (int) ((argb >> 8) & 0xFF);
+                    int b = (int) (argb & 0xFF);
+                    entity.setBackgroundColor(Color.fromARGB(a, r, g, b));
+                } catch (NumberFormatException e) {
+                    entity.setBackgroundColor(TRANSPARENT);
+                }
+            } else {
+                entity.setBackgroundColor(TRANSPARENT);
+            }
+
             entity.setPersistent(false);
-            entity.setAlignment(TextDisplay.TextAlignment.CENTER);
-            entity.setShadowed(true);
+
+            TextDisplay.TextAlignment alignmentEnum;
+            try {
+                alignmentEnum = TextDisplay.TextAlignment.valueOf(textAlignment);
+            } catch (IllegalArgumentException e) {
+                alignmentEnum = TextDisplay.TextAlignment.CENTER;
+            }
+            entity.setAlignment(alignmentEnum);
+
+            entity.setShadowed(textShadow);
+            entity.setLineWidth(lineWidth);
+            entity.setSeeThrough(seeThrough);
+            entity.setViewRange(viewRange);
         });
 
         this.entityUuid = display.getUniqueId();
@@ -131,16 +183,32 @@ public class Hologram {
         Component combined = Component.empty();
         for (int i = 0; i < lines.size(); i++) {
             if (i > 0) combined = combined.append(Component.newline());
-            combined = combined.append(mm.deserialize(lines.get(i)));
+            String line = lines.get(i);
+            // Resolve PlaceholderAPI placeholders if present
+            if (line.contains("%") && line.indexOf('%') != line.lastIndexOf('%')) {
+                line = resolvePlaceholders(line);
+            }
+            combined = combined.append(mm.deserialize(line));
         }
         return combined;
+    }
+
+    private String resolvePlaceholders(String text) {
+        try {
+            Class<?> papiClass = Class.forName("me.clip.placeholderapi.PlaceholderAPI");
+            java.lang.reflect.Method setPlaceholders = papiClass.getMethod("setPlaceholders",
+                    org.bukkit.OfflinePlayer.class, String.class);
+            return (String) setPlaceholders.invoke(null, (org.bukkit.OfflinePlayer) null, text);
+        } catch (Exception e) {
+            return text; // PlaceholderAPI not present, return as-is
+        }
     }
 
     // --- Getters and setters ---
 
     public String getId() { return id; }
 
-    public Location getLocation() { return location.clone(); }
+    public Location getLocation() { return location != null ? location.clone() : null; }
 
     public void setLocation(Location location) {
         this.location = location.clone();
@@ -168,8 +236,63 @@ public class Hologram {
 
     public UUID getEntityUuid() { return entityUuid; }
 
+    // --- Visual option getters and setters ---
+
+    public String getBillboard() { return billboard; }
+
+    public void setBillboard(String billboard) { this.billboard = billboard; }
+
+    public boolean isTextShadow() { return textShadow; }
+
+    public void setTextShadow(boolean textShadow) { this.textShadow = textShadow; }
+
+    public String getBackground() { return background; }
+
+    public void setBackground(String background) { this.background = background; }
+
+    public int getLineWidth() { return lineWidth; }
+
+    public void setLineWidth(int lineWidth) { this.lineWidth = lineWidth; }
+
+    public boolean isSeeThrough() { return seeThrough; }
+
+    public void setSeeThrough(boolean seeThrough) { this.seeThrough = seeThrough; }
+
+    public String getTextAlignment() { return textAlignment; }
+
+    public void setTextAlignment(String textAlignment) { this.textAlignment = textAlignment; }
+
+    public float getViewRange() { return viewRange; }
+
+    public void setViewRange(float viewRange) { this.viewRange = viewRange; }
+
+    public int getUpdateInterval() { return updateInterval; }
+
+    public void setUpdateInterval(int updateInterval) { this.updateInterval = updateInterval; }
+
+    public List<HologramCondition> getConditions() { return conditions; }
+    public boolean hasConditions() { return !conditions.isEmpty(); }
+
+    public List<HologramAction> getActions() { return actions; }
+    public int getClickCooldown() { return clickCooldown; }
+    public void setClickCooldown(int clickCooldown) { this.clickCooldown = clickCooldown; }
+
+    public boolean containsPlaceholders() {
+        for (String line : lines) {
+            if (line.contains("%") && line.indexOf('%') != line.lastIndexOf('%')) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void refreshPlaceholders() {
+        if (!isSpawned() || !containsPlaceholders()) return;
+        updateText();
+    }
+
     public String getWorldName() {
-        return location.getWorld() != null ? location.getWorld().getName() : "world";
+        return location != null && location.getWorld() != null ? location.getWorld().getName() : "world";
     }
 
     public long getChunkKey() {

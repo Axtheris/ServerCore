@@ -96,6 +96,8 @@ public class NPCConfig {
         }
 
         NPC npc = new NPC(id, displayName, location, yaw, skinTexture, skinSignature, lookAtPlayer, dialogueId);
+        npc.setDialogueHologram(yaml.getBoolean("dialogue-hologram", false));
+        npc.setDialogueHologramOffset(yaml.getDouble("dialogue-hologram-offset", 0.5));
         manager.register(npc);
     }
 

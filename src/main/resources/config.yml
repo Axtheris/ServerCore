@@ -10,6 +10,7 @@ systems:
     enabled: true
   holograms:
     enabled: true
+    view-distance: 48
   npcs:
     enabled: true
     view-distance: 48

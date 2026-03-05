@@ -36,6 +36,8 @@ public class Hologram {
     private String textAlignment = "CENTER";
     private float viewRange = 1.0f;
 
+    private int updateInterval = 20; // ticks between placeholder refreshes
+
     public Hologram(String id, Location location, List<String> lines, HologramAnimation animation,
                     double bobAmplitude, double bobFrequency) {
         this.id = id;
@@ -241,6 +243,24 @@ public class Hologram {
     public float getViewRange() { return viewRange; }
 
     public void setViewRange(float viewRange) { this.viewRange = viewRange; }
+
+    public int getUpdateInterval() { return updateInterval; }
+
+    public void setUpdateInterval(int updateInterval) { this.updateInterval = updateInterval; }
+
+    public boolean containsPlaceholders() {
+        for (String line : lines) {
+            if (line.contains("%") && line.indexOf('%') != line.lastIndexOf('%')) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void refreshPlaceholders() {
+        if (!isSpawned() || !containsPlaceholders()) return;
+        updateText();
+    }
 
     public String getWorldName() {
         return location != null && location.getWorld() != null ? location.getWorld().getName() : "world";

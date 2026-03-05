@@ -85,4 +85,44 @@ class HologramDataModelTest {
             assertEquals(0, h.getLineWidth());
         }
     }
+
+    @Nested
+    class UpdateIntervalTests {
+        @Test
+        void defaultUpdateIntervalIsTwenty() {
+            Hologram h = new Hologram("test", null, List.of("hello"));
+            assertEquals(20, h.getUpdateInterval());
+        }
+
+        @Test
+        void setUpdateInterval() {
+            Hologram h = new Hologram("test", null, List.of("hello"));
+            h.setUpdateInterval(40);
+            assertEquals(40, h.getUpdateInterval());
+        }
+
+        @Test
+        void containsPlaceholdersDetectsPercent() {
+            Hologram h = new Hologram("test", null, List.of("Hello %player_name%"));
+            assertTrue(h.containsPlaceholders());
+        }
+
+        @Test
+        void containsPlaceholdersReturnsFalseForStaticText() {
+            Hologram h = new Hologram("test", null, List.of("<gold>Static text"));
+            assertFalse(h.containsPlaceholders());
+        }
+
+        @Test
+        void containsPlaceholdersReturnsFalseForSinglePercent() {
+            Hologram h = new Hologram("test", null, List.of("50% off sale"));
+            assertFalse(h.containsPlaceholders());
+        }
+
+        @Test
+        void containsPlaceholdersDetectsAcrossMultipleLines() {
+            Hologram h = new Hologram("test", null, List.of("Line 1", "Score: %player_level%"));
+            assertTrue(h.containsPlaceholders());
+        }
+    }
 }

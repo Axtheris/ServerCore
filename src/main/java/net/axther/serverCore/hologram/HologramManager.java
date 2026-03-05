@@ -64,6 +64,15 @@ public class HologramManager {
         return nearby;
     }
 
+    public void refreshPlaceholders(int tickCount) {
+        for (Hologram hologram : holograms.values()) {
+            if (hologram.isSpawned() && hologram.containsPlaceholders()
+                    && tickCount % hologram.getUpdateInterval() == 0) {
+                hologram.refreshPlaceholders();
+            }
+        }
+    }
+
     public void destroyAll() {
         despawnAll();
         holograms.clear();

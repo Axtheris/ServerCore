@@ -17,11 +17,27 @@ public class Quest {
     private final List<QuestReward> rewards;
     private final boolean repeatable;
     private final int cooldownSeconds;
+    private final String requiredPermission;
+    private final List<String> prerequisites;
+    private final int timeLimit; // seconds, 0 = no limit
+    private final String category;
+    private final boolean sequentialObjectives;
 
     public Quest(String id, String displayName, String description,
                  String acceptNpc, String turnInNpc,
                  List<QuestObjective> objectives, List<QuestReward> rewards,
                  boolean repeatable, int cooldownSeconds) {
+        this(id, displayName, description, acceptNpc, turnInNpc,
+                objectives, rewards, repeatable, cooldownSeconds,
+                null, List.of(), 0, "general", false);
+    }
+
+    public Quest(String id, String displayName, String description,
+                 String acceptNpc, String turnInNpc,
+                 List<QuestObjective> objectives, List<QuestReward> rewards,
+                 boolean repeatable, int cooldownSeconds,
+                 String requiredPermission, List<String> prerequisites,
+                 int timeLimit, String category, boolean sequentialObjectives) {
         this.id = id;
         this.displayName = displayName;
         this.description = description;
@@ -31,6 +47,11 @@ public class Quest {
         this.rewards = rewards;
         this.repeatable = repeatable;
         this.cooldownSeconds = cooldownSeconds;
+        this.requiredPermission = requiredPermission;
+        this.prerequisites = prerequisites;
+        this.timeLimit = timeLimit;
+        this.category = category;
+        this.sequentialObjectives = sequentialObjectives;
     }
 
     @SuppressWarnings("unchecked")
@@ -71,8 +92,15 @@ public class Quest {
             }
         }
 
+        String requiredPermission = section.getString("required-permission", null);
+        List<String> prerequisites = section.getStringList("prerequisites");
+        int timeLimit = section.getInt("time-limit", 0);
+        String category = section.getString("category", "general");
+        boolean sequentialObjectives = section.getBoolean("sequential-objectives", false);
+
         return new Quest(id, displayName, description, acceptNpc, turnInNpc,
-                objectives, rewards, repeatable, cooldown);
+                objectives, rewards, repeatable, cooldown,
+                requiredPermission, prerequisites, timeLimit, category, sequentialObjectives);
     }
 
     // Getters
@@ -85,4 +113,9 @@ public class Quest {
     public List<QuestReward> getRewards() { return rewards; }
     public boolean isRepeatable() { return repeatable; }
     public int getCooldownSeconds() { return cooldownSeconds; }
+    public String getRequiredPermission() { return requiredPermission; }
+    public List<String> getPrerequisites() { return prerequisites; }
+    public int getTimeLimit() { return timeLimit; }
+    public String getCategory() { return category; }
+    public boolean isSequentialObjectives() { return sequentialObjectives; }
 }

@@ -15,7 +15,10 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class QuestCommand implements TabExecutor {
@@ -89,34 +92,86 @@ public class QuestCommand implements TabExecutor {
         MiniMessage mm = MiniMessage.miniMessage();
         player.sendMessage(Component.text("--- Active Quests (" + active.size() + ") ---", NamedTextColor.GREEN));
 
+        // Group by category
+        Map<String, List<QuestProgress>> byCategory = new LinkedHashMap<>();
         for (QuestProgress progress : active) {
             Quest quest = manager.getQuest(progress.getQuestId());
             if (quest == null) continue;
+            byCategory.computeIfAbsent(quest.getCategory(), k -> new ArrayList<>()).add(progress);
+        }
 
-            player.sendMessage(Component.text(" ").append(mm.deserialize(quest.getDisplayName())));
+        for (Map.Entry<String, List<QuestProgress>> entry : byCategory.entrySet()) {
+            player.sendMessage(Component.text(" [" + entry.getKey() + "]", NamedTextColor.GOLD));
 
-            List<QuestObjective> objectives = quest.getObjectives();
-            for (int i = 0; i < objectives.size(); i++) {
-                QuestObjective obj = objectives.get(i);
-                int current = progress.getProgress(i);
+            for (QuestProgress progress : entry.getValue()) {
+                Quest quest = manager.getQuest(progress.getQuestId());
+                if (quest == null) continue;
 
-                // For fetch objectives, show inventory count dynamically
-                if (obj.getType() == QuestObjective.Type.FETCH) {
-                    current = manager.countMaterial(player, obj.getTarget());
+                String timeInfo = "";
+                if (quest.getTimeLimit() > 0) {
+                    long elapsed = (System.currentTimeMillis() - progress.getStartedAt()) / 1000;
+                    long remaining = quest.getTimeLimit() - elapsed;
+                    if (remaining > 0) {
+                        timeInfo = " <gray>(" + formatTime(remaining) + " remaining)";
+                    } else {
+                        timeInfo = " <red>(EXPIRED)";
+                    }
                 }
 
-                String desc = switch (obj.getType()) {
-                    case FETCH -> "Collect " + obj.getAmount() + " " + obj.getTarget();
-                    case KILL -> "Kill " + obj.getAmount() + " " + obj.getTarget();
-                    case TALK -> "Talk to " + obj.getTarget();
-                };
+                player.sendMessage(Component.text("  ").append(mm.deserialize(quest.getDisplayName() + timeInfo)));
 
-                boolean done = current >= obj.getAmount();
-                player.sendMessage(Component.text("   " + (done ? "+" : "-") + " " + desc
-                                + " (" + Math.min(current, obj.getAmount()) + "/" + obj.getAmount() + ")",
-                        done ? NamedTextColor.GREEN : NamedTextColor.GRAY));
+                List<QuestObjective> objectives = quest.getObjectives();
+                for (int i = 0; i < objectives.size(); i++) {
+                    QuestObjective obj = objectives.get(i);
+                    int current = progress.getProgress(i);
+
+                    if (obj.getType() == QuestObjective.Type.FETCH) {
+                        current = manager.countMaterial(player, obj.getTarget());
+                    }
+
+                    String desc = obj.getDescription() != null ? obj.getDescription()
+                            : generateDescription(obj);
+
+                    boolean done = current >= obj.getAmount();
+                    boolean locked = quest.isSequentialObjectives() && i > getFirstIncomplete(progress, objectives);
+                    String prefix = done ? "+" : locked ? "x" : "-";
+                    NamedTextColor color = done ? NamedTextColor.GREEN : locked ? NamedTextColor.DARK_GRAY : NamedTextColor.GRAY;
+
+                    player.sendMessage(Component.text("   " + prefix + " " + desc
+                                    + " (" + Math.min(current, obj.getAmount()) + "/" + obj.getAmount() + ")",
+                            color));
+                }
             }
         }
+    }
+
+    private String generateDescription(QuestObjective obj) {
+        return switch (obj.getType()) {
+            case FETCH -> "Collect " + obj.getAmount() + " " + obj.getTarget();
+            case KILL -> "Kill " + obj.getAmount() + " " + obj.getTarget();
+            case TALK -> "Talk to " + obj.getTarget();
+            case CRAFT -> "Craft " + obj.getAmount() + " " + obj.getTarget();
+            case MINE -> "Mine " + obj.getAmount() + " " + obj.getTarget();
+            case PLACE -> "Place " + obj.getAmount() + " " + obj.getTarget();
+            case FISH -> obj.getTarget().equals("ANY") ? "Catch fish" : "Catch " + obj.getTarget();
+            case BREED -> "Breed " + obj.getAmount() + " " + obj.getTarget();
+            case SMELT -> "Smelt " + obj.getAmount() + " " + obj.getTarget();
+            case EXPLORE -> "Explore location";
+            case INTERACT -> "Interact with " + obj.getTarget();
+        };
+    }
+
+    private int getFirstIncomplete(QuestProgress progress, List<QuestObjective> objectives) {
+        for (int i = 0; i < objectives.size(); i++) {
+            if (progress.getProgress(i) < objectives.get(i).getAmount()) return i;
+        }
+        return objectives.size();
+    }
+
+    private String formatTime(long seconds) {
+        if (seconds >= 3600) return (seconds / 3600) + "h " + ((seconds % 3600) / 60) + "m";
+        if (seconds >= 60) return (seconds / 60) + "m " + (seconds % 60) + "s";
+        return seconds + "s";
     }
 
     private void handleCompleted(Player player) {

@@ -8,12 +8,21 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Location;
+
 import java.util.*;
 
 public class QuestManager {
 
     private final Map<String, Quest> quests = new LinkedHashMap<>();
     private QuestStore store;
+    private int maxActiveQuests = 0;
+    private net.axther.serverCore.pet.PetManager petManager;
+
+    public void setMaxActiveQuests(int max) { this.maxActiveQuests = max; }
+    public void setPetManager(net.axther.serverCore.pet.PetManager petManager) { this.petManager = petManager; }
 
     // Player UUID -> list of active quest progress
     private final Map<UUID, List<QuestProgress>> activeQuests = new HashMap<>();
@@ -55,6 +64,22 @@ public class QuestManager {
                 long elapsed = (System.currentTimeMillis() - completedAt) / 1000;
                 if (elapsed < quest.getCooldownSeconds()) return false;
             }
+        }
+
+        // Check required permission
+        if (quest.getRequiredPermission() != null && !player.hasPermission(quest.getRequiredPermission())) {
+            return false;
+        }
+
+        // Check prerequisites
+        for (String prereq : quest.getPrerequisites()) {
+            if (!hasCompleted(player.getUniqueId(), prereq)) return false;
+        }
+
+        // Check max active quests
+        if (maxActiveQuests > 0) {
+            List<QuestProgress> active = activeQuests.get(player.getUniqueId());
+            if (active != null && active.size() >= maxActiveQuests) return false;
         }
 
         return true;
@@ -111,7 +136,16 @@ public class QuestManager {
 
         // Give rewards
         for (QuestReward reward : quest.getRewards()) {
-            reward.give(player);
+            if (reward.getType() == QuestReward.Type.PET && petManager != null) {
+                var profile = petManager.getProfile(reward.getValue());
+                if (profile != null) {
+                    for (int i = 0; i < reward.getAmount(); i++) {
+                        player.getInventory().addItem(profile.createItem());
+                    }
+                }
+            } else {
+                reward.give(player);
+            }
         }
 
         // Remove from active, add to completed
@@ -159,9 +193,9 @@ public class QuestManager {
         return getActiveProgress(playerId, questId) != null;
     }
 
-    // --- Kill tracking (called from listener) ---
+    // --- Shared objective increment helper ---
 
-    public void handleKill(UUID playerId, String entityTypeName) {
+    private void incrementObjective(UUID playerId, QuestObjective.Type type, String target, int amount) {
         List<QuestProgress> list = activeQuests.get(playerId);
         if (list == null) return;
 
@@ -169,16 +203,41 @@ public class QuestManager {
             Quest quest = quests.get(progress.getQuestId());
             if (quest == null) continue;
 
+            // Check time limit expiry
+            if (quest.getTimeLimit() > 0 && progress.isExpired(quest.getTimeLimit())) continue;
+
             List<QuestObjective> objectives = quest.getObjectives();
             for (int i = 0; i < objectives.size(); i++) {
                 QuestObjective obj = objectives.get(i);
-                if (obj.getType() == QuestObjective.Type.KILL
-                        && obj.getTarget().equalsIgnoreCase(entityTypeName)
-                        && progress.getProgress(i) < obj.getAmount()) {
-                    progress.increment(i);
+                if (obj.getType() != type) continue;
+
+                // Sequential: skip if not current objective
+                if (quest.isSequentialObjectives() && i > getFirstIncompleteIndex(progress, objectives)) continue;
+
+                boolean matches = type == QuestObjective.Type.FISH
+                        ? (obj.getTarget().equalsIgnoreCase("ANY") || obj.getTarget().equalsIgnoreCase(target))
+                        : obj.getTarget().equalsIgnoreCase(target);
+
+                if (matches && progress.getProgress(i) < obj.getAmount()) {
+                    for (int a = 0; a < amount && progress.getProgress(i) < obj.getAmount(); a++) {
+                        progress.increment(i);
+                    }
                 }
             }
         }
+    }
+
+    private int getFirstIncompleteIndex(QuestProgress progress, List<QuestObjective> objectives) {
+        for (int i = 0; i < objectives.size(); i++) {
+            if (progress.getProgress(i) < objectives.get(i).getAmount()) return i;
+        }
+        return objectives.size();
+    }
+
+    // --- Kill tracking (called from listener) ---
+
+    public void handleKill(UUID playerId, String entityTypeName) {
+        incrementObjective(playerId, QuestObjective.Type.KILL, entityTypeName, 1);
     }
 
     // --- Talk tracking (called from NPC interaction) ---
@@ -197,10 +256,96 @@ public class QuestManager {
                 if (obj.getType() == QuestObjective.Type.TALK
                         && obj.getTarget().equalsIgnoreCase(npcId)
                         && progress.getProgress(i) < 1) {
+                    if (quest.isSequentialObjectives() && i > getFirstIncompleteIndex(progress, objectives)) continue;
                     progress.setProgress(i, 1);
                 }
             }
         }
+    }
+
+    // --- New handler methods ---
+
+    public void handleCraft(UUID playerId, String materialName, int amount) {
+        incrementObjective(playerId, QuestObjective.Type.CRAFT, materialName, amount);
+    }
+
+    public void handleMine(UUID playerId, String materialName) {
+        incrementObjective(playerId, QuestObjective.Type.MINE, materialName, 1);
+    }
+
+    public void handlePlace(UUID playerId, String materialName) {
+        incrementObjective(playerId, QuestObjective.Type.PLACE, materialName, 1);
+    }
+
+    public void handleFish(UUID playerId, String materialName) {
+        incrementObjective(playerId, QuestObjective.Type.FISH, materialName, 1);
+    }
+
+    public void handleBreed(UUID playerId, String entityTypeName) {
+        incrementObjective(playerId, QuestObjective.Type.BREED, entityTypeName, 1);
+    }
+
+    public void handleSmelt(UUID playerId, String materialName, int amount) {
+        incrementObjective(playerId, QuestObjective.Type.SMELT, materialName, amount);
+    }
+
+    public void handleInteract(UUID playerId, String targetName) {
+        incrementObjective(playerId, QuestObjective.Type.INTERACT, targetName, 1);
+    }
+
+    // --- Explore tracking (location-based) ---
+
+    public void handleExplore(UUID playerId, Location location) {
+        List<QuestProgress> list = activeQuests.get(playerId);
+        if (list == null) return;
+
+        for (QuestProgress progress : list) {
+            Quest quest = quests.get(progress.getQuestId());
+            if (quest == null) continue;
+
+            List<QuestObjective> objectives = quest.getObjectives();
+            for (int i = 0; i < objectives.size(); i++) {
+                QuestObjective obj = objectives.get(i);
+                if (obj.getType() != QuestObjective.Type.EXPLORE) continue;
+                if (quest.isSequentialObjectives() && i > getFirstIncompleteIndex(progress, objectives)) continue;
+                if (progress.getProgress(i) >= 1) continue;
+
+                String[] parts = obj.getTarget().split(",");
+                if (parts.length != 4) continue;
+                String world = parts[0];
+                if (!location.getWorld().getName().equalsIgnoreCase(world)) continue;
+
+                try {
+                    double tx = Double.parseDouble(parts[1]);
+                    double ty = Double.parseDouble(parts[2]);
+                    double tz = Double.parseDouble(parts[3]);
+                    double distSq = Math.pow(location.getX() - tx, 2) + Math.pow(location.getY() - ty, 2) + Math.pow(location.getZ() - tz, 2);
+                    if (distSq <= obj.getRadius() * obj.getRadius()) {
+                        progress.setProgress(i, 1);
+                    }
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+    }
+
+    // --- Expired quest check ---
+
+    public void checkExpiredQuests(Player player) {
+        List<QuestProgress> list = activeQuests.get(player.getUniqueId());
+        if (list == null) return;
+
+        list.removeIf(progress -> {
+            Quest quest = quests.get(progress.getQuestId());
+            if (quest == null) return false;
+            if (quest.getTimeLimit() > 0 && progress.isExpired(quest.getTimeLimit())) {
+                player.sendMessage(Component.text(
+                        "Quest '" + quest.getDisplayName() + "' has expired!",
+                        NamedTextColor.RED));
+                return true;
+            }
+            return false;
+        });
+        if (list.isEmpty()) activeQuests.remove(player.getUniqueId());
     }
 
     // --- Cleanup ---

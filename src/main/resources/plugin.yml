@@ -9,58 +9,236 @@ commands:
   cosmetic:
     description: Manage mob cosmetics
     usage: /cosmetic <apply|remove|clear|info|calibrate|gui>
-    permission: servercore.cosmetic
   emitter:
     description: Manage particle emitters
     usage: /emitter <create|remove|list|edit|info|gui>
-    permission: servercore.emitter
   pet:
     description: Manage player pets
     usage: /pet <summon|dismiss|sit|follow|feed|list|give|gui|reload>
-    permission: servercore.pet
   hologram:
     description: Manage text display holograms
     usage: /hologram <create|remove|addline|removeline|edit|list|near|movehere|setanimation>
-    permission: servercore.hologram
   npc:
     description: Manage NPCs and dialogue
     usage: /npc <create|remove|movehere|list|reload>
-    permission: servercore.npc
   quest:
     description: Manage player quests
     usage: /quest <active|completed|abandon|reload>
-    permission: servercore.quest
   timeline:
     description: Manage event timelines
     usage: /timeline <play|stop|list|reload>
-    permission: servercore.timeline
   servercore:
     description: ServerCore admin commands
     usage: /servercore reload
-    permission: servercore.admin
 
 permissions:
-  servercore.cosmetic:
-    description: Allows use of the cosmetic command
+  # --- Wildcard parent permissions ---
+  servercore.admin.*:
+    description: Grants all servercore admin permissions
     default: op
-  servercore.emitter:
-    description: Allows use of the emitter command
+    children:
+      servercore.admin.reload: true
+  servercore.cosmetic.*:
+    description: Grants all cosmetic permissions
     default: op
-  servercore.pet:
-    description: Allows use of the pet command
+    children:
+      servercore.cosmetic.apply: true
+      servercore.cosmetic.remove: true
+      servercore.cosmetic.clear: true
+      servercore.cosmetic.info: true
+      servercore.cosmetic.calibrate: true
+      servercore.cosmetic.gui: true
+  servercore.emitter.*:
+    description: Grants all emitter permissions
     default: op
-  servercore.hologram:
-    description: Allows use of the hologram command
+    children:
+      servercore.emitter.create: true
+      servercore.emitter.remove: true
+      servercore.emitter.list: true
+      servercore.emitter.edit: true
+      servercore.emitter.info: true
+      servercore.emitter.gui: true
+  servercore.pet.*:
+    description: Grants all pet permissions
     default: op
-  servercore.npc:
-    description: Allows use of the NPC command
+    children:
+      servercore.pet.summon: true
+      servercore.pet.dismiss: true
+      servercore.pet.sit: true
+      servercore.pet.follow: true
+      servercore.pet.feed: true
+      servercore.pet.list: true
+      servercore.pet.give: true
+      servercore.pet.reload: true
+      servercore.pet.gui: true
+  servercore.hologram.*:
+    description: Grants all hologram permissions
     default: op
-  servercore.quest:
-    description: Allows use of the quest command
+    children:
+      servercore.hologram.create: true
+      servercore.hologram.remove: true
+      servercore.hologram.addline: true
+      servercore.hologram.removeline: true
+      servercore.hologram.edit: true
+      servercore.hologram.list: true
+      servercore.hologram.near: true
+      servercore.hologram.movehere: true
+      servercore.hologram.setanimation: true
+  servercore.npc.*:
+    description: Grants all NPC permissions
+    default: op
+    children:
+      servercore.npc.create: true
+      servercore.npc.remove: true
+      servercore.npc.movehere: true
+      servercore.npc.list: true
+      servercore.npc.reload: true
+  servercore.quest.*:
+    description: Grants all quest permissions
+    default: op
+    children:
+      servercore.quest.active: true
+      servercore.quest.completed: true
+      servercore.quest.abandon: true
+      servercore.quest.reload: true
+  servercore.timeline.*:
+    description: Grants all timeline permissions
+    default: op
+    children:
+      servercore.timeline.play: true
+      servercore.timeline.stop: true
+      servercore.timeline.list: true
+      servercore.timeline.reload: true
+  # --- Individual permissions ---
+  servercore.admin.reload:
+    description: Reload central config
+    default: op
+  servercore.cosmetic.apply:
+    description: Apply cosmetics to mobs
+    default: op
+  servercore.cosmetic.remove:
+    description: Remove cosmetics from mobs
+    default: op
+  servercore.cosmetic.clear:
+    description: Clear all cosmetics
+    default: op
+  servercore.cosmetic.info:
+    description: View held item info
+    default: op
+  servercore.cosmetic.calibrate:
+    description: Enter cosmetic calibration mode
+    default: op
+  servercore.cosmetic.gui:
+    description: Open cosmetic manager GUI
+    default: op
+  servercore.emitter.create:
+    description: Create particle emitters
+    default: op
+  servercore.emitter.remove:
+    description: Remove particle emitters
+    default: op
+  servercore.emitter.list:
+    description: List active emitters
+    default: op
+  servercore.emitter.edit:
+    description: Edit emitter properties
+    default: op
+  servercore.emitter.info:
+    description: View emitter info
+    default: op
+  servercore.emitter.gui:
+    description: Open emitter manager GUI
+    default: op
+  servercore.pet.summon:
+    description: Summon a pet
     default: true
-  servercore.timeline:
-    description: Allows use of the timeline command
+  servercore.pet.dismiss:
+    description: Dismiss active pets
+    default: true
+  servercore.pet.sit:
+    description: Toggle pet sit mode
+    default: true
+  servercore.pet.follow:
+    description: Make pets follow you
+    default: true
+  servercore.pet.feed:
+    description: Feed your pets
+    default: true
+  servercore.pet.list:
+    description: List owned pets
+    default: true
+  servercore.pet.give:
+    description: Give pet items to players
     default: op
-  servercore.admin:
-    description: Allows use of the servercore admin command
+  servercore.pet.reload:
+    description: Reload pet configs
+    default: op
+  servercore.pet.gui:
+    description: Open pet collection GUI
+    default: true
+  servercore.hologram.create:
+    description: Create holograms
+    default: op
+  servercore.hologram.remove:
+    description: Remove holograms
+    default: op
+  servercore.hologram.addline:
+    description: Add lines to holograms
+    default: op
+  servercore.hologram.removeline:
+    description: Remove lines from holograms
+    default: op
+  servercore.hologram.edit:
+    description: Edit hologram text
+    default: op
+  servercore.hologram.list:
+    description: List all holograms
+    default: op
+  servercore.hologram.near:
+    description: Find nearby holograms
+    default: op
+  servercore.hologram.movehere:
+    description: Move holograms to your location
+    default: op
+  servercore.hologram.setanimation:
+    description: Set hologram animations
+    default: op
+  servercore.npc.create:
+    description: Create NPCs
+    default: op
+  servercore.npc.remove:
+    description: Remove NPCs
+    default: op
+  servercore.npc.movehere:
+    description: Move NPCs to your location
+    default: op
+  servercore.npc.list:
+    description: List all NPCs
+    default: op
+  servercore.npc.reload:
+    description: Reload NPC configs
+    default: op
+  servercore.quest.active:
+    description: View active quests
+    default: true
+  servercore.quest.completed:
+    description: View completed quests
+    default: true
+  servercore.quest.abandon:
+    description: Abandon active quests
+    default: true
+  servercore.quest.reload:
+    description: Reload quest definitions
+    default: op
+  servercore.timeline.play:
+    description: Play timelines
+    default: op
+  servercore.timeline.stop:
+    description: Stop timelines
+    default: op
+  servercore.timeline.list:
+    description: List all timelines
+    default: op
+  servercore.timeline.reload:
+    description: Reload timeline configs
     default: op

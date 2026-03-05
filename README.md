@@ -180,87 +180,87 @@ Use `/servercore reload` to apply changes without restarting.
 
 | Subcommand | Description | Permission |
 |:-----------|:------------|:-----------|
-| `reload` | Reload central config | `servercore.admin` |
+| `reload` | Reload central config | `servercore.admin.reload` |
 
 ### `/cosmetic` - Mob Cosmetics
 
 | Subcommand | Description | Permission |
 |:-----------|:------------|:-----------|
-| `apply` | Apply held item as cosmetic to targeted mob | `servercore.cosmetic` |
-| `remove` | Remove cosmetic from targeted mob | `servercore.cosmetic` |
-| `clear` | Remove all active cosmetics | `servercore.cosmetic` |
-| `info` | Show item info for held item | `servercore.cosmetic` |
-| `calibrate` | Enter calibration mode | `servercore.cosmetic` |
-| `gui` | Open cosmetic manager GUI | `servercore.cosmetic` |
+| `apply` | Apply held item as cosmetic to targeted mob | `servercore.cosmetic.apply` |
+| `remove` | Remove cosmetic from targeted mob | `servercore.cosmetic.remove` |
+| `clear` | Remove all active cosmetics | `servercore.cosmetic.clear` |
+| `info` | Show item info for held item | `servercore.cosmetic.info` |
+| `calibrate` | Enter calibration mode | `servercore.cosmetic.calibrate` |
+| `gui` | Open cosmetic manager GUI | `servercore.cosmetic.gui` |
 
 ### `/emitter` - Particle Emitters
 
 | Subcommand | Description | Permission |
 |:-----------|:------------|:-----------|
-| `create` | Create a new particle emitter | `servercore.emitter` |
-| `remove` | Remove an emitter | `servercore.emitter` |
-| `list` | List all active emitters | `servercore.emitter` |
-| `edit` | Edit an existing emitter | `servercore.emitter` |
-| `info` | Show emitter details | `servercore.emitter` |
-| `gui` | Open emitter manager GUI | `servercore.emitter` |
+| `create` | Create a new particle emitter | `servercore.emitter.create` |
+| `remove` | Remove an emitter | `servercore.emitter.remove` |
+| `list` | List all active emitters | `servercore.emitter.list` |
+| `edit` | Edit an existing emitter | `servercore.emitter.edit` |
+| `info` | Show emitter details | `servercore.emitter.info` |
+| `gui` | Open emitter manager GUI | `servercore.emitter.gui` |
 
 ### `/pet` - Pet System
 
-| Subcommand | Description | Permission |
-|:-----------|:------------|:-----------|
-| `summon <type>` | Summon a pet | `servercore.pet` |
-| `dismiss` | Dismiss active pets | `servercore.pet` |
-| `sit` | Toggle sit mode | `servercore.pet` |
-| `follow` | Make pets follow you | `servercore.pet` |
-| `feed` | Feed your pets | `servercore.pet` |
-| `list` | List owned pets | `servercore.pet` |
-| `give <type> [player]` | Give a pet item | `servercore.pet` |
-| `gui` | Open pet collection GUI | `servercore.pet` |
-| `reload` | Reload pet configs | `servercore.pet` |
+| Subcommand | Description | Permission | Default |
+|:-----------|:------------|:-----------|:--------|
+| `summon <type>` | Summon a pet | `servercore.pet.summon` | All |
+| `dismiss` | Dismiss active pets | `servercore.pet.dismiss` | All |
+| `sit` | Toggle sit mode | `servercore.pet.sit` | All |
+| `follow` | Make pets follow you | `servercore.pet.follow` | All |
+| `feed` | Feed your pets | `servercore.pet.feed` | All |
+| `list` | List owned pets | `servercore.pet.list` | All |
+| `give <type> [player]` | Give a pet item | `servercore.pet.give` | OP |
+| `gui` | Open pet collection GUI | `servercore.pet.gui` | All |
+| `reload` | Reload pet configs | `servercore.pet.reload` | OP |
 
 ### `/hologram` - Holograms
 
 | Subcommand | Description | Permission |
 |:-----------|:------------|:-----------|
-| `create <id> <text>` | Create a hologram | `servercore.hologram` |
-| `remove <id>` | Remove a hologram | `servercore.hologram` |
-| `addline <id> <text>` | Add a text line | `servercore.hologram` |
-| `removeline <id> <line#>` | Remove a text line | `servercore.hologram` |
-| `edit <id> <line#> <text>` | Edit a text line | `servercore.hologram` |
-| `list` | List all holograms | `servercore.hologram` |
-| `near [radius]` | Find nearby holograms | `servercore.hologram` |
-| `movehere <id>` | Move hologram to you | `servercore.hologram` |
-| `setanimation <id> <type>` | Set hologram animation | `servercore.hologram` |
+| `create <id> <text>` | Create a hologram | `servercore.hologram.create` |
+| `remove <id>` | Remove a hologram | `servercore.hologram.remove` |
+| `addline <id> <text>` | Add a text line | `servercore.hologram.addline` |
+| `removeline <id> <line#>` | Remove a text line | `servercore.hologram.removeline` |
+| `edit <id> <line#> <text>` | Edit a text line | `servercore.hologram.edit` |
+| `list` | List all holograms | `servercore.hologram.list` |
+| `near [radius]` | Find nearby holograms | `servercore.hologram.near` |
+| `movehere <id>` | Move hologram to you | `servercore.hologram.movehere` |
+| `setanimation <id> <type>` | Set hologram animation | `servercore.hologram.setanimation` |
 
 ### `/npc` - NPCs & Dialogue
 
 | Subcommand | Description | Permission |
 |:-----------|:------------|:-----------|
-| `create <id>` | Create an NPC at your location | `servercore.npc` |
-| `remove <id>` | Remove an NPC | `servercore.npc` |
-| `movehere <id>` | Teleport NPC to you | `servercore.npc` |
-| `list` | List all NPCs | `servercore.npc` |
-| `reload` | Reload NPC configs | `servercore.npc` |
+| `create <id>` | Create an NPC at your location | `servercore.npc.create` |
+| `remove <id>` | Remove an NPC | `servercore.npc.remove` |
+| `movehere <id>` | Teleport NPC to you | `servercore.npc.movehere` |
+| `list` | List all NPCs | `servercore.npc.list` |
+| `reload` | Reload NPC configs | `servercore.npc.reload` |
 
 ### `/quest` - Quests
 
-| Subcommand | Description | Permission |
-|:-----------|:------------|:-----------|
-| `active` | List your active quests with progress | `servercore.quest` |
-| `completed` | List quests you have finished | `servercore.quest` |
-| `abandon <id>` | Drop an active quest | `servercore.quest` |
-| `reload` | Reload quest definitions from YAML | `servercore.quest` |
+| Subcommand | Description | Permission | Default |
+|:-----------|:------------|:-----------|:--------|
+| `active` | List your active quests with progress | `servercore.quest.active` | All |
+| `completed` | List quests you have finished | `servercore.quest.completed` | All |
+| `abandon <id>` | Drop an active quest | `servercore.quest.abandon` | All |
+| `reload` | Reload quest definitions from YAML | `servercore.quest.reload` | OP |
 
 ### `/timeline` - Event Timelines
 
 | Subcommand | Description | Permission |
 |:-----------|:------------|:-----------|
-| `play <id>` | Play a timeline at your location | `servercore.timeline` |
-| `stop [id]` | Stop a timeline (or all) | `servercore.timeline` |
-| `list` | List all timelines | `servercore.timeline` |
-| `reload` | Reload timeline configs | `servercore.timeline` |
+| `play <id>` | Play a timeline at your location | `servercore.timeline.play` |
+| `stop [id]` | Stop a timeline (or all) | `servercore.timeline.stop` |
+| `list` | List all timelines | `servercore.timeline.list` |
+| `reload` | Reload timeline configs | `servercore.timeline.reload` |
 
-> All permissions default to **OP only**.
+> Wildcard permissions (`servercore.cosmetic.*`, `servercore.pet.*`, etc.) grant all subcommands for that system. All permissions default to **OP only** unless noted.
 
 ---
 

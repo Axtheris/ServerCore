@@ -18,5 +18,8 @@ public class HologramTickTask extends BukkitRunnable {
         tickCount++;
         manager.tickAll(tickCount);
         manager.refreshPlaceholders(tickCount);
+        if (manager.getVisibilityTracker() != null) {
+            manager.getVisibilityTracker().update(tickCount);
+        }
     }
 }

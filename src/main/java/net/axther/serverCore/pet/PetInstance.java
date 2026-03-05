@@ -23,6 +23,7 @@ public class PetInstance {
     private int attackCooldown = 0;
     private int feedCooldown = 0;
     private boolean usingModelEngine = false;
+    private boolean passive = false;
 
     // Smooth movement tracking
     private double currentX;
@@ -79,8 +80,8 @@ public class PetInstance {
     }
 
     private void tickFollowing(Player owner, ArmorStand stand) {
-        // Check for attack target if combat-enabled
-        if (profile.canAttack()) {
+        // Check for attack target if combat-enabled and not passive
+        if (profile.canAttack() && !passive) {
             LivingEntity target = findNearestHostile(owner);
             if (target != null) {
                 attackTargetUuid = target.getUniqueId();
@@ -290,6 +291,17 @@ public class PetInstance {
     }
 
     public PetState getState() { return state; }
+
+    public boolean isPassive() { return passive; }
+
+    public void setPassive(boolean passive) {
+        this.passive = passive;
+        // If toggling to passive while attacking, return to following
+        if (passive && state == PetState.ATTACKING) {
+            attackTargetUuid = null;
+            state = PetState.FOLLOWING;
+        }
+    }
 
     public void destroy() {
         ArmorStand stand = getStand();

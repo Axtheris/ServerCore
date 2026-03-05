@@ -140,6 +140,10 @@ public class PetManager {
         return standIndex.containsKey(standUuid);
     }
 
+    public PetInstance getPetByStand(UUID standUuid) {
+        return standIndex.get(standUuid);
+    }
+
     public List<PetInstance> getPets(UUID playerUuid) {
         return activePets.getOrDefault(playerUuid, List.of());
     }

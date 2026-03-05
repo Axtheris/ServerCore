@@ -71,6 +71,7 @@ public class PetManager {
         });
 
         PetInstance instance = new PetInstance(player.getUniqueId(), stand.getUniqueId(), profile);
+        instance.setPassive(profile.isPassiveByDefault());
 
         if (useModelEngine) {
             boolean applied = ModelEngineHook.applyModel(stand, profile.getModelId());

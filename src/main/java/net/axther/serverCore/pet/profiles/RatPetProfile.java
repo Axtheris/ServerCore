@@ -28,6 +28,7 @@ public class RatPetProfile extends PetProfile {
                 0.28, 3.0, 2.0, 16.0,
                 true, 5.0, 1.5, 25,
                 600, 4, true,
+                false,
                 PetAnimationType.FLOAT,
                 List.of(
                         new PetSound(Sound.ENTITY_SILVERFISH_AMBIENT, 0.5f, 1.8f, 200)

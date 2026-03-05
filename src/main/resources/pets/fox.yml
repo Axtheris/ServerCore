@@ -9,6 +9,7 @@ item-lore:
   - ""
   - "<yellow>Right-click <gray>to summon/dismiss"
 use-small-stand: true
+passive-by-default: false
 animation-type: HOP
 bob-amplitude: 0.11
 bob-frequency: 0.10

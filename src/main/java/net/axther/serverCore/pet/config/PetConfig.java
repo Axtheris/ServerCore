@@ -104,6 +104,7 @@ public class PetConfig {
         int feedCooldownTicks = section.getInt("feed-cooldown-ticks", 600);
         int heartParticleCount = section.getInt("heart-particle-count", 5);
         boolean useSmallStand = section.getBoolean("use-small-stand", true);
+        boolean passiveByDefault = section.getBoolean("passive-by-default", false);
 
         PetAnimationType animationType = PetAnimationType.FLOAT;
         String animTypeStr = section.getString("animation-type");
@@ -161,6 +162,7 @@ public class PetConfig {
                 followSpeed, followStartDistance, followStopDistance, teleportDistance,
                 canAttack, attackRange, attackDamage, attackCooldownTicks,
                 feedCooldownTicks, heartParticleCount, useSmallStand,
+                passiveByDefault,
                 animationType,
                 ambientSounds,
                 modelId, modelAnimations);

@@ -47,6 +47,9 @@ public class PetProfile {
     // Display
     private final boolean useSmallStand;
 
+    // Behavior
+    private final boolean passiveByDefault;
+
     // Animation type
     private final PetAnimationType animationType;
 
@@ -63,6 +66,7 @@ public class PetProfile {
                       double followSpeed, double followStartDistance, double followStopDistance, double teleportDistance,
                       boolean canAttack, double attackRange, double attackDamage, int attackCooldownTicks,
                       int feedCooldownTicks, int heartParticleCount, boolean useSmallStand,
+                      boolean passiveByDefault,
                       PetAnimationType animationType,
                       List<PetSound> ambientSounds,
                       String modelId, Map<String, String> modelAnimations) {
@@ -85,6 +89,7 @@ public class PetProfile {
         this.feedCooldownTicks = feedCooldownTicks;
         this.heartParticleCount = heartParticleCount;
         this.useSmallStand = useSmallStand;
+        this.passiveByDefault = passiveByDefault;
         this.animationType = animationType;
         this.ambientSounds = ambientSounds;
         this.modelId = modelId;
@@ -137,6 +142,7 @@ public class PetProfile {
     public int getFeedCooldownTicks() { return feedCooldownTicks; }
     public int getHeartParticleCount() { return heartParticleCount; }
     public boolean useSmallStand() { return useSmallStand; }
+    public boolean isPassiveByDefault() { return passiveByDefault; }
     public PetAnimationType getAnimationType() { return animationType; }
     public List<PetSound> getAmbientSounds() { return ambientSounds; }
     public String getModelId() { return modelId; }

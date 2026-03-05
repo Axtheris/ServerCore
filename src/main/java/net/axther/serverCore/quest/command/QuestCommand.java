@@ -2,6 +2,7 @@ package net.axther.serverCore.quest.command;
 
 import net.axther.serverCore.quest.Quest;
 import net.axther.serverCore.quest.QuestManager;
+import net.axther.serverCore.quest.gui.QuestGUI;
 import net.axther.serverCore.quest.QuestObjective;
 import net.axther.serverCore.quest.QuestProgress;
 import net.axther.serverCore.quest.config.QuestConfig;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 
 public class QuestCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = List.of("active", "completed", "abandon", "reload");
+    private static final List<String> SUBCOMMANDS = List.of("active", "completed", "abandon", "gui", "reload");
 
     private final QuestManager manager;
     private final QuestConfig config;
@@ -42,7 +43,7 @@ public class QuestCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage(Component.text("Usage: /quest <active|completed|abandon|reload>",
+            player.sendMessage(Component.text("Usage: /quest <active|completed|abandon|gui|reload>",
                     NamedTextColor.YELLOW));
             return true;
         }
@@ -69,6 +70,13 @@ public class QuestCommand implements TabExecutor {
                 }
                 handleAbandon(player, args);
             }
+            case "gui" -> {
+                if (!player.hasPermission("servercore.quest.gui")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                new QuestGUI(manager).openJournal(player);
+            }
             case "reload" -> {
                 if (!player.hasPermission("servercore.quest.reload")) {
                     player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
@@ -77,7 +85,7 @@ public class QuestCommand implements TabExecutor {
                 handleReload(player);
             }
             default -> player.sendMessage(Component.text(
-                    "Unknown subcommand. Use: active, completed, abandon, reload", NamedTextColor.RED));
+                    "Unknown subcommand. Use: active, completed, abandon, gui, reload", NamedTextColor.RED));
         }
         return true;
     }

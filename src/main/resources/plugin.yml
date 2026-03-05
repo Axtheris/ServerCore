@@ -17,7 +17,7 @@ commands:
     usage: /pet <summon|dismiss|sit|follow|feed|list|give|gui|reload>
   hologram:
     description: Manage text display holograms
-    usage: /hologram <create|remove|addline|removeline|edit|list|near|movehere|setanimation>
+    usage: /hologram <create|remove|addline|removeline|edit|list|near|movehere|setanimation|gui>
   npc:
     description: Manage NPCs and dialogue
     usage: /npc <create|remove|movehere|list|reload>
@@ -87,6 +87,7 @@ permissions:
       servercore.hologram.near: true
       servercore.hologram.movehere: true
       servercore.hologram.setanimation: true
+      servercore.hologram.gui: true
   servercore.npc.*:
     description: Grants all NPC permissions
     default: op
@@ -206,6 +207,9 @@ permissions:
     default: op
   servercore.hologram.setanimation:
     description: Set hologram animations
+    default: op
+  servercore.hologram.gui:
+    description: Open hologram manager GUI
     default: op
   servercore.npc.create:
     description: Create NPCs

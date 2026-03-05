@@ -4,6 +4,7 @@ import net.axther.serverCore.hologram.Hologram;
 import net.axther.serverCore.hologram.HologramAnimation;
 import net.axther.serverCore.hologram.HologramManager;
 import net.axther.serverCore.hologram.config.HologramConfig;
+import net.axther.serverCore.hologram.gui.HologramGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 public class HologramCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = List.of(
-            "create", "remove", "addline", "removeline", "edit", "list", "near", "movehere", "setanimation"
+            "create", "remove", "addline", "removeline", "edit", "list", "near", "movehere", "setanimation", "gui"
     );
 
     private final HologramManager manager;
@@ -40,7 +41,7 @@ public class HologramCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage(Component.text("Usage: /hologram <create|remove|addline|removeline|edit|list|near|movehere|setanimation>", NamedTextColor.YELLOW));
+            player.sendMessage(Component.text("Usage: /hologram <create|remove|addline|removeline|edit|list|near|movehere|setanimation|gui>", NamedTextColor.YELLOW));
             return true;
         }
 
@@ -108,7 +109,14 @@ public class HologramCommand implements TabExecutor {
                 }
                 handleSetAnimation(player, args);
             }
-            default -> player.sendMessage(Component.text("Unknown subcommand. Use: create, remove, addline, removeline, edit, list, near, movehere, setanimation", NamedTextColor.RED));
+            case "gui" -> {
+                if (!player.hasPermission("servercore.hologram.gui")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                new HologramGUI(manager, config).openBrowser(player);
+            }
+            default -> player.sendMessage(Component.text("Unknown subcommand. Use: create, remove, addline, removeline, edit, list, near, movehere, setanimation, gui", NamedTextColor.RED));
         }
         return true;
     }

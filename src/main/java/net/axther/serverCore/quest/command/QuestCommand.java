@@ -105,10 +105,18 @@ public class QuestCommand implements TabExecutor {
                     current = manager.countMaterial(player, obj.getTarget());
                 }
 
-                String desc = switch (obj.getType()) {
+                String desc = obj.getDescription() != null ? obj.getDescription() : switch (obj.getType()) {
                     case FETCH -> "Collect " + obj.getAmount() + " " + obj.getTarget();
                     case KILL -> "Kill " + obj.getAmount() + " " + obj.getTarget();
                     case TALK -> "Talk to " + obj.getTarget();
+                    case CRAFT -> "Craft " + obj.getAmount() + " " + obj.getTarget();
+                    case MINE -> "Mine " + obj.getAmount() + " " + obj.getTarget();
+                    case PLACE -> "Place " + obj.getAmount() + " " + obj.getTarget();
+                    case FISH -> "Catch " + obj.getAmount() + " " + obj.getTarget();
+                    case BREED -> "Breed " + obj.getAmount() + " " + obj.getTarget();
+                    case SMELT -> "Smelt " + obj.getAmount() + " " + obj.getTarget();
+                    case EXPLORE -> "Explore " + obj.getTarget();
+                    case INTERACT -> "Interact with " + obj.getTarget() + " " + obj.getAmount() + " times";
                 };
 
                 boolean done = current >= obj.getAmount();

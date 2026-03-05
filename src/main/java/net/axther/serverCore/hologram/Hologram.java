@@ -25,10 +25,19 @@ public class Hologram {
     private double bobFrequency;
     private UUID entityUuid;
 
+    // Visual styling options
+    private String billboard = "CENTER";
+    private boolean textShadow = false;
+    private String background = null;
+    private int lineWidth = 200;
+    private boolean seeThrough = false;
+    private String textAlignment = "CENTER";
+    private float viewRange = 1.0f;
+
     public Hologram(String id, Location location, List<String> lines, HologramAnimation animation,
                     double bobAmplitude, double bobFrequency) {
         this.id = id;
-        this.location = location.clone();
+        this.location = location != null ? location.clone() : null;
         this.lines = new ArrayList<>(lines);
         this.animation = animation;
         this.bobAmplitude = bobAmplitude;
@@ -48,11 +57,44 @@ public class Hologram {
 
         TextDisplay display = world.spawn(location, TextDisplay.class, entity -> {
             entity.text(buildText());
-            entity.setBillboard(Display.Billboard.CENTER);
-            entity.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
+
+            Display.Billboard billboardEnum;
+            try {
+                billboardEnum = Display.Billboard.valueOf(billboard);
+            } catch (IllegalArgumentException e) {
+                billboardEnum = Display.Billboard.CENTER;
+            }
+            entity.setBillboard(billboardEnum);
+
+            if (background != null) {
+                try {
+                    long argb = Long.parseUnsignedLong(background.replace("#", ""), 16);
+                    int a = (int) ((argb >> 24) & 0xFF);
+                    int r = (int) ((argb >> 16) & 0xFF);
+                    int g = (int) ((argb >> 8) & 0xFF);
+                    int b = (int) (argb & 0xFF);
+                    entity.setBackgroundColor(Color.fromARGB(a, r, g, b));
+                } catch (NumberFormatException e) {
+                    entity.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
+                }
+            } else {
+                entity.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
+            }
+
             entity.setPersistent(false);
-            entity.setAlignment(TextDisplay.TextAlignment.CENTER);
-            entity.setShadowed(true);
+
+            TextDisplay.TextAlignment alignmentEnum;
+            try {
+                alignmentEnum = TextDisplay.TextAlignment.valueOf(textAlignment);
+            } catch (IllegalArgumentException e) {
+                alignmentEnum = TextDisplay.TextAlignment.CENTER;
+            }
+            entity.setAlignment(alignmentEnum);
+
+            entity.setShadowed(textShadow);
+            entity.setLineWidth(lineWidth);
+            entity.setSeeThrough(seeThrough);
+            entity.setViewRange(viewRange);
         });
 
         this.entityUuid = display.getUniqueId();
@@ -167,6 +209,36 @@ public class Hologram {
     public void setBobFrequency(double bobFrequency) { this.bobFrequency = bobFrequency; }
 
     public UUID getEntityUuid() { return entityUuid; }
+
+    // --- Visual option getters and setters ---
+
+    public String getBillboard() { return billboard; }
+
+    public void setBillboard(String billboard) { this.billboard = billboard; }
+
+    public boolean isTextShadow() { return textShadow; }
+
+    public void setTextShadow(boolean textShadow) { this.textShadow = textShadow; }
+
+    public String getBackground() { return background; }
+
+    public void setBackground(String background) { this.background = background; }
+
+    public int getLineWidth() { return lineWidth; }
+
+    public void setLineWidth(int lineWidth) { this.lineWidth = lineWidth; }
+
+    public boolean isSeeThrough() { return seeThrough; }
+
+    public void setSeeThrough(boolean seeThrough) { this.seeThrough = seeThrough; }
+
+    public String getTextAlignment() { return textAlignment; }
+
+    public void setTextAlignment(String textAlignment) { this.textAlignment = textAlignment; }
+
+    public float getViewRange() { return viewRange; }
+
+    public void setViewRange(float viewRange) { this.viewRange = viewRange; }
 
     public String getWorldName() {
         return location.getWorld() != null ? location.getWorld().getName() : "world";

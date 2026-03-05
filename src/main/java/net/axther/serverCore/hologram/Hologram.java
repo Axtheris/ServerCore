@@ -1,5 +1,7 @@
 package net.axther.serverCore.hologram;
 
+import net.axther.serverCore.hologram.action.HologramAction;
+import net.axther.serverCore.hologram.condition.HologramCondition;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -37,6 +39,10 @@ public class Hologram {
     private float viewRange = 1.0f;
 
     private int updateInterval = 20; // ticks between placeholder refreshes
+
+    private final List<HologramCondition> conditions = new ArrayList<>();
+    private final List<HologramAction> actions = new ArrayList<>();
+    private int clickCooldown = 20;
 
     public Hologram(String id, Location location, List<String> lines, HologramAnimation animation,
                     double bobAmplitude, double bobFrequency) {
@@ -247,6 +253,13 @@ public class Hologram {
     public int getUpdateInterval() { return updateInterval; }
 
     public void setUpdateInterval(int updateInterval) { this.updateInterval = updateInterval; }
+
+    public List<HologramCondition> getConditions() { return conditions; }
+    public boolean hasConditions() { return !conditions.isEmpty(); }
+
+    public List<HologramAction> getActions() { return actions; }
+    public int getClickCooldown() { return clickCooldown; }
+    public void setClickCooldown(int clickCooldown) { this.clickCooldown = clickCooldown; }
 
     public boolean containsPlaceholders() {
         for (String line : lines) {

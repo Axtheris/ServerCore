@@ -1,5 +1,7 @@
 package net.axther.serverCore.hologram;
 
+import net.axther.serverCore.hologram.action.HologramAction;
+import net.axther.serverCore.hologram.condition.HologramCondition;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
 import java.util.List;
@@ -123,6 +125,114 @@ class HologramDataModelTest {
         void containsPlaceholdersDetectsAcrossMultipleLines() {
             Hologram h = new Hologram("test", null, List.of("Line 1", "Score: %player_level%"));
             assertTrue(h.containsPlaceholders());
+        }
+    }
+
+    @Nested
+    class HologramConditionTests {
+        @Test
+        void parsePermissionCondition() {
+            var condition = HologramCondition.parse("permission", "vip.access", null, null);
+            assertNotNull(condition);
+            assertEquals("permission", condition.getType());
+            assertEquals("vip.access", condition.getValue());
+        }
+
+        @Test
+        void parseWorldCondition() {
+            var condition = HologramCondition.parse("world", "world_nether", null, null);
+            assertEquals("world", condition.getType());
+        }
+
+        @Test
+        void parsePlaceholderConditionWithEquals() {
+            var condition = HologramCondition.parse("placeholder", "%player_level%", "10", null);
+            assertEquals("placeholder", condition.getType());
+            assertEquals("10", condition.getEquals());
+        }
+
+        @Test
+        void parsePlaceholderConditionWithMin() {
+            var condition = HologramCondition.parse("placeholder", "%player_health%", null, "5");
+            assertEquals("5", condition.getMin());
+        }
+
+        @Test
+        void parseQuestConditions() {
+            var active = HologramCondition.parse("quest_active", "dragon_hunter", null, null);
+            var complete = HologramCondition.parse("quest_complete", "intro_quest", null, null);
+            assertEquals("quest_active", active.getType());
+            assertEquals("quest_complete", complete.getType());
+        }
+
+        @Test
+        void hologramStartsWithNoConditions() {
+            Hologram h = new Hologram("test", null, List.of("hi"));
+            assertFalse(h.hasConditions());
+            assertTrue(h.getConditions().isEmpty());
+        }
+
+        @Test
+        void addingConditionMakesHasConditionsTrue() {
+            Hologram h = new Hologram("test", null, List.of("hi"));
+            h.getConditions().add(HologramCondition.parse("permission", "vip", null, null));
+            assertTrue(h.hasConditions());
+        }
+    }
+
+    @Nested
+    class HologramActionTests {
+        @Test
+        void parseCommandAction() {
+            var action = HologramAction.parse("command", "say Hello %player%");
+            assertNotNull(action);
+            assertEquals("command", action.getType());
+            assertEquals("say Hello %player%", action.getValue());
+        }
+
+        @Test
+        void parsePlayerCommandAction() {
+            var action = HologramAction.parse("player_command", "spawn");
+            assertEquals("player_command", action.getType());
+        }
+
+        @Test
+        void parseMessageAction() {
+            var action = HologramAction.parse("message", "<gold>Welcome!");
+            assertEquals("message", action.getType());
+        }
+
+        @Test
+        void parseSoundAction() {
+            var action = HologramAction.parse("sound", "ENTITY_EXPERIENCE_ORB_PICKUP");
+            assertEquals("sound", action.getType());
+        }
+
+        @Test
+        void hologramDefaultClickCooldown() {
+            Hologram h = new Hologram("test", null, List.of("hi"));
+            assertEquals(20, h.getClickCooldown());
+        }
+
+        @Test
+        void hologramActionsListStartsEmpty() {
+            Hologram h = new Hologram("test", null, List.of("hi"));
+            assertTrue(h.getActions().isEmpty());
+        }
+
+        @Test
+        void addingActionsToHologram() {
+            Hologram h = new Hologram("test", null, List.of("hi"));
+            h.getActions().add(HologramAction.parse("command", "say hi"));
+            h.getActions().add(HologramAction.parse("sound", "ENTITY_EXPERIENCE_ORB_PICKUP"));
+            assertEquals(2, h.getActions().size());
+        }
+
+        @Test
+        void clickCooldownCanBeCustomized() {
+            Hologram h = new Hologram("test", null, List.of("hi"));
+            h.setClickCooldown(60);
+            assertEquals(60, h.getClickCooldown());
         }
     }
 }

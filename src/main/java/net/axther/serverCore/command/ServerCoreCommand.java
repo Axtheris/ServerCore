@@ -29,6 +29,10 @@ public class ServerCoreCommand implements TabExecutor {
         }
 
         if (args[0].equalsIgnoreCase("reload")) {
+            if (!sender.hasPermission("servercore.admin.reload")) {
+                sender.sendMessage("No permission.");
+                return true;
+            }
             config.reload();
 
             sender.sendMessage("ServerCore config reloaded.");
@@ -47,7 +51,7 @@ public class ServerCoreCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String prefix = args[0].toLowerCase();
-            if ("reload".startsWith(prefix)) {
+            if ("reload".startsWith(prefix) && sender.hasPermission("servercore.admin.reload")) {
                 return List.of("reload");
             }
             return Collections.emptyList();

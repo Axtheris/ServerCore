@@ -45,10 +45,34 @@ public class QuestCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "active" -> handleActive(player);
-            case "completed" -> handleCompleted(player);
-            case "abandon" -> handleAbandon(player, args);
-            case "reload" -> handleReload(player);
+            case "active" -> {
+                if (!player.hasPermission("servercore.quest.active")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleActive(player);
+            }
+            case "completed" -> {
+                if (!player.hasPermission("servercore.quest.completed")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleCompleted(player);
+            }
+            case "abandon" -> {
+                if (!player.hasPermission("servercore.quest.abandon")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleAbandon(player, args);
+            }
+            case "reload" -> {
+                if (!player.hasPermission("servercore.quest.reload")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleReload(player);
+            }
             default -> player.sendMessage(Component.text(
                     "Unknown subcommand. Use: active, completed, abandon, reload", NamedTextColor.RED));
         }
@@ -141,7 +165,10 @@ public class QuestCommand implements TabExecutor {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command,
                                                 @NotNull String label, @NotNull String[] args) {
         if (args.length == 1) {
-            return filter(SUBCOMMANDS, args[0]);
+            return SUBCOMMANDS.stream()
+                    .filter(s -> s.toLowerCase().startsWith(args[0].toLowerCase()))
+                    .filter(s -> !(sender instanceof Player p) || p.hasPermission("servercore.quest." + s))
+                    .collect(Collectors.toList());
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("abandon") && sender instanceof Player player) {
             List<String> activeIds = manager.getActiveQuests(player.getUniqueId()).stream()

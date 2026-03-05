@@ -52,11 +52,41 @@ public class NPCCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "create" -> handleCreate(player, args);
-            case "remove" -> handleRemove(player, args);
-            case "movehere" -> handleMoveHere(player, args);
-            case "list" -> handleList(player);
-            case "reload" -> handleReload(player);
+            case "create" -> {
+                if (!player.hasPermission("servercore.npc.create")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleCreate(player, args);
+            }
+            case "remove" -> {
+                if (!player.hasPermission("servercore.npc.remove")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleRemove(player, args);
+            }
+            case "movehere" -> {
+                if (!player.hasPermission("servercore.npc.movehere")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleMoveHere(player, args);
+            }
+            case "list" -> {
+                if (!player.hasPermission("servercore.npc.list")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleList(player);
+            }
+            case "reload" -> {
+                if (!player.hasPermission("servercore.npc.reload")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleReload(player);
+            }
             default -> player.sendMessage(Component.text("Unknown subcommand. Use: create, remove, movehere, list, reload", NamedTextColor.RED));
         }
         return true;
@@ -186,7 +216,10 @@ public class NPCCommand implements TabExecutor {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (args.length == 1) {
-            return filter(SUBCOMMANDS, args[0]);
+            return SUBCOMMANDS.stream()
+                    .filter(s -> s.toLowerCase().startsWith(args[0].toLowerCase()))
+                    .filter(s -> !(sender instanceof Player p) || p.hasPermission("servercore.npc." + s))
+                    .collect(Collectors.toList());
         }
 
         String sub = args[0].toLowerCase();

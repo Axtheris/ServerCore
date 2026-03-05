@@ -45,15 +45,69 @@ public class HologramCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "create" -> handleCreate(player, args);
-            case "remove" -> handleRemove(player, args);
-            case "addline" -> handleAddLine(player, args);
-            case "removeline" -> handleRemoveLine(player, args);
-            case "edit" -> handleEdit(player, args);
-            case "list" -> handleList(player);
-            case "near" -> handleNear(player, args);
-            case "movehere" -> handleMoveHere(player, args);
-            case "setanimation" -> handleSetAnimation(player, args);
+            case "create" -> {
+                if (!player.hasPermission("servercore.hologram.create")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleCreate(player, args);
+            }
+            case "remove" -> {
+                if (!player.hasPermission("servercore.hologram.remove")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleRemove(player, args);
+            }
+            case "addline" -> {
+                if (!player.hasPermission("servercore.hologram.addline")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleAddLine(player, args);
+            }
+            case "removeline" -> {
+                if (!player.hasPermission("servercore.hologram.removeline")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleRemoveLine(player, args);
+            }
+            case "edit" -> {
+                if (!player.hasPermission("servercore.hologram.edit")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleEdit(player, args);
+            }
+            case "list" -> {
+                if (!player.hasPermission("servercore.hologram.list")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleList(player);
+            }
+            case "near" -> {
+                if (!player.hasPermission("servercore.hologram.near")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleNear(player, args);
+            }
+            case "movehere" -> {
+                if (!player.hasPermission("servercore.hologram.movehere")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleMoveHere(player, args);
+            }
+            case "setanimation" -> {
+                if (!player.hasPermission("servercore.hologram.setanimation")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleSetAnimation(player, args);
+            }
             default -> player.sendMessage(Component.text("Unknown subcommand. Use: create, remove, addline, removeline, edit, list, near, movehere, setanimation", NamedTextColor.RED));
         }
         return true;
@@ -304,7 +358,10 @@ public class HologramCommand implements TabExecutor {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (args.length == 1) {
-            return filter(SUBCOMMANDS, args[0]);
+            return SUBCOMMANDS.stream()
+                    .filter(s -> s.toLowerCase().startsWith(args[0].toLowerCase()))
+                    .filter(s -> !(sender instanceof Player p) || p.hasPermission("servercore.hologram." + s))
+                    .collect(Collectors.toList());
         }
 
         String sub = args[0].toLowerCase();

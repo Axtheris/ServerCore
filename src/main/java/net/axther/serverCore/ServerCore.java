@@ -86,6 +86,7 @@ public final class ServerCore extends JavaPlugin {
     private ReactiveTickTask reactiveTickTask;
     private MenuManager menuManager;
     private MenuConfig menuConfig;
+    private net.axther.serverCore.gui.task.MenuTickTask menuTickTask;
 
     @Override
     public void onEnable() {
@@ -115,6 +116,9 @@ public final class ServerCore extends JavaPlugin {
                 menuCmd.setExecutor(menuCommand);
                 menuCmd.setTabCompleter(menuCommand);
             }
+
+            menuTickTask = new net.axther.serverCore.gui.task.MenuTickTask(menuManager);
+            menuTickTask.runTaskTimer(this, 0L, 1L);
         }
 
         // --- Cosmetic System ---
@@ -477,6 +481,9 @@ public final class ServerCore extends JavaPlugin {
         }
         if (reactiveManager != null) {
             reactiveManager.clearAll(cosmeticManager, petManager);
+        }
+        if (menuTickTask != null) {
+            menuTickTask.cancel();
         }
     }
 }

@@ -32,7 +32,7 @@ public class PaginatedMenu extends Menu {
 
     private PaginatedMenu(String title, List<MenuItem> contentItems, int itemsPerPage,
                           Menu parent, int currentPage) {
-        super(title, 6, new HashMap<>(), parent);
+        super(title, 6, new HashMap<>(), parent, 0, null, null);
         this.contentItems = contentItems;
         this.itemsPerPage = itemsPerPage;
         this.currentPage = currentPage;

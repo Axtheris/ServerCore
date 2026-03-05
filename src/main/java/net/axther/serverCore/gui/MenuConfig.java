@@ -220,7 +220,10 @@ public class MenuConfig {
         if (layout == null) return null;
 
         MenuConfig self = this;
-        Menu.Builder builder = Menu.builder(layout.title()).rows(layout.rows());
+        Menu.Builder builder = Menu.builder(layout.title()).rows(layout.rows())
+                .menuId(menuId)
+                .openSound(layout.openSound())
+                .refreshInterval(layout.refreshInterval());
 
         for (var entry : layout.items().entrySet()) {
             MenuItemDef def = entry.getValue();

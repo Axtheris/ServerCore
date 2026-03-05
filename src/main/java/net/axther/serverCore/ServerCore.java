@@ -265,7 +265,14 @@ public final class ServerCore extends JavaPlugin {
             questManager.setStore(questStore);
             questStore.load(questManager);
 
-            getServer().getPluginManager().registerEvents(new QuestListener(questManager), this);
+            // Read quest config values
+            int maxActive = getConfig().getInt("systems.quests.max-active-quests", 0);
+            boolean actionBar = getConfig().getBoolean("systems.quests.action-bar-progress", true);
+            questManager.setMaxActiveQuests(maxActive);
+
+            QuestListener questListener = new QuestListener(questManager);
+            questListener.setActionBarEnabled(actionBar);
+            getServer().getPluginManager().registerEvents(questListener, this);
 
             PluginCommand questCmd = getCommand("quest");
             if (questCmd != null) {
@@ -274,7 +281,18 @@ public final class ServerCore extends JavaPlugin {
                 questCmd.setTabCompleter(questCommand);
             }
 
+            // Set up Vault (soft dependency)
+            boolean vaultPresent = getServer().getPluginManager().getPlugin("Vault") != null;
+            if (vaultPresent) {
+                setupVault();
+            }
+
             getLogger().info("Quest system loaded with " + questManager.getAllQuests().size() + " quests");
+        }
+
+        // Wire pet manager for PET quest rewards
+        if (petManager != null && questManager != null) {
+            questManager.setPetManager(petManager);
         }
 
         // --- Timeline / Event Sequencer System ---
@@ -364,6 +382,13 @@ public final class ServerCore extends JavaPlugin {
 
     private void registerJavaPetProfiles() {
         petManager.registerProfile(new RatPetProfile());
+    }
+
+    private void setupVault() {
+        boolean econ = net.axther.serverCore.hook.VaultHook.setupEconomy();
+        boolean perm = net.axther.serverCore.hook.VaultHook.setupPermissions();
+        if (econ) getLogger().info("Vault economy hooked for quest rewards");
+        if (perm) getLogger().info("Vault permissions hooked for quest rewards");
     }
 
     @Override

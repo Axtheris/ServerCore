@@ -17,6 +17,8 @@ import java.util.UUID;
 
 public class Hologram {
 
+    private static final Color TRANSPARENT = Color.fromARGB(0, 0, 0, 0);
+
     private final String id;
     private Location location;
     private final List<String> lines;
@@ -75,10 +77,10 @@ public class Hologram {
                     int b = (int) (argb & 0xFF);
                     entity.setBackgroundColor(Color.fromARGB(a, r, g, b));
                 } catch (NumberFormatException e) {
-                    entity.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
+                    entity.setBackgroundColor(TRANSPARENT);
                 }
             } else {
-                entity.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
+                entity.setBackgroundColor(TRANSPARENT);
             }
 
             entity.setPersistent(false);
@@ -182,7 +184,7 @@ public class Hologram {
 
     public String getId() { return id; }
 
-    public Location getLocation() { return location.clone(); }
+    public Location getLocation() { return location != null ? location.clone() : null; }
 
     public void setLocation(Location location) {
         this.location = location.clone();
@@ -241,7 +243,7 @@ public class Hologram {
     public void setViewRange(float viewRange) { this.viewRange = viewRange; }
 
     public String getWorldName() {
-        return location.getWorld() != null ? location.getWorld().getName() : "world";
+        return location != null && location.getWorld() != null ? location.getWorld().getName() : "world";
     }
 
     public long getChunkKey() {

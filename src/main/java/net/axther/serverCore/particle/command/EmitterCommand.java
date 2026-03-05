@@ -80,12 +80,48 @@ public class EmitterCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "create" -> handleCreate(player, args);
-            case "remove" -> handleRemove(player, args);
-            case "list" -> handleList(player);
-            case "edit" -> handleEdit(player, args);
-            case "info" -> handleInfo(player);
-            case "gui" -> handleGui(player);
+            case "create" -> {
+                if (!player.hasPermission("servercore.emitter.create")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleCreate(player, args);
+            }
+            case "remove" -> {
+                if (!player.hasPermission("servercore.emitter.remove")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleRemove(player, args);
+            }
+            case "list" -> {
+                if (!player.hasPermission("servercore.emitter.list")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleList(player);
+            }
+            case "edit" -> {
+                if (!player.hasPermission("servercore.emitter.edit")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleEdit(player, args);
+            }
+            case "info" -> {
+                if (!player.hasPermission("servercore.emitter.info")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleInfo(player);
+            }
+            case "gui" -> {
+                if (!player.hasPermission("servercore.emitter.gui")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleGui(player);
+            }
             default -> player.sendMessage(Component.text("Unknown subcommand. Use: create, remove, list, edit, info, gui", NamedTextColor.RED));
         }
         return true;
@@ -385,7 +421,11 @@ public class EmitterCommand implements TabExecutor {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (args.length == 1) {
-            return filter(SUBCOMMANDS, args[0]);
+            String prefix = args[0].toLowerCase();
+            return SUBCOMMANDS.stream()
+                    .filter(s -> s.startsWith(prefix))
+                    .filter(s -> !(sender instanceof Player p) || p.hasPermission("servercore.emitter." + s))
+                    .toList();
         }
 
         String sub = args[0].toLowerCase();

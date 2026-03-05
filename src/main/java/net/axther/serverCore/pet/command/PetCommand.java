@@ -51,15 +51,69 @@ public class PetCommand implements CommandExecutor, TabCompleter {
         }
 
         switch (args[0].toLowerCase()) {
-            case "summon" -> handleSummon(player, args);
-            case "dismiss" -> handleDismiss(player);
-            case "sit" -> handleSit(player);
-            case "follow" -> handleFollow(player);
-            case "feed" -> handleFeed(player);
-            case "list" -> handleList(player);
-            case "give" -> handleGive(player, args);
-            case "reload" -> handleReload(player);
-            case "gui" -> handleGui(player);
+            case "summon" -> {
+                if (!player.hasPermission("servercore.pet.summon")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleSummon(player, args);
+            }
+            case "dismiss" -> {
+                if (!player.hasPermission("servercore.pet.dismiss")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleDismiss(player);
+            }
+            case "sit" -> {
+                if (!player.hasPermission("servercore.pet.sit")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleSit(player);
+            }
+            case "follow" -> {
+                if (!player.hasPermission("servercore.pet.follow")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleFollow(player);
+            }
+            case "feed" -> {
+                if (!player.hasPermission("servercore.pet.feed")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleFeed(player);
+            }
+            case "list" -> {
+                if (!player.hasPermission("servercore.pet.list")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleList(player);
+            }
+            case "give" -> {
+                if (!player.hasPermission("servercore.pet.give")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleGive(player, args);
+            }
+            case "reload" -> {
+                if (!player.hasPermission("servercore.pet.reload")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleReload(player);
+            }
+            case "gui" -> {
+                if (!player.hasPermission("servercore.pet.gui")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleGui(player);
+            }
             default -> player.sendMessage("Usage: /pet <summon|dismiss|sit|follow|feed|list|give|reload|gui>");
         }
 
@@ -286,7 +340,10 @@ public class PetCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1) {
             String prefix = args[0].toLowerCase();
-            return SUBCOMMANDS.stream().filter(s -> s.startsWith(prefix)).toList();
+            return SUBCOMMANDS.stream()
+                    .filter(s -> s.startsWith(prefix))
+                    .filter(s -> !(sender instanceof Player p) || p.hasPermission("servercore.pet." + s))
+                    .toList();
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("summon")) {
             String prefix = args[1].toLowerCase();

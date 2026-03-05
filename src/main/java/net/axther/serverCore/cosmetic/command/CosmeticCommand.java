@@ -56,12 +56,48 @@ public class CosmeticCommand implements CommandExecutor, TabCompleter {
         }
 
         switch (args[0].toLowerCase()) {
-            case "apply" -> handleApply(player);
-            case "remove" -> handleRemove(player);
-            case "clear" -> handleClear(player);
-            case "info" -> handleInfo(player);
-            case "calibrate" -> handleCalibrate(player, args);
-            case "gui" -> handleGui(player);
+            case "apply" -> {
+                if (!player.hasPermission("servercore.cosmetic.apply")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleApply(player);
+            }
+            case "remove" -> {
+                if (!player.hasPermission("servercore.cosmetic.remove")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleRemove(player);
+            }
+            case "clear" -> {
+                if (!player.hasPermission("servercore.cosmetic.clear")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleClear(player);
+            }
+            case "info" -> {
+                if (!player.hasPermission("servercore.cosmetic.info")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleInfo(player);
+            }
+            case "calibrate" -> {
+                if (!player.hasPermission("servercore.cosmetic.calibrate")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleCalibrate(player, args);
+            }
+            case "gui" -> {
+                if (!player.hasPermission("servercore.cosmetic.gui")) {
+                    player.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleGui(player);
+            }
             default -> player.sendMessage("Usage: /cosmetic <apply|remove|clear|info|calibrate|gui>");
         }
 
@@ -407,7 +443,10 @@ public class CosmeticCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1) {
             String prefix = args[0].toLowerCase();
-            return SUBCOMMANDS.stream().filter(s -> s.startsWith(prefix)).toList();
+            return SUBCOMMANDS.stream()
+                    .filter(s -> s.startsWith(prefix))
+                    .filter(s -> !(sender instanceof Player p) || p.hasPermission("servercore.cosmetic." + s))
+                    .toList();
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("calibrate")) {
             String prefix = args[1].toLowerCase();

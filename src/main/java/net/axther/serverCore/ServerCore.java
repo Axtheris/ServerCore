@@ -359,7 +359,7 @@ public final class ServerCore extends JavaPlugin {
         // --- Public API ---
         ServerCoreAPI.init(cosmeticManager, emitterManager, petManager,
                 hologramManager, npcManager, timelineManager, reactiveManager, menuManager,
-                questManager);
+                questManager, menuConfig);
 
         // Build startup summary
         StringBuilder summary = new StringBuilder("ServerCore enabled");

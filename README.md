@@ -16,7 +16,7 @@
 
 <br>
 
-Eight plug-and-play systems -- **cosmetics**, **particle emitters**, **pets**, **holograms**, **NPCs with dialogue**, **event timelines**, **reactive cosmetics**, and **chest GUIs** -- all YAML-driven so server operators never need to touch code. Power users get a particle scripting language, a public API with custom Bukkit events, and PlaceholderAPI support.
+Nine plug-and-play systems -- **cosmetics**, **particle emitters**, **pets**, **holograms**, **NPCs with dialogue**, **quests**, **event timelines**, **reactive cosmetics**, and **chest GUIs** -- all YAML-driven so server operators never need to touch code. Power users get a particle scripting language, a public API with custom Bukkit events, and PlaceholderAPI support.
 
 <br>
 
@@ -76,6 +76,17 @@ Place static NPCs with full player-model skins and branching dialogue trees. Pow
 - **Look-at-player**: NPCs turn to face nearby players
 - **Clickable choices**: dialogue options rendered as clickable chat messages
 - **Per-player visibility**: NPCs appear and disappear based on configurable view distance
+
+### Quests
+
+A YAML-driven quest system integrated with NPC dialogue. Players accept quests from NPCs, complete objectives, and return for rewards.
+
+- **Three objective types**: fetch items, kill mobs, talk to NPCs
+- **Three reward types**: items, XP, console commands with player placeholders
+- **Dialogue integration**: quest conditions and actions in NPC dialogue trees
+- **Repeatable quests**: optional cooldown timers for repeatable content
+- **Persistence**: quest progress survives server restarts
+- **Inline or standalone**: define quests in NPC files or separate quest files
 
 ### Event Timelines
 
@@ -148,6 +159,8 @@ systems:
   holograms:
     enabled: true
   npcs:
+    enabled: true
+  quests:
     enabled: true
   timelines:
     enabled: true
@@ -228,6 +241,15 @@ Use `/servercore reload` to apply changes without restarting.
 | `movehere <id>` | Teleport NPC to you | `servercore.npc` |
 | `list` | List all NPCs | `servercore.npc` |
 | `reload` | Reload NPC configs | `servercore.npc` |
+
+### `/quest` - Quests
+
+| Subcommand | Description | Permission |
+|:-----------|:------------|:-----------|
+| `active` | List your active quests with progress | `servercore.quest` |
+| `completed` | List quests you have finished | `servercore.quest` |
+| `abandon <id>` | Drop an active quest | `servercore.quest` |
+| `reload` | Reload quest definitions from YAML | `servercore.quest` |
 
 ### `/timeline` - Event Timelines
 
@@ -310,6 +332,35 @@ dialogue:
             value: "<gold>Safe travels."
 ```
 
+### Quests (`quests/*.yml`)
+
+```yaml
+id: gather-wood
+display-name: "<gold>Lumberjack's Request"
+description: "Gather 16 oak logs for the merchant."
+accept-npc: merchant
+turn-in-npc: merchant
+repeatable: true
+cooldown: 3600
+objectives:
+  - type: fetch
+    material: OAK_LOG
+    amount: 16
+  - type: kill
+    entity: ZOMBIE
+    amount: 5
+rewards:
+  - type: item
+    material: DIAMOND
+    amount: 3
+  - type: xp
+    amount: 100
+  - type: command
+    value: "eco give %player% 500"
+```
+
+Quests can also be defined inline in NPC YAML files under a `quest:` key, where `accept-npc` and `turn-in-npc` default to the parent NPC.
+
 ### Timelines (`timelines/*.yml`)
 
 ```yaml
@@ -368,6 +419,8 @@ If PlaceholderAPI is installed, these placeholders are available:
 | `%servercore_cosmetic_count%` | Active cosmetics count |
 | `%servercore_emitter_count%` | Active emitters count |
 | `%servercore_hologram_count%` | Total holograms count |
+| `%servercore_quest_active%` | Number of active quests |
+| `%servercore_quest_completed%` | Number of completed quests |
 
 ---
 
@@ -421,6 +474,9 @@ api.getHologramManager();
 // Timelines
 api.getTimelineManager().play("boss-intro", location);
 
+// Quests
+api.getQuestManager().acceptQuest(player, "gather-wood");
+
 // NPCs
 api.getNPCManager();
 ```
@@ -436,7 +492,7 @@ void onPetSummon(PetSummonEvent event) {
 }
 ```
 
-Available events: `PetSummonEvent`, `PetDismissEvent`, `CosmeticApplyEvent`, `CosmeticRemoveEvent`, `EmitterCreateEvent`, `HologramCreateEvent`, `DialogueStartEvent`, `TimelinePlayEvent`
+Available events: `PetSummonEvent`, `PetDismissEvent`, `CosmeticApplyEvent`, `CosmeticRemoveEvent`, `EmitterCreateEvent`, `HologramCreateEvent`, `DialogueStartEvent`, `TimelinePlayEvent`, `QuestStartEvent`, `QuestCompleteEvent`
 
 ---
 

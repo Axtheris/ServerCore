@@ -12,6 +12,19 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
+ADDITIONAL CLAUSE -- CONFIGURATION CONTENT
+
+The YAML configuration files that define content for ServerCore's systems
+(including but not limited to pet profiles, quest definitions, particle emitter
+presets, NPC dialogue trees, hologram layouts, timeline sequences, reactive
+rules, and cosmetic profiles) are considered user-generated content, not
+"substantial portions of the Software." Authors of such configuration packs
+may freely sell, distribute, or license them under any terms they choose,
+without restriction from this license. This clause applies to configuration
+data only; forking, rebranding, or redistributing the plugin's compiled code
+or Java source as a competing product for direct monetary gain is not
+permitted under this license.
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE

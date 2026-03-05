@@ -10,7 +10,7 @@
 &nbsp;
 ![Paper 1.21](https://img.shields.io/badge/Paper-1.21-2B6CB0?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTMgM2gxOHYxOEgzVjN6IiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjMiLz48L3N2Zz4=)
 &nbsp;
-[![License: MIT](https://img.shields.io/badge/License-MIT-22C55E.svg)](LICENSE)
+[![License: Modified MIT](https://img.shields.io/badge/License-Modified%20MIT-22C55E.svg)](LICENSE)
 &nbsp;
 ![Model Engine](https://img.shields.io/badge/Model%20Engine-optional-9CA3AF)
 
@@ -508,7 +508,9 @@ Available events: `PetSummonEvent`, `PetDismissEvent`, `CosmeticApplyEvent`, `Co
 
 ## License
 
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+This project is licensed under a **modified MIT License**. See the [LICENSE](LICENSE) file for details.
+
+**Configuration packs are fair game.** You may freely create, sell, and distribute YAML configuration packs (pets, quests, particles, NPC dialogues, timelines, holograms, reactive rules, cosmetics). The license explicitly permits commercial use of configuration content. Forking and reselling the plugin itself as a competing product is not permitted.
 
 ---
 

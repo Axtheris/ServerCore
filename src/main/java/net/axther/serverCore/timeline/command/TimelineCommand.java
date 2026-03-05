@@ -42,10 +42,34 @@ public class TimelineCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "play" -> handlePlay(sender, args);
-            case "stop" -> handleStop(sender, args);
-            case "list" -> handleList(sender);
-            case "reload" -> handleReload(sender);
+            case "play" -> {
+                if (!sender.hasPermission("servercore.timeline.play")) {
+                    sender.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handlePlay(sender, args);
+            }
+            case "stop" -> {
+                if (!sender.hasPermission("servercore.timeline.stop")) {
+                    sender.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleStop(sender, args);
+            }
+            case "list" -> {
+                if (!sender.hasPermission("servercore.timeline.list")) {
+                    sender.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleList(sender);
+            }
+            case "reload" -> {
+                if (!sender.hasPermission("servercore.timeline.reload")) {
+                    sender.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                    return true;
+                }
+                handleReload(sender);
+            }
             default -> sender.sendMessage(Component.text(
                     "Unknown subcommand. Use: play, stop, list, reload", NamedTextColor.RED));
         }
@@ -153,7 +177,10 @@ public class TimelineCommand implements TabExecutor {
                                                 @NotNull String label,
                                                 @NotNull String[] args) {
         if (args.length == 1) {
-            return filter(SUBCOMMANDS, args[0]);
+            return SUBCOMMANDS.stream()
+                    .filter(s -> s.toLowerCase().startsWith(args[0].toLowerCase()))
+                    .filter(s -> sender.hasPermission("servercore.timeline." + s))
+                    .collect(Collectors.toList());
         }
 
         if (args.length == 2) {

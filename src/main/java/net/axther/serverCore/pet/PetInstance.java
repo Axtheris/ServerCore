@@ -1,5 +1,6 @@
 package net.axther.serverCore.pet;
 
+import net.axther.serverCore.api.event.PetStateChangeEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -269,10 +270,19 @@ public class PetInstance {
     }
 
     public void setState(PetState state) {
+        PetState oldState = this.state;
         if (state == PetState.FOLLOWING) {
             attackTargetUuid = null;
         }
         this.state = state;
+
+        if (oldState != state) {
+            Player owner = getOwner();
+            if (owner != null) {
+                Bukkit.getPluginManager().callEvent(
+                        new PetStateChangeEvent(owner, profile.getId(), oldState.name(), state.name()));
+            }
+        }
 
         if (usingModelEngine) {
             String stateKey = switch (state) {

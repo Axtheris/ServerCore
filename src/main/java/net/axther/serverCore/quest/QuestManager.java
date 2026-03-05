@@ -1,6 +1,8 @@
 package net.axther.serverCore.quest;
 
+import net.axther.serverCore.api.event.QuestAbandonEvent;
 import net.axther.serverCore.api.event.QuestCompleteEvent;
+import net.axther.serverCore.api.event.QuestProgressEvent;
 import net.axther.serverCore.api.event.QuestStartEvent;
 import net.axther.serverCore.quest.data.QuestStore;
 import org.bukkit.Bukkit;
@@ -166,6 +168,12 @@ public class QuestManager {
     }
 
     public void abandonQuest(UUID playerId, String questId) {
+        Player player = Bukkit.getPlayer(playerId);
+        if (player != null) {
+            QuestAbandonEvent event = new QuestAbandonEvent(player, questId);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) return;
+        }
         removeActiveProgress(playerId, questId);
     }
 
@@ -228,6 +236,11 @@ public class QuestManager {
                     for (int a = 0; a < amount && progress.getProgress(i) < obj.getAmount(); a++) {
                         progress.increment(i);
                     }
+                    Player player = Bukkit.getPlayer(playerId);
+                    if (player != null) {
+                        Bukkit.getPluginManager().callEvent(
+                                new QuestProgressEvent(player, progress.getQuestId(), i, progress.getProgress(i)));
+                    }
                 }
             }
         }
@@ -264,6 +277,11 @@ public class QuestManager {
                         && progress.getProgress(i) < 1) {
                     if (quest.isSequentialObjectives() && i > getFirstIncompleteIndex(progress, objectives)) continue;
                     progress.setProgress(i, 1);
+                    Player player = Bukkit.getPlayer(playerId);
+                    if (player != null) {
+                        Bukkit.getPluginManager().callEvent(
+                                new QuestProgressEvent(player, progress.getQuestId(), i, 1));
+                    }
                 }
             }
         }
@@ -328,6 +346,11 @@ public class QuestManager {
                     double distSq = Math.pow(location.getX() - tx, 2) + Math.pow(location.getY() - ty, 2) + Math.pow(location.getZ() - tz, 2);
                     if (distSq <= obj.getRadius() * obj.getRadius()) {
                         progress.setProgress(i, 1);
+                        Player player = Bukkit.getPlayer(playerId);
+                        if (player != null) {
+                            Bukkit.getPluginManager().callEvent(
+                                    new QuestProgressEvent(player, progress.getQuestId(), i, 1));
+                        }
                     }
                 } catch (NumberFormatException ignored) {}
             }

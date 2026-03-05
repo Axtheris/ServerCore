@@ -1,5 +1,6 @@
 package net.axther.serverCore.gui;
 
+import net.axther.serverCore.api.event.MenuOpenEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -70,6 +71,10 @@ public class Menu {
      * Registers the menu with the global {@link MenuManager} if one is available.
      */
     public void open(Player player) {
+        MenuOpenEvent openEvent = new MenuOpenEvent(player, menuId);
+        Bukkit.getPluginManager().callEvent(openEvent);
+        if (openEvent.isCancelled()) return;
+
         Inventory inventory = Bukkit.createInventory(null, rows * 9,
                 MiniMessage.miniMessage().deserialize(title));
 

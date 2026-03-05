@@ -1,8 +1,10 @@
 package net.axther.serverCore.hologram.listener;
 
+import net.axther.serverCore.api.event.HologramClickEvent;
 import net.axther.serverCore.hologram.Hologram;
 import net.axther.serverCore.hologram.HologramManager;
 import net.axther.serverCore.hologram.action.HologramAction;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -37,6 +39,10 @@ public class HologramInteractListener implements Listener {
 
         // Convert ticks to millis (1 tick = 50ms)
         cooldowns.put(cooldownKey, now + (hologram.getClickCooldown() * 50L));
+
+        HologramClickEvent clickEvent = new HologramClickEvent(player, hologram.getId(), hologram.getActions());
+        Bukkit.getPluginManager().callEvent(clickEvent);
+        if (clickEvent.isCancelled()) return;
 
         for (HologramAction action : hologram.getActions()) {
             action.execute(player);

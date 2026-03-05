@@ -225,7 +225,7 @@ public final class ServerCore extends JavaPlugin {
 
                 npcConfig.loadAll(npcManager, questManager);
 
-                npcListener = new NPCListener(npcManager, npcConfig);
+                npcListener = new NPCListener(this, npcManager, npcConfig);
                 getServer().getPluginManager().registerEvents(npcListener, this);
 
                 int viewDistance = serverCoreConfig.getNpcViewDistance();

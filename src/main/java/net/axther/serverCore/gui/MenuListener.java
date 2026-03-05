@@ -1,5 +1,7 @@
 package net.axther.serverCore.gui;
 
+import net.axther.serverCore.api.event.MenuCloseEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -48,6 +50,11 @@ public class MenuListener implements Listener {
     public void onInventoryClose(InventoryCloseEvent event) {
         if (!(event.getPlayer() instanceof Player player)) return;
 
+        Menu menu = menuManager.getOpenMenu(player.getUniqueId());
         menuManager.closeMenu(player);
+
+        if (menu != null) {
+            Bukkit.getPluginManager().callEvent(new MenuCloseEvent(player, menu.getMenuId()));
+        }
     }
 }

@@ -1,5 +1,6 @@
 package net.axther.serverCore.reactive;
 
+import net.axther.serverCore.api.event.ReactiveRuleTriggeredEvent;
 import net.axther.serverCore.cosmetic.CosmeticInstance;
 import net.axther.serverCore.cosmetic.CosmeticManager;
 import net.axther.serverCore.pet.PetInstance;
@@ -60,6 +61,7 @@ public class ReactiveManager {
                 if (conditionsMet && !wasActive) {
                     // Activate: apply effects
                     playerActive.add(rule.getId());
+                    Bukkit.getPluginManager().callEvent(new ReactiveRuleTriggeredEvent(player, rule.getId()));
                     applyRuleEffects(rule, player, cosmeticManager, petManager);
                 } else if (conditionsMet && wasActive) {
                     // Still active: re-apply transient effects (particles)

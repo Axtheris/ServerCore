@@ -36,4 +36,8 @@ public class MenuManager {
     public Menu getOpenMenu(UUID playerUuid) {
         return openMenus.get(playerUuid);
     }
+
+    public Map<UUID, Menu> getOpenMenus() {
+        return openMenus;
+    }
 }

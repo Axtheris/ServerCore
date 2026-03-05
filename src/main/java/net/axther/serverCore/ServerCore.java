@@ -49,8 +49,10 @@ import net.axther.serverCore.quest.command.QuestCommand;
 import net.axther.serverCore.quest.config.QuestConfig;
 import net.axther.serverCore.quest.data.QuestStore;
 import net.axther.serverCore.quest.listener.QuestListener;
+import net.axther.serverCore.gui.MenuConfig;
 import net.axther.serverCore.gui.MenuListener;
 import net.axther.serverCore.gui.MenuManager;
+import net.axther.serverCore.gui.command.MenuCommand;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -83,6 +85,8 @@ public final class ServerCore extends JavaPlugin {
     private ReactiveManager reactiveManager;
     private ReactiveTickTask reactiveTickTask;
     private MenuManager menuManager;
+    private MenuConfig menuConfig;
+    private net.axther.serverCore.gui.task.MenuTickTask menuTickTask;
 
     @Override
     public void onEnable() {
@@ -101,6 +105,20 @@ public final class ServerCore extends JavaPlugin {
         if (serverCoreConfig.isSystemEnabled("gui")) {
             menuManager = new MenuManager();
             getServer().getPluginManager().registerEvents(new MenuListener(menuManager), this);
+
+            // Load menu configs
+            menuConfig = new MenuConfig(this);
+            menuConfig.load();
+
+            PluginCommand menuCmd = getCommand("menu");
+            if (menuCmd != null) {
+                MenuCommand menuCommand = new MenuCommand(menuConfig);
+                menuCmd.setExecutor(menuCommand);
+                menuCmd.setTabCompleter(menuCommand);
+            }
+
+            menuTickTask = new net.axther.serverCore.gui.task.MenuTickTask(menuManager);
+            menuTickTask.runTaskTimer(this, 0L, 1L);
         }
 
         // --- Cosmetic System ---
@@ -341,7 +359,7 @@ public final class ServerCore extends JavaPlugin {
         // --- Public API ---
         ServerCoreAPI.init(cosmeticManager, emitterManager, petManager,
                 hologramManager, npcManager, timelineManager, reactiveManager, menuManager,
-                questManager);
+                questManager, menuConfig);
 
         // Build startup summary
         StringBuilder summary = new StringBuilder("ServerCore enabled");
@@ -463,6 +481,9 @@ public final class ServerCore extends JavaPlugin {
         }
         if (reactiveManager != null) {
             reactiveManager.clearAll(cosmeticManager, petManager);
+        }
+        if (menuTickTask != null) {
+            menuTickTask.cancel();
         }
     }
 }

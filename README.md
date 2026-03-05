@@ -117,6 +117,11 @@ Cosmetics and pets that visually change based on world state.
 
 Chest-based menus with pagination, confirmation dialogs, and integration across all systems.
 
+- **YAML-driven custom menus**: define menus in `menus/*.yml` with click actions (`command`, `player_command`, `message`, `sound`, `close`, `open_menu`, `back`)
+- **Dynamic items**: PlaceholderAPI integration with name/lore templates and configurable auto-refresh interval
+- **Animated items**: material cycling with configurable tick interval for eye-catching displays
+- **`/menu <id>` command**: open any custom menu by ID
+- **Built-in system GUIs**: Quest Journal, Hologram Manager, and NPC Browser accessible via `/quest gui`, `/hologram gui`, `/npc gui`
 - **Paginated menus**: automatic page navigation for large lists
 - **Confirmation dialogs**: yes/no prompts before destructive actions
 - **Glass pane borders**: polished UI with no item duplication exploits
@@ -242,6 +247,7 @@ Use `/servercore reload` to apply changes without restarting.
 | `near [radius]` | Find nearby holograms | `servercore.hologram.near` |
 | `movehere <id>` | Move hologram to you | `servercore.hologram.movehere` |
 | `setanimation <id> <type>` | Set hologram animation | `servercore.hologram.setanimation` |
+| `gui` | Open hologram manager GUI | `servercore.hologram.gui` |
 
 ### `/npc` - NPCs & Dialogue
 
@@ -251,6 +257,7 @@ Use `/servercore reload` to apply changes without restarting.
 | `remove <id>` | Remove an NPC | `servercore.npc.remove` |
 | `movehere <id>` | Teleport NPC to you | `servercore.npc.movehere` |
 | `list` | List all NPCs | `servercore.npc.list` |
+| `gui` | Open NPC browser GUI | `servercore.npc.gui` |
 | `reload` | Reload NPC configs | `servercore.npc.reload` |
 
 ### `/quest` - Quests
@@ -260,6 +267,7 @@ Use `/servercore reload` to apply changes without restarting.
 | `active` | List your active quests with progress | `servercore.quest.active` | All |
 | `completed` | List quests you have finished | `servercore.quest.completed` | All |
 | `abandon <id>` | Drop an active quest | `servercore.quest.abandon` | All |
+| `gui` | Open quest journal GUI | `servercore.quest.gui` | All |
 | `reload` | Reload quest definitions from YAML | `servercore.quest.reload` | OP |
 
 ### `/timeline` - Event Timelines
@@ -270,6 +278,12 @@ Use `/servercore reload` to apply changes without restarting.
 | `stop [id]` | Stop a timeline (or all) | `servercore.timeline.stop` |
 | `list` | List all timelines | `servercore.timeline.list` |
 | `reload` | Reload timeline configs | `servercore.timeline.reload` |
+
+### `/menu` - Custom Menus
+
+| Subcommand | Description | Permission |
+|:-----------|:------------|:-----------|
+| `<id>` | Open a custom YAML-defined menu | `servercore.menu.open` |
 
 > Wildcard permissions (`servercore.cosmetic.*`, `servercore.pet.*`, etc.) grant all subcommands for that system. All permissions default to **OP only** unless noted.
 
@@ -488,7 +502,7 @@ cd ServerCore
 ./gradlew build
 ```
 
-The output JAR will be at `build/libs/ServerCore-2.1.0.jar`.
+The output JAR will be at `build/libs/ServerCore-2.3.0.jar`.
 
 To launch a Paper test server with the plugin auto-loaded:
 
@@ -504,7 +518,7 @@ To launch a Paper test server with the plugin auto-loaded:
 ./gradlew test
 ```
 
-The test suite includes 275 tests covering particle emitter patterns, the scripting engine, and GUI pagination. All particle patterns are benchmarked for stability and performance under sustained load.
+The test suite includes 275+ tests covering particle emitter patterns, the scripting engine, GUI pagination, menu actions, custom events, and fluent builders. All particle patterns are benchmarked for stability and performance under sustained load.
 
 ---
 
@@ -537,6 +551,54 @@ api.getQuestManager().acceptQuest(player, "gather-wood");
 api.getNPCManager();
 ```
 
+### Fluent Builders
+
+Create holograms, emitters, and menus with a fluent API:
+
+```java
+ServerCoreAPI api = ServerCoreAPI.get();
+
+// Hologram builder
+api.hologram("welcome")
+    .at(location)
+    .lines("<gold>Welcome!", "<gray>Enjoy your stay")
+    .animation(HologramAnimation.BOB)
+    .spawn();
+
+// Emitter builder
+api.emitter("spiral")
+    .at(location)
+    .pattern("helix")
+    .particle(Particle.FLAME)
+    .spawn();
+
+// Menu builder
+api.menu("Reward Shop")
+    .rows(3)
+    .item(13, rewardItem, List.of(MenuAction.parse("close", "")))
+    .open(player);
+```
+
+### Convenience Methods
+
+```java
+// Quest helpers
+api.openQuestJournal(player);
+api.isQuestActive(player, "gather-wood");
+api.getQuestProgress(player, "gather-wood");
+
+// Hologram visibility
+api.showHologramTo(player, "welcome");
+api.hideHologramFrom(player, "welcome");
+
+// GUI
+api.openMenu(player, "shop");
+
+// Pet queries
+api.hasPetSummoned(player);
+api.getPetName(player);
+```
+
 ### Custom Events
 
 Listen for ServerCore events in your plugin:
@@ -548,7 +610,7 @@ void onPetSummon(PetSummonEvent event) {
 }
 ```
 
-Available events: `PetSummonEvent`, `PetDismissEvent`, `CosmeticApplyEvent`, `CosmeticRemoveEvent`, `EmitterCreateEvent`, `HologramCreateEvent`, `DialogueStartEvent`, `TimelinePlayEvent`, `QuestStartEvent`, `QuestCompleteEvent`
+Available events: `PetSummonEvent`, `PetDismissEvent`, `CosmeticApplyEvent`, `CosmeticRemoveEvent`, `EmitterCreateEvent`, `HologramCreateEvent`, `DialogueStartEvent`, `TimelinePlayEvent`, `QuestStartEvent`, `QuestCompleteEvent`, `HologramClickEvent`, `QuestProgressEvent`, `QuestAbandonEvent`, `PetStateChangeEvent`, `MenuOpenEvent`, `MenuCloseEvent`, `ReactiveRuleTriggeredEvent`
 
 ---
 

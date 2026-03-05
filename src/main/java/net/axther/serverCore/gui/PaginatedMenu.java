@@ -32,7 +32,7 @@ public class PaginatedMenu extends Menu {
 
     private PaginatedMenu(String title, List<MenuItem> contentItems, int itemsPerPage,
                           Menu parent, int currentPage) {
-        super(title, 6, new HashMap<>(), parent);
+        super(title, 6, new HashMap<>(), parent, 0, null, null);
         this.contentItems = contentItems;
         this.itemsPerPage = itemsPerPage;
         this.currentPage = currentPage;
@@ -48,6 +48,11 @@ public class PaginatedMenu extends Menu {
 
     @Override
     public void open(Player player) {
+        // Fire MenuOpenEvent (matching Menu.open() behavior)
+        var openEvent = new net.axther.serverCore.api.event.MenuOpenEvent(player, null);
+        Bukkit.getPluginManager().callEvent(openEvent);
+        if (openEvent.isCancelled()) return;
+
         Map<Integer, MenuItem> pageItems = buildPageItems(player);
 
         Inventory inventory = Bukkit.createInventory(null, 54,

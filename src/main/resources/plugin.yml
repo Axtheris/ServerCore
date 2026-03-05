@@ -17,16 +17,19 @@ commands:
     usage: /pet <summon|dismiss|sit|follow|feed|list|give|gui|reload>
   hologram:
     description: Manage text display holograms
-    usage: /hologram <create|remove|addline|removeline|edit|list|near|movehere|setanimation>
+    usage: /hologram <create|remove|addline|removeline|edit|list|near|movehere|setanimation|gui>
   npc:
     description: Manage NPCs and dialogue
-    usage: /npc <create|remove|movehere|list|reload>
+    usage: /npc <create|remove|movehere|list|reload|gui>
   quest:
     description: Manage player quests
-    usage: /quest <active|completed|abandon|reload>
+    usage: /quest <active|completed|abandon|gui|reload>
   timeline:
     description: Manage event timelines
     usage: /timeline <play|stop|list|reload>
+  menu:
+    description: Open a custom menu
+    usage: /menu <id>
   servercore:
     description: ServerCore admin commands
     usage: /servercore reload
@@ -84,6 +87,7 @@ permissions:
       servercore.hologram.near: true
       servercore.hologram.movehere: true
       servercore.hologram.setanimation: true
+      servercore.hologram.gui: true
   servercore.npc.*:
     description: Grants all NPC permissions
     default: op
@@ -93,6 +97,7 @@ permissions:
       servercore.npc.movehere: true
       servercore.npc.list: true
       servercore.npc.reload: true
+      servercore.npc.gui: true
   servercore.quest.*:
     description: Grants all quest permissions
     default: op
@@ -100,6 +105,7 @@ permissions:
       servercore.quest.active: true
       servercore.quest.completed: true
       servercore.quest.abandon: true
+      servercore.quest.gui: true
       servercore.quest.reload: true
   servercore.timeline.*:
     description: Grants all timeline permissions
@@ -203,6 +209,9 @@ permissions:
   servercore.hologram.setanimation:
     description: Set hologram animations
     default: op
+  servercore.hologram.gui:
+    description: Open hologram manager GUI
+    default: op
   servercore.npc.create:
     description: Create NPCs
     default: op
@@ -218,6 +227,9 @@ permissions:
   servercore.npc.reload:
     description: Reload NPC configs
     default: op
+  servercore.npc.gui:
+    description: Open NPC browser GUI
+    default: op
   servercore.quest.active:
     description: View active quests
     default: true
@@ -226,6 +238,9 @@ permissions:
     default: true
   servercore.quest.abandon:
     description: Abandon active quests
+    default: true
+  servercore.quest.gui:
+    description: Open quest journal GUI
     default: true
   servercore.quest.reload:
     description: Reload quest definitions

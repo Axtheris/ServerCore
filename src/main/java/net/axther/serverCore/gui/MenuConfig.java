@@ -140,6 +140,24 @@ public class MenuConfig {
     }
 
     /**
+     * Builds a {@link Menu} from a loaded layout by its config ID.
+     * Returns null if the layout is not found.
+     *
+     * @param menuId the menu identifier from menus.yml
+     * @return the built Menu, or null
+     */
+    public Menu buildMenu(String menuId) {
+        MenuLayout layout = layouts.get(menuId);
+        if (layout == null) return null;
+
+        Menu.Builder builder = Menu.builder(layout.title()).rows(layout.rows());
+        for (var entry : layout.items().entrySet()) {
+            builder.item(entry.getKey(), MenuItem.builder(entry.getValue()).build());
+        }
+        return builder.build();
+    }
+
+    /**
      * Represents a loaded menu layout from configuration.
      */
     public record MenuLayout(String title, int rows, Map<Integer, ItemStack> items) {

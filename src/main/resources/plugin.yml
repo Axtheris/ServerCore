@@ -27,6 +27,9 @@ commands:
   timeline:
     description: Manage event timelines
     usage: /timeline <play|stop|list|reload>
+  menu:
+    description: Open a custom menu
+    usage: /menu <id>
   servercore:
     description: ServerCore admin commands
     usage: /servercore reload

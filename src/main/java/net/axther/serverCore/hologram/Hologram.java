@@ -183,9 +183,25 @@ public class Hologram {
         Component combined = Component.empty();
         for (int i = 0; i < lines.size(); i++) {
             if (i > 0) combined = combined.append(Component.newline());
-            combined = combined.append(mm.deserialize(lines.get(i)));
+            String line = lines.get(i);
+            // Resolve PlaceholderAPI placeholders if present
+            if (line.contains("%") && line.indexOf('%') != line.lastIndexOf('%')) {
+                line = resolvePlaceholders(line);
+            }
+            combined = combined.append(mm.deserialize(line));
         }
         return combined;
+    }
+
+    private String resolvePlaceholders(String text) {
+        try {
+            Class<?> papiClass = Class.forName("me.clip.placeholderapi.PlaceholderAPI");
+            java.lang.reflect.Method setPlaceholders = papiClass.getMethod("setPlaceholders",
+                    org.bukkit.OfflinePlayer.class, String.class);
+            return (String) setPlaceholders.invoke(null, (org.bukkit.OfflinePlayer) null, text);
+        } catch (Exception e) {
+            return text; // PlaceholderAPI not present, return as-is
+        }
     }
 
     // --- Getters and setters ---

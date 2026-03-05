@@ -16,14 +16,9 @@ public class HologramInteractListener implements Listener {
 
     private final HologramManager manager;
     private final Map<String, Long> cooldowns = new HashMap<>();
-    private long currentTick = 0;
 
     public HologramInteractListener(HologramManager manager) {
         this.manager = manager;
-    }
-
-    public void tick() {
-        currentTick++;
     }
 
     @EventHandler
@@ -36,10 +31,12 @@ public class HologramInteractListener implements Listener {
         if (hologram.getActions().isEmpty()) return;
 
         String cooldownKey = player.getUniqueId() + ":" + hologram.getId();
+        long now = System.currentTimeMillis();
         Long expiresAt = cooldowns.get(cooldownKey);
-        if (expiresAt != null && currentTick < expiresAt) return;
+        if (expiresAt != null && now < expiresAt) return;
 
-        cooldowns.put(cooldownKey, currentTick + hologram.getClickCooldown());
+        // Convert ticks to millis (1 tick = 50ms)
+        cooldowns.put(cooldownKey, now + (hologram.getClickCooldown() * 50L));
 
         for (HologramAction action : hologram.getActions()) {
             action.execute(player);

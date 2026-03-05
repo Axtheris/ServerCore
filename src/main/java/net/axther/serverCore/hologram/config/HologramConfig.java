@@ -95,9 +95,10 @@ public class HologramConfig {
                             String condValue = map.get("value") != null ? String.valueOf(map.get("value")) : "";
                             String condEquals = map.containsKey("equals") ? String.valueOf(map.get("equals")) : null;
                             String condMin = map.containsKey("min") ? String.valueOf(map.get("min")) : null;
+                            String condMax = map.containsKey("max") ? String.valueOf(map.get("max")) : null;
                             hologram.getConditions().add(
                                     net.axther.serverCore.hologram.condition.HologramCondition.parse(
-                                            condType, condValue, condEquals, condMin));
+                                            condType, condValue, condEquals, condMin, condMax));
                         }
                     }
                 }
@@ -163,6 +164,7 @@ public class HologramConfig {
                     m.put("value", cond.getValue());
                     if (cond.getEquals() != null) m.put("equals", cond.getEquals());
                     if (cond.getMin() != null) m.put("min", cond.getMin());
+                    if (cond.getMax() != null) m.put("max", cond.getMax());
                     condMaps.add(m);
                 }
                 sec.set("conditions", condMaps);

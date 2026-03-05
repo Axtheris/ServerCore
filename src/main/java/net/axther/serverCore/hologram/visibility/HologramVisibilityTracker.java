@@ -17,6 +17,8 @@ public class HologramVisibilityTracker {
     private final HologramManager manager;
     private final double viewDistance;
     private final Map<UUID, Set<String>> hiddenHolograms = new HashMap<>();
+    private static java.lang.reflect.Method cachedSetPlaceholders;
+    private static boolean papiChecked = false;
 
     public HologramVisibilityTracker(JavaPlugin plugin, HologramManager manager, double viewDistance) {
         this.plugin = plugin;
@@ -81,10 +83,15 @@ public class HologramVisibilityTracker {
 
     private boolean evaluatePlaceholderCondition(Player player, HologramCondition condition) {
         try {
-            Class<?> papiClass = Class.forName("me.clip.placeholderapi.PlaceholderAPI");
-            java.lang.reflect.Method setPlaceholders = papiClass.getMethod("setPlaceholders",
-                    org.bukkit.OfflinePlayer.class, String.class);
-            String resolved = (String) setPlaceholders.invoke(null, player, condition.getValue());
+            if (!papiChecked) {
+                papiChecked = true;
+                Class<?> papiClass = Class.forName("me.clip.placeholderapi.PlaceholderAPI");
+                cachedSetPlaceholders = papiClass.getMethod("setPlaceholders",
+                        org.bukkit.OfflinePlayer.class, String.class);
+            }
+            if (cachedSetPlaceholders == null) return true;
+
+            String resolved = (String) cachedSetPlaceholders.invoke(null, player, condition.getValue());
 
             if (condition.getEquals() != null) {
                 return resolved.equals(condition.getEquals());
@@ -93,7 +100,16 @@ public class HologramVisibilityTracker {
                 try {
                     double val = Double.parseDouble(resolved);
                     double min = Double.parseDouble(condition.getMin());
-                    return val >= min;
+                    if (val < min) return false;
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            }
+            if (condition.getMax() != null) {
+                try {
+                    double val = Double.parseDouble(resolved);
+                    double max = Double.parseDouble(condition.getMax());
+                    if (val > max) return false;
                 } catch (NumberFormatException e) {
                     return false;
                 }

@@ -48,9 +48,8 @@ public class NPCListener implements Listener {
 
         DialogueSession session = new DialogueSession(player, npc, tree);
         activeSessions.put(player.getUniqueId(), session);
-        session.start();
 
-        // Spawn dialogue hologram above NPC head if enabled
+        // Spawn dialogue hologram BEFORE start so the first node can use it
         if (npc.isDialogueHologram()) {
             Location npcLoc = npc.getLocation().clone().add(0, 2.0, 0);
             net.axther.serverCore.hologram.DialogueHologram dialogueHolo =
@@ -58,6 +57,7 @@ public class NPCListener implements Listener {
                             plugin, player, npcLoc, npc.getDialogueHologramOffset());
             session.setDialogueHologram(dialogueHolo);
         }
+        session.start();
     }
 
     @EventHandler

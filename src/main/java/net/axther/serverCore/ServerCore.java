@@ -243,24 +243,38 @@ public final class ServerCore extends JavaPlugin {
                 npcTickTask.runTaskTimer(this, 0L, 1L);
 
                 getLogger().info("NPC system enabled with PacketEvents (view distance: " + viewDistance + " blocks)");
-
-                // --- Quest System (continued) ---
-                questConfig = new QuestConfig(this);
-                questConfig.loadAll(questManager);
-
-                questStore = new QuestStore(this);
-                questManager.setStore(questStore);
-                questStore.load(questManager);
-
-                getServer().getPluginManager().registerEvents(new QuestListener(questManager), this);
-
-                PluginCommand questCmd = getCommand("quest");
-                if (questCmd != null) {
-                    QuestCommand questCommand = new QuestCommand(questManager, questConfig);
-                    questCmd.setExecutor(questCommand);
-                    questCmd.setTabCompleter(questCommand);
-                }
             }
+        }
+
+        // --- Quest System ---
+        if (serverCoreConfig.isSystemEnabled("quests")) {
+            if (questManager == null) {
+                questManager = new QuestManager();
+            }
+
+            // Load standalone quest files
+            questConfig = new QuestConfig(this);
+            questConfig.loadAll(questManager);
+
+            // Load inline NPC quests if NPC system is active
+            if (npcConfig != null) {
+                // Inline NPC quests are already loaded during npcConfig.loadAll()
+            }
+
+            questStore = new QuestStore(this);
+            questManager.setStore(questStore);
+            questStore.load(questManager);
+
+            getServer().getPluginManager().registerEvents(new QuestListener(questManager), this);
+
+            PluginCommand questCmd = getCommand("quest");
+            if (questCmd != null) {
+                QuestCommand questCommand = new QuestCommand(questManager, questConfig);
+                questCmd.setExecutor(questCommand);
+                questCmd.setTabCompleter(questCommand);
+            }
+
+            getLogger().info("Quest system loaded with " + questManager.getAllQuests().size() + " quests");
         }
 
         // --- Timeline / Event Sequencer System ---

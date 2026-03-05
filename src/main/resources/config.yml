@@ -13,6 +13,8 @@ systems:
   npcs:
     enabled: true
     view-distance: 48
+  quests:
+    enabled: true
   timelines:
     enabled: true
   reactive:

@@ -181,6 +181,35 @@ public class NPCConfig {
         yaml.set("yaw", 180.0);
         yaml.set("look-at-player", true);
 
+        // Inline quest definition
+        ConfigurationSection quest = yaml.createSection("quest");
+        quest.set("id", "gather-wood");
+        quest.set("display-name", "<gold>Lumberjack's Request");
+        quest.set("description", "Gather 16 oak logs for the merchant.");
+        quest.set("repeatable", true);
+        quest.set("cooldown", 3600);
+
+        var objectives = new java.util.ArrayList<Map<String, Object>>();
+        Map<String, Object> fetchObj = new java.util.LinkedHashMap<>();
+        fetchObj.put("type", "fetch");
+        fetchObj.put("material", "OAK_LOG");
+        fetchObj.put("amount", 16);
+        objectives.add(fetchObj);
+        quest.set("objectives", objectives);
+
+        var rewards = new java.util.ArrayList<Map<String, Object>>();
+        Map<String, Object> itemReward = new java.util.LinkedHashMap<>();
+        itemReward.put("type", "item");
+        itemReward.put("material", "EMERALD");
+        itemReward.put("amount", 5);
+        rewards.add(itemReward);
+        Map<String, Object> xpReward = new java.util.LinkedHashMap<>();
+        xpReward.put("type", "xp");
+        xpReward.put("amount", 100);
+        rewards.add(xpReward);
+        quest.set("rewards", rewards);
+
+        // Dialogue tree with quest integration
         ConfigurationSection dialogue = yaml.createSection("dialogue");
 
         // start node
@@ -189,39 +218,105 @@ public class NPCConfig {
 
         var startChoices = new java.util.ArrayList<Map<String, Object>>();
 
-        Map<String, Object> choice1 = new java.util.LinkedHashMap<>();
-        choice1.put("label", "<yellow>Tell me about this place");
-        choice1.put("next", "lore");
-        var conds = new java.util.ArrayList<Map<String, Object>>();
-        Map<String, Object> cond = new java.util.LinkedHashMap<>();
-        cond.put("type", "permission");
-        cond.put("value", "server.lore");
-        conds.add(cond);
-        choice1.put("conditions", conds);
-        startChoices.add(choice1);
+        // Quest offer choice (only shown when quest is available)
+        Map<String, Object> questOffer = new java.util.LinkedHashMap<>();
+        questOffer.put("label", "<yellow>Any work available?");
+        questOffer.put("next", "quest-offer");
+        var questAvailConds = new java.util.ArrayList<Map<String, Object>>();
+        Map<String, Object> questAvailCond = new java.util.LinkedHashMap<>();
+        questAvailCond.put("type", "quest_available");
+        questAvailCond.put("value", "gather-wood");
+        questAvailConds.add(questAvailCond);
+        questOffer.put("conditions", questAvailConds);
+        startChoices.add(questOffer);
 
-        Map<String, Object> choice2 = new java.util.LinkedHashMap<>();
-        choice2.put("label", "<red>Goodbye");
-        var actions = new java.util.ArrayList<Map<String, Object>>();
-        Map<String, Object> action = new java.util.LinkedHashMap<>();
-        action.put("type", "message");
-        action.put("value", "<gold>Safe travels.");
-        actions.add(action);
-        choice2.put("actions", actions);
-        startChoices.add(choice2);
+        // Quest turn-in choice (only shown when objectives are complete)
+        Map<String, Object> questTurnIn = new java.util.LinkedHashMap<>();
+        questTurnIn.put("label", "<green>I have the logs!");
+        questTurnIn.put("next", "quest-complete");
+        var questCompConds = new java.util.ArrayList<Map<String, Object>>();
+        Map<String, Object> questCompCond = new java.util.LinkedHashMap<>();
+        questCompCond.put("type", "quest_complete");
+        questCompCond.put("value", "gather-wood");
+        questCompConds.add(questCompCond);
+        questTurnIn.put("conditions", questCompConds);
+        startChoices.add(questTurnIn);
+
+        // Quest in-progress reminder
+        Map<String, Object> questReminder = new java.util.LinkedHashMap<>();
+        questReminder.put("label", "<gray>About my task...");
+        questReminder.put("next", "quest-progress");
+        var questActiveConds = new java.util.ArrayList<Map<String, Object>>();
+        Map<String, Object> questActiveCond = new java.util.LinkedHashMap<>();
+        questActiveCond.put("type", "quest_active");
+        questActiveCond.put("value", "gather-wood");
+        questActiveConds.add(questActiveCond);
+        questReminder.put("conditions", questActiveConds);
+        startChoices.add(questReminder);
+
+        Map<String, Object> goodbyeChoice = new java.util.LinkedHashMap<>();
+        goodbyeChoice.put("label", "<red>Goodbye");
+        var goodbyeActions = new java.util.ArrayList<Map<String, Object>>();
+        Map<String, Object> goodbyeAction = new java.util.LinkedHashMap<>();
+        goodbyeAction.put("type", "message");
+        goodbyeAction.put("value", "<gold>Safe travels.");
+        goodbyeActions.add(goodbyeAction);
+        goodbyeChoice.put("actions", goodbyeActions);
+        startChoices.add(goodbyeChoice);
 
         startNode.set("choices", startChoices);
 
-        // lore node
-        ConfigurationSection loreNode = dialogue.createSection("lore");
-        loreNode.set("text", java.util.List.of("<gray>This town has a long history..."));
+        // quest-offer node
+        ConfigurationSection offerNode = dialogue.createSection("quest-offer");
+        offerNode.set("text", java.util.List.of(
+                "<gold>I need 16 oak logs for my shop.",
+                "<gold>Bring them back and I'll pay you well."));
 
-        var loreChoices = new java.util.ArrayList<Map<String, Object>>();
-        Map<String, Object> loreChoice = new java.util.LinkedHashMap<>();
-        loreChoice.put("label", "<yellow>Thanks");
-        loreChoice.put("next", "start");
-        loreChoices.add(loreChoice);
-        loreNode.set("choices", loreChoices);
+        var offerChoices = new java.util.ArrayList<Map<String, Object>>();
+        Map<String, Object> acceptChoice = new java.util.LinkedHashMap<>();
+        acceptChoice.put("label", "<green>I'll get them for you!");
+        var acceptActions = new java.util.ArrayList<Map<String, Object>>();
+        Map<String, Object> acceptAction = new java.util.LinkedHashMap<>();
+        acceptAction.put("type", "accept_quest");
+        acceptAction.put("value", "gather-wood");
+        acceptActions.add(acceptAction);
+        acceptChoice.put("actions", acceptActions);
+        offerChoices.add(acceptChoice);
+
+        Map<String, Object> declineChoice = new java.util.LinkedHashMap<>();
+        declineChoice.put("label", "<red>Not right now");
+        declineChoice.put("next", "start");
+        offerChoices.add(declineChoice);
+
+        offerNode.set("choices", offerChoices);
+
+        // quest-progress node
+        ConfigurationSection progressNode = dialogue.createSection("quest-progress");
+        progressNode.set("text", java.util.List.of("<gold>Still working on those logs? I need 16 oak logs."));
+
+        var progressChoices = new java.util.ArrayList<Map<String, Object>>();
+        Map<String, Object> progressBack = new java.util.LinkedHashMap<>();
+        progressBack.put("label", "<yellow>I'm on it!");
+        progressChoices.add(progressBack);
+        progressNode.set("choices", progressChoices);
+
+        // quest-complete node
+        ConfigurationSection completeNode = dialogue.createSection("quest-complete");
+        completeNode.set("text", java.util.List.of(
+                "<gold>Excellent work! Here's your reward."));
+
+        var completeChoices = new java.util.ArrayList<Map<String, Object>>();
+        Map<String, Object> turnInChoice = new java.util.LinkedHashMap<>();
+        turnInChoice.put("label", "<green>Thanks!");
+        var completeActions = new java.util.ArrayList<Map<String, Object>>();
+        Map<String, Object> completeAction = new java.util.LinkedHashMap<>();
+        completeAction.put("type", "complete_quest");
+        completeAction.put("value", "gather-wood");
+        completeActions.add(completeAction);
+        turnInChoice.put("actions", completeActions);
+        completeChoices.add(turnInChoice);
+
+        completeNode.set("choices", completeChoices);
 
         try {
             npcsDir.mkdirs();

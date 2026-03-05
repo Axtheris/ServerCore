@@ -177,6 +177,15 @@ class HologramDataModelTest {
             Hologram h = new Hologram("test", null, List.of("hi"));
             h.getConditions().add(HologramCondition.parse("permission", "vip", null, null));
             assertTrue(h.hasConditions());
+            assertEquals(1, h.getConditions().size());
+        }
+
+        @Test
+        void multipleConditionsAllStored() {
+            Hologram h = new Hologram("test", null, List.of("hi"));
+            h.getConditions().add(HologramCondition.parse("permission", "vip", null, null));
+            h.getConditions().add(HologramCondition.parse("world", "world_nether", null, null));
+            assertEquals(2, h.getConditions().size());
         }
     }
 
@@ -233,6 +242,46 @@ class HologramDataModelTest {
             Hologram h = new Hologram("test", null, List.of("hi"));
             h.setClickCooldown(60);
             assertEquals(60, h.getClickCooldown());
+        }
+
+        @Test
+        void zeroClickCooldownAllowed() {
+            Hologram h = new Hologram("test", null, List.of("hi"));
+            h.setClickCooldown(0);
+            assertEquals(0, h.getClickCooldown());
+        }
+    }
+
+    @Nested
+    class CombinedFeatureTests {
+        @Test
+        void allFieldsCanBeSetTogether() {
+            Hologram h = new Hologram("test", null, List.of("Hello %player_name%"));
+            h.setBillboard("HORIZONTAL");
+            h.setTextShadow(true);
+            h.setBackground("#80000000");
+            h.setLineWidth(300);
+            h.setSeeThrough(true);
+            h.setTextAlignment("LEFT");
+            h.setViewRange(2.0f);
+            h.setUpdateInterval(40);
+            h.setClickCooldown(60);
+            h.getConditions().add(HologramCondition.parse("permission", "vip", null, null));
+            h.getActions().add(HologramAction.parse("command", "say hi"));
+
+            // Verify all fields
+            assertEquals("HORIZONTAL", h.getBillboard());
+            assertTrue(h.isTextShadow());
+            assertEquals("#80000000", h.getBackground());
+            assertEquals(300, h.getLineWidth());
+            assertTrue(h.isSeeThrough());
+            assertEquals("LEFT", h.getTextAlignment());
+            assertEquals(2.0f, h.getViewRange(), 0.001f);
+            assertEquals(40, h.getUpdateInterval());
+            assertEquals(60, h.getClickCooldown());
+            assertTrue(h.hasConditions());
+            assertEquals(1, h.getActions().size());
+            assertTrue(h.containsPlaceholders());
         }
     }
 }

@@ -59,10 +59,15 @@ A complete pet system where players summon, dismiss, feed, and interact with com
 
 ### Holograms
 
-Floating text using Paper 1.21 text display entities with MiniMessage formatting and animations.
+Floating text using Paper 1.21 text display entities with MiniMessage formatting, animations, and interactive features.
 
 - **MiniMessage support**: gradients, colors, bold, italic, and all MiniMessage features
 - **Animations**: bob, rotate, and pulse effects with configurable amplitude and frequency
+- **Visual styling**: billboard mode, background color, text shadow, alignment, line width, see-through, view range
+- **Dynamic content**: PlaceholderAPI placeholders refresh on a configurable update interval
+- **Conditional visibility**: per-player show/hide based on permissions, world, quest status, or placeholder values
+- **Click actions**: run commands, send messages, play sounds on hologram interaction with cooldown
+- **NPC dialogue display**: floating text above NPC heads during conversations, visible only to the conversing player
 - **Chunk-aware**: holograms automatically spawn and despawn with chunk loading
 
 ### NPCs & Dialogue
@@ -124,7 +129,7 @@ Chest-based menus with pagination, confirmation dialogs, and integration across 
 | Plugin | Required | Purpose |
 |:-------|:--------:|:--------|
 | [Model Engine](https://mythiccraft.io/index.php?pages/model-engine/) R4+ | No | 3D custom models and animations for pets |
-| [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) | No | Exposes ServerCore data as placeholders |
+| [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) | No | Exposes ServerCore data as placeholders; dynamic hologram content |
 | [PacketEvents](https://github.com/retrooper/packetevents) 2.7+ | For NPCs | Full player-model NPCs with skins |
 | [Vault](https://www.spigotmc.org/resources/vault.34315/) | No | Economy and permission quest rewards |
 
@@ -310,6 +315,29 @@ holograms:
     lines:
       - "<gradient:#FF6B6B:#FFE66D><bold>Welcome to the Server</bold></gradient>"
       - "<gray>Type /help to get started"
+
+  vip-portal:
+    world: world
+    x: 10.5
+    y: 70.0
+    z: 10.5
+    animation: PULSE
+    lines:
+      - "<rainbow>VIP Portal</rainbow>"
+      - "<gray>Click to teleport"
+    billboard: CENTER           # CENTER, FIXED, HORIZONTAL, VERTICAL
+    text-shadow: true
+    background: "#80000000"     # ARGB hex
+    update-interval: 40         # ticks between placeholder refreshes
+    click-cooldown: 40
+    conditions:
+      - type: permission
+        value: vip.access
+    actions:
+      - type: command
+        value: "warp vip %player%"
+      - type: sound
+        value: ENTITY_ENDERMAN_TELEPORT
 ```
 
 ### NPCs (`npcs/*.yml`)
@@ -323,6 +351,8 @@ y: 65.0
 z: -50.5
 yaw: 180.0
 look-at-player: true
+dialogue-hologram: true         # show dialogue text above NPC head
+dialogue-hologram-offset: 0.5   # blocks above NPC
 dialogue:
   start:
     text:

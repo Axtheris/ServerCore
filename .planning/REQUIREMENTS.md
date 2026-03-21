@@ -38,9 +38,9 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Persistence
 
-- [ ] **PERS-01**: Data stores (cosmetics, pets, quests) use dirty-flag with periodic batch write (debounced) instead of saving on every mutation
-- [ ] **PERS-02**: Async saves use snapshot-then-async pattern — main thread snapshots data, async thread serializes to disk — no ConcurrentModificationException
-- [ ] **PERS-03**: `onDisable()` synchronous flush guarantees all pending dirty data is written before process exits
+- [x] **PERS-01**: Data stores (cosmetics, pets, quests) use dirty-flag with periodic batch write (debounced) instead of saving on every mutation
+- [x] **PERS-02**: Async saves use snapshot-then-async pattern — main thread snapshots data, async thread serializes to disk — no ConcurrentModificationException
+- [x] **PERS-03**: `onDisable()` synchronous flush guarantees all pending dirty data is written before process exits
 
 ### Performance
 
@@ -108,9 +108,9 @@ Deferred to future milestone. Tracked but not in current roadmap.
 | CONF-02 | Phase 4 | Pending |
 | CONF-03 | Phase 1 | Complete |
 | CONF-04 | Phase 1 | Complete |
-| PERS-01 | Phase 3 | Pending |
-| PERS-02 | Phase 3 | Pending |
-| PERS-03 | Phase 3 | Pending |
+| PERS-01 | Phase 3 | Complete |
+| PERS-02 | Phase 3 | Complete |
+| PERS-03 | Phase 3 | Complete |
 | PERF-01 | Phase 3 | Complete |
 | SEC-01 | Phase 4 | Pending |
 | SEC-02 | Phase 4 | Pending |

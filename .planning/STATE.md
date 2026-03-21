@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-03-21T23:53:31.681Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-21T23:53:48.787Z"
 progress:
   total_phases: 4
   completed_phases: 3
@@ -53,6 +53,7 @@ Plan: 2 of 2
 | Phase 02-memory-and-logic-correctness P03 | 8 | 2 tasks | 3 files |
 | Phase 02-memory-and-logic-correctness P01 | 1 | 2 tasks | 3 files |
 | Phase 03-async-persistence-and-performance P02 | 3 | 2 tasks | 2 files |
+| Phase 03-async-persistence-and-performance P01 | 4 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,9 @@ Recent decisions affecting current work:
 - [Phase 03-02]: ExploreTarget stores world NAME (String) not World reference — worlds may not be loaded at config parse time (D-19)
 - [Phase 03-02]: IllegalArgumentException catches both NumberFormatException (subclass) and empty worldName — Java multi-catch prohibits related types
 - [Phase 03-02]: Raw target string preserved in QuestObjective for backward compat; exploreTarget used exclusively in tick-path
+- [Phase 03-01]: buildSnapshot() on main thread (Bukkit API safe); writeSnapshot() async-only touching detached YamlConfiguration
+- [Phase 03-01]: dirty cleared BEFORE dispatch so mutations during snapshot window correctly re-set dirty for next flush cycle
+- [Phase 03-01]: saving flag is volatile (not synchronized): safe pattern where main thread sets true before dispatch, async sets false in finally
 
 ### Pending Todos
 
@@ -91,6 +95,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T23:53:25.007Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-03-21T23:53:48.785Z
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None

@@ -29,7 +29,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Server shutdown completes with all data files written and no tick task still running after onDisable() returns
   4. Config files with out-of-range numeric values or missing soft dependencies produce a WARNING log entry naming the specific key — not a silent default
   5. Reloading or crashing the server in any partial-init state does not throw an exception from onDisable()
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Tick loop hardening: per-instance try-catch in CosmeticManager/PetManager + world-null guards in tick() methods (CORR-02, CORR-03)
+- [ ] 01-02-PLAN.md — Config validation and soft-dep logging: NPC/hologram view-distance bounds + absent-dependency INFO logs (CONF-01, CONF-03, CONF-04)
+- [ ] 01-03-PLAN.md — Lifecycle audit: fix onDisable() task-cancel ordering for emitter/pet + verify and document already-correct patterns (CORR-01, CORR-04, LIFE-01, LIFE-02, LIFE-03, LIFE-04)
 
 ### Phase 2: Memory and Logic Correctness
 **Goal**: Memory usage stays bounded over server lifetime and quest objective progression is always consistent
@@ -70,7 +75,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Correctness and Stability | 0/? | Not started | - |
+| 1. Correctness and Stability | 0/3 | In progress | - |
 | 2. Memory and Logic Correctness | 0/? | Not started | - |
 | 3. Async Persistence and Performance | 0/? | Not started | - |
 | 4. Security and Observability | 0/? | Not started | - |

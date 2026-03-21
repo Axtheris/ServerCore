@@ -448,6 +448,12 @@ public final class ServerCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        // LIFE-01 VERIFIED: All tick tasks are cancelled before their manager state is cleared.
+        // Correct order per system: (1) cancel task -> (2) save data -> (3) destroyAll/clear.
+        // LIFE-04 VERIFIED: All data stores (cosmeticStore, petStore, questStore) are saved
+        // synchronously in this method before the process can exit.
+        // LIFE-02: null guards on every block below ensure this method is safe in partial-init
+        // state (e.g., if a system failed to load, its manager/task fields remain null).
         ServerCoreAPI.shutdown();
         if (tickTask != null) {
             tickTask.cancel();
@@ -458,20 +464,20 @@ public final class ServerCore extends JavaPlugin {
         if (cosmeticManager != null) {
             cosmeticManager.destroyAll();
         }
-        if (emitterConfig != null && emitterManager != null) {
-            emitterConfig.saveAll(emitterManager);
-        }
         if (emitterTickTask != null) {
             emitterTickTask.cancel();
+        }
+        if (emitterConfig != null && emitterManager != null) {
+            emitterConfig.saveAll(emitterManager);
         }
         if (emitterManager != null) {
             emitterManager.destroyAll();
         }
-        if (petStore != null) {
-            petStore.save();
-        }
         if (petTickTask != null) {
             petTickTask.cancel();
+        }
+        if (petStore != null) {
+            petStore.save();
         }
         if (petManager != null) {
             petManager.destroyAll();

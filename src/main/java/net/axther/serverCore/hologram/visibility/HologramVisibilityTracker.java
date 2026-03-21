@@ -35,7 +35,9 @@ public class HologramVisibilityTracker {
             if (entity == null) continue;
 
             Location holoLoc = hologram.getLocation();
-            // Guard against null world — hologram may reference an invalid/unloaded world (per CORR-02)
+            // Guard against null world — hologram may reference an invalid/unloaded world (per CORR-02).
+            // MEM-03 VERIFIED: This guard is the single protection point against NPE on world unload.
+            // hiddenHolograms entries are cleaned up in handlePlayerQuit() — no unbounded growth here.
             if (holoLoc == null || holoLoc.getWorld() == null) continue;
             double viewDistSq = viewDistance * viewDistance;
 

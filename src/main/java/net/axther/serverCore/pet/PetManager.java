@@ -11,6 +11,7 @@ import net.axther.serverCore.pet.data.PetStore;
 import net.axther.serverCore.pet.model.ModelEngineHook;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 public class PetManager {
 
@@ -19,9 +20,11 @@ public class PetManager {
     private final Map<UUID, List<PetInstance>> activePets = new HashMap<>();
     private final Map<UUID, PetInstance> standIndex = new HashMap<>();
     private PetStore store;
+    private final Logger logger;
 
-    public PetManager(boolean modelEngineEnabled) {
+    public PetManager(boolean modelEngineEnabled, Logger logger) {
         this.modelEngineEnabled = modelEngineEnabled;
+        this.logger = logger;
     }
 
     public void setStore(PetStore store) {
@@ -115,11 +118,19 @@ public class PetManager {
             var entry = iterator.next();
             var instances = entry.getValue();
             instances.removeIf(instance -> {
-                if (!instance.tick()) {
+                try {
+                    if (!instance.tick()) {
+                        standIndex.remove(instance.getStandUuid());
+                        return true;
+                    }
+                    return false;
+                } catch (Exception e) {
+                    logger.warning("[ServerCore] PetInstance tick failed for owner UUID "
+                            + instance.getOwnerUuid() + ": " + e.getMessage());
                     standIndex.remove(instance.getStandUuid());
+                    try { instance.destroy(); } catch (Exception ignored) {}
                     return true;
                 }
-                return false;
             });
             if (instances.isEmpty()) {
                 iterator.remove();

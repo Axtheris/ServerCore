@@ -12,6 +12,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 public class CosmeticManager {
 
@@ -19,6 +20,11 @@ public class CosmeticManager {
     private final Map<UUID, List<CosmeticInstance>> activeCosmetics = new HashMap<>();
     private final Map<UUID, CosmeticInstance> standIndex = new HashMap<>();
     private CosmeticStore store;
+    private final Logger logger;
+
+    public CosmeticManager(Logger logger) {
+        this.logger = logger;
+    }
 
     public void registerProfile(EntityType type, MobCosmeticProfile profile) {
         profiles.put(type, profile);
@@ -38,6 +44,9 @@ public class CosmeticManager {
             return false;
         }
 
+        // CORR-01 VERIFIED: Event is fired BEFORE stand spawn. If cancelled, we return false
+        // without spawning any ArmorStand — no orphan entities can leak on cancellation.
+        // DO NOT reorder: stand spawn must remain AFTER the isCancelled() check.
         CosmeticApplyEvent event = new CosmeticApplyEvent(mob, item);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
@@ -94,11 +103,19 @@ public class CosmeticManager {
             var entry = iterator.next();
             var instances = entry.getValue();
             instances.removeIf(instance -> {
-                if (!instance.tick()) {
+                try {
+                    if (!instance.tick()) {
+                        standIndex.remove(instance.getStandUuid());
+                        return true;
+                    }
+                    return false;
+                } catch (Exception e) {
+                    logger.warning("[ServerCore] CosmeticInstance tick failed for mob UUID "
+                            + instance.getMobUuid() + ": " + e.getMessage());
                     standIndex.remove(instance.getStandUuid());
+                    try { instance.destroy(); } catch (Exception ignored) {}
                     return true;
                 }
-                return false;
             });
             if (instances.isEmpty()) {
                 iterator.remove();

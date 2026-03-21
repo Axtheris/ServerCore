@@ -13,6 +13,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -22,12 +26,37 @@ public class CosmeticStore {
     private final File file;
     private final Map<UUID, PendingCosmetic> pending = new HashMap<>();
 
+    // PERS-01: Dirty flag — set on mutation, cleared before flush dispatch.
+    private boolean dirty = false;
+    // PERS-02: volatile so async write thread can clear it without a memory barrier issue.
+    private volatile boolean saving = false;
+
     public CosmeticStore(JavaPlugin plugin) {
         this.plugin = plugin;
         this.file = new File(plugin.getDataFolder(), "cosmetic-data.yml");
     }
 
-    public void save(CosmeticManager manager) {
+    // -------------------------------------------------------------------------
+    // Dirty-flag API
+    // -------------------------------------------------------------------------
+
+    public void markDirty() {
+        dirty = true;
+    }
+
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    // -------------------------------------------------------------------------
+    // Snapshot helpers
+    // -------------------------------------------------------------------------
+
+    /**
+     * PERS-02: snapshot is built on main thread (safe to access Bukkit API and live collections).
+     * Returns a fully-populated YamlConfiguration without touching the disk.
+     */
+    private YamlConfiguration buildSnapshot(CosmeticManager manager) {
         YamlConfiguration config = new YamlConfiguration();
 
         Map<UUID, List<CosmeticInstance>> active = manager.getActiveCosmetics();
@@ -38,7 +67,7 @@ public class CosmeticStore {
 
             String key = "cosmetics." + mobUuid.toString();
 
-            // Determine entity type and world from the mob
+            // Bukkit.getEntity() must run on the main thread — stays here in buildSnapshot.
             Entity entity = Bukkit.getEntity(mobUuid);
             if (entity == null) continue;
 
@@ -69,15 +98,102 @@ public class CosmeticStore {
             config.set(key + ".items", serializedItems);
         }
 
+        return config;
+    }
+
+    // -------------------------------------------------------------------------
+    // Write helpers
+    // -------------------------------------------------------------------------
+
+    /**
+     * PERS-02: writeSnapshot runs on async thread — only touches the detached YamlConfiguration.
+     * YamlConfiguration is read-only after buildSnapshot() returns — no concurrent access.
+     * Uses atomic file swap for crash safety (PERS-03).
+     */
+    private void writeSnapshot(YamlConfiguration snapshot) {
         try {
-            config.save(file);
+            Path tmp = file.toPath().resolveSibling(file.getName() + ".tmp");
+            snapshot.save(tmp.toFile());
+            try {
+                Files.move(tmp, file.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(tmp, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to save cosmetic data", e);
+        } finally {
+            saving = false;
+        }
+    }
+
+    /**
+     * Synchronous write — same atomic swap logic as writeSnapshot but without the saving flag
+     * management. Only called from onDisable on the main thread when no async write is in flight.
+     */
+    private void writeSnapshotSync(YamlConfiguration snapshot) {
+        try {
+            Path tmp = file.toPath().resolveSibling(file.getName() + ".tmp");
+            snapshot.save(tmp.toFile());
+            try {
+                Files.move(tmp, file.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(tmp, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to save cosmetic data", e);
         }
     }
 
+    // -------------------------------------------------------------------------
+    // Public persistence API
+    // -------------------------------------------------------------------------
+
+    /**
+     * PERS-01: Flushes dirty state to disk via snapshot-then-async write.
+     * No-op if store is clean or an async write is already in flight.
+     */
+    public void flushIfDirty(CosmeticManager manager) {
+        if (!dirty) return;
+        if (saving) return;  // async write in flight, skip (PERS-02)
+        saving = true;
+        dirty = false;  // clear BEFORE dispatch — mutations after snapshot set dirty again (correct)
+        YamlConfiguration snapshot = buildSnapshot(manager);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> writeSnapshot(snapshot));
+    }
+
+    /**
+     * PERS-01 / onDisable: Synchronous save — guaranteed to complete before process exits.
+     */
+    public void saveSync(CosmeticManager manager) {
+        dirty = false;
+        YamlConfiguration snapshot = buildSnapshot(manager);
+        writeSnapshotSync(snapshot);
+    }
+
+    // -------------------------------------------------------------------------
+    // Load
+    // -------------------------------------------------------------------------
+
     @SuppressWarnings("unchecked")
     public void load(CosmeticManager manager) {
+        // PERS-03: Clean up any .tmp file left by a crashed async write.
+        Path tmp = file.toPath().resolveSibling(file.getName() + ".tmp");
+        if (Files.exists(tmp)) {
+            if (!file.exists()) {
+                try {
+                    Files.move(tmp, file.toPath());
+                } catch (IOException e) {
+                    plugin.getLogger().warning("Failed to recover cosmetic data from .tmp file: " + e.getMessage());
+                }
+            } else {
+                try {
+                    Files.deleteIfExists(tmp);
+                } catch (IOException e) {
+                    plugin.getLogger().warning("Failed to delete orphaned cosmetic .tmp file: " + e.getMessage());
+                }
+            }
+        }
+
         if (!file.exists()) return;
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);

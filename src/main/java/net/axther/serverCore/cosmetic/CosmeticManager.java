@@ -21,6 +21,7 @@ public class CosmeticManager {
     private final Map<UUID, CosmeticInstance> standIndex = new HashMap<>();
     private CosmeticStore store;
     private final Logger logger;
+    private int sweepCounter = 0;
 
     public CosmeticManager(Logger logger) {
         this.logger = logger;
@@ -120,6 +121,21 @@ public class CosmeticManager {
             if (instances.isEmpty()) {
                 iterator.remove();
             }
+        }
+
+        // MEM-02: Safety-net audit sweep — runs every 10 minutes (12000 ticks).
+        // Catches stale standIndex entries not removed by normal cleanup paths.
+        // Non-persistent armor stands are removed on chunk unload, so getEntity()==null
+        // means the entity is truly gone. Logged at FINE to avoid INFO noise.
+        if (++sweepCounter >= 12000) {
+            sweepCounter = 0;
+            standIndex.entrySet().removeIf(e -> {
+                if (Bukkit.getEntity(e.getKey()) == null) {
+                    logger.fine("[ServerCore] CosmeticManager audit: removed stale standIndex entry " + e.getKey());
+                    return true;
+                }
+                return false;
+            });
         }
     }
 

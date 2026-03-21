@@ -82,9 +82,18 @@ public class EmitterManager {
     }
 
     public void tickAll() {
+        // CORR-03 VERIFIED: EmitterInstance.tick() has a world-null guard. Per-instance try-catch
+        // added to guard against unexpected particle API exceptions without aborting all emitters.
         for (EmitterInstance instance : emittersById.values()) {
             if (instance.isChunkLoaded()) {
-                instance.tick();
+                try {
+                    instance.tick();
+                } catch (Exception e) {
+                    // Log at WARNING — a single bad emitter must not stop all other emitters
+                    java.util.logging.Logger.getLogger("ServerCore")
+                            .warning("[ServerCore] EmitterInstance tick failed for id '"
+                                    + instance.getId() + "': " + e.getMessage());
+                }
             }
         }
     }

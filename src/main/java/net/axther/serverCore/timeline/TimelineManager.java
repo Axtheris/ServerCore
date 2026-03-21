@@ -89,7 +89,19 @@ public class TimelineManager {
      * have completed.
      */
     public void tickAll() {
-        activeInstances.removeIf(instance -> !instance.tick());
+        // CORR-03: Per-instance try-catch added. TimelineAction.execute() calls may throw
+        // if origin world is missing or action config is invalid. One failing timeline
+        // must not abort all other active instances.
+        activeInstances.removeIf(instance -> {
+            try {
+                return !instance.tick();
+            } catch (Exception e) {
+                java.util.logging.Logger.getLogger("ServerCore")
+                        .warning("[ServerCore] TimelineInstance tick failed for timeline '"
+                                + instance.getTimeline().getId() + "': " + e.getMessage());
+                return true; // Remove the failed instance
+            }
+        });
     }
 
     /**

@@ -42,7 +42,10 @@ public class CosmeticInstance {
         LivingEntity mob = getMob();
         ArmorStand stand = getStand();
 
-        if (mob == null || mob.isDead() || stand == null || stand.isDead()) {
+        // Canonical null-check order: null -> isDead() -> getWorld() == null (per CORR-02)
+        // Prevents NPE when entity is in a partially-unloaded world
+        if (mob == null || mob.isDead() || mob.getWorld() == null
+                || stand == null || stand.isDead() || stand.getWorld() == null) {
             destroy();
             return false;
         }

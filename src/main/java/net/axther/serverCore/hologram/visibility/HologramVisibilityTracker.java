@@ -35,6 +35,8 @@ public class HologramVisibilityTracker {
             if (entity == null) continue;
 
             Location holoLoc = hologram.getLocation();
+            // Guard against null world — hologram may reference an invalid/unloaded world (per CORR-02)
+            if (holoLoc == null || holoLoc.getWorld() == null) continue;
             double viewDistSq = viewDistance * viewDistance;
 
             for (Player player : Bukkit.getOnlinePlayers()) {

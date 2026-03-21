@@ -49,7 +49,8 @@ public class PetInstance {
         Player owner = getOwner();
         ArmorStand stand = getStand();
 
-        if (owner == null || !owner.isOnline() || stand == null || stand.isDead()) {
+        // Null-check order: null -> !isOnline() -> isDead() -> getWorld() == null (per CORR-02)
+        if (owner == null || !owner.isOnline() || stand == null || stand.isDead() || stand.getWorld() == null) {
             destroy();
             return false;
         }

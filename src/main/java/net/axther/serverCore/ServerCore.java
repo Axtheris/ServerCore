@@ -215,7 +215,15 @@ public final class ServerCore extends JavaPlugin {
             hologramConfig.loadAll(hologramManager);
 
             // Visibility tracker for conditional holograms
-            double holoViewDistance = getConfig().getDouble("systems.holograms.view-distance", 48.0);
+            double rawHoloViewDistance = getConfig().getDouble("systems.holograms.view-distance", 48.0);
+            double holoViewDistance;
+            if (rawHoloViewDistance < 1.0 || rawHoloViewDistance > 512.0) {
+                getLogger().warning("[ServerCore] systems.holograms.view-distance value '"
+                        + rawHoloViewDistance + "' is out of bounds [1.0-512.0], clamping to 48.0");
+                holoViewDistance = 48.0;
+            } else {
+                holoViewDistance = rawHoloViewDistance;
+            }
             var visibilityTracker = new net.axther.serverCore.hologram.visibility.HologramVisibilityTracker(
                     this, hologramManager, holoViewDistance);
             hologramManager.setVisibilityTracker(visibilityTracker);

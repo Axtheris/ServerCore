@@ -482,11 +482,11 @@ public final class ServerCore extends JavaPlugin {
         if (petManager != null) {
             petManager.destroyAll();
         }
-        if (hologramConfig != null && hologramManager != null) {
-            hologramConfig.saveAll(hologramManager);
-        }
         if (hologramTickTask != null) {
             hologramTickTask.cancel();
+        }
+        if (hologramConfig != null && hologramManager != null) {
+            hologramConfig.saveAll(hologramManager);
         }
         if (hologramManager != null) {
             hologramManager.destroyAll();

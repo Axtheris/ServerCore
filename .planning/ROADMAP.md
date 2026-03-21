@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Correctness and Stability** - Eliminate crashes, null-dereferences, lifecycle failures, and silent config errors (completed 2026-03-21)
 - [ ] **Phase 2: Memory and Logic Correctness** - Bound all unbounded maps; fix quest objective progression to a single source of truth
-- [ ] **Phase 3: Async Persistence and Performance** - Debounce saves with snapshot-then-async; eliminate per-tick allocations
+- [x] **Phase 3: Async Persistence and Performance** - Debounce saves with snapshot-then-async; eliminate per-tick allocations (completed 2026-03-21)
 - [ ] **Phase 4: Security and Observability** - Enforce hologram action permissions, validate NPC skin Base64, add live debug command
 
 ## Phase Details
@@ -64,8 +64,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Async persistence: dirty-flag + snapshot-then-async writes for CosmeticStore/PetStore/QuestStore, SaveFlushTask every 6000 ticks, atomic file swap, onDisable sync path (PERS-01, PERS-02, PERS-03)
-- [ ] 03-02-PLAN.md — Explore target pre-parsing: ExploreTarget record in QuestObjective, pre-parsed at config load, zero-allocation handleExplore (PERF-01)
+- [x] 03-01-PLAN.md — Async persistence: dirty-flag + snapshot-then-async writes for CosmeticStore/PetStore/QuestStore, SaveFlushTask every 6000 ticks, atomic file swap, onDisable sync path (PERS-01, PERS-02, PERS-03)
+- [x] 03-02-PLAN.md — Explore target pre-parsing: ExploreTarget record in QuestObjective, pre-parsed at config load, zero-allocation handleExplore (PERF-01)
 
 ### Phase 4: Security and Observability
 **Goal**: Hologram actions enforce permissions, NPC skins are validated before packet send, and operators can inspect live plugin state
@@ -86,5 +86,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Correctness and Stability | 3/3 | Complete   | 2026-03-21 |
 | 2. Memory and Logic Correctness | 0/3 | Not started | - |
-| 3. Async Persistence and Performance | 0/2 | Not started | - |
+| 3. Async Persistence and Performance | 2/2 | Complete   | 2026-03-21 |
 | 4. Security and Observability | 0/? | Not started | - |

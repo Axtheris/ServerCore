@@ -44,7 +44,7 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Performance
 
-- [ ] **PERF-01**: Quest explore objective target coordinates are pre-parsed to Location objects at QuestConfig load time — no per-tick `String.split()` allocation
+- [x] **PERF-01**: Quest explore objective target coordinates are pre-parsed to Location objects at QuestConfig load time — no per-tick `String.split()` allocation
 
 ### Security
 
@@ -111,7 +111,7 @@ Deferred to future milestone. Tracked but not in current roadmap.
 | PERS-01 | Phase 3 | Pending |
 | PERS-02 | Phase 3 | Pending |
 | PERS-03 | Phase 3 | Pending |
-| PERF-01 | Phase 3 | Pending |
+| PERF-01 | Phase 3 | Complete |
 | SEC-01 | Phase 4 | Pending |
 | SEC-02 | Phase 4 | Pending |
 | OBS-01 | Phase 4 | Pending |

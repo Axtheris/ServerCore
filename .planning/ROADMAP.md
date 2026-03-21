@@ -45,7 +45,12 @@ Plans:
   2. A player who accepts a quest, collects items, abandons, and re-accepts sees correct FETCH objective progress — not stale progress from the prior accept
   3. Completing a quest objective via any call path in QuestManager advances the same underlying progression state
   4. A hologram visibility tick during world unload does not throw a NullPointerException
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Hologram cooldown eviction: sweepCooldowns() on HologramInteractListener, field promotion in ServerCore, wired into HologramTickTask (MEM-01)
+- [ ] 02-02-PLAN.md — standIndex safety-net audit sweep: sweepCounter + Bukkit.getEntity() check in CosmeticManager and PetManager tickAll() (MEM-02)
+- [ ] 02-03-PLAN.md — Verification comments: MEM-03 on HologramVisibilityTracker, CORR-05/CORR-06 on QuestManager, CORR-06 on QuestListener (MEM-03, CORR-05, CORR-06)
 
 ### Phase 3: Async Persistence and Performance
 **Goal**: Data saves never block the main thread during play and quest explore checks allocate no garbage per tick
@@ -76,6 +81,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Correctness and Stability | 3/3 | Complete   | 2026-03-21 |
-| 2. Memory and Logic Correctness | 0/? | Not started | - |
+| 2. Memory and Logic Correctness | 0/3 | Not started | - |
 | 3. Async Persistence and Performance | 0/? | Not started | - |
 | 4. Security and Observability | 0/? | Not started | - |

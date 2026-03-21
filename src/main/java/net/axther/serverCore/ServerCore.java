@@ -123,7 +123,7 @@ public final class ServerCore extends JavaPlugin {
 
         // --- Cosmetic System ---
         if (serverCoreConfig.isSystemEnabled("cosmetics")) {
-            cosmeticManager = new CosmeticManager();
+            cosmeticManager = new CosmeticManager(getLogger());
 
             // Register Java profiles first (these take priority over config)
             cosmeticManager.registerProfile(EntityType.PANDA, new PandaCosmeticProfile());
@@ -180,7 +180,7 @@ public final class ServerCore extends JavaPlugin {
             if (megEnabled) {
                 getLogger().info("Model Engine detected -- pet models enabled");
             }
-            petManager = new PetManager(megEnabled);
+            petManager = new PetManager(megEnabled, getLogger());
 
             // Register Java profiles first (take priority over config)
             registerJavaPetProfiles();
@@ -256,7 +256,15 @@ public final class ServerCore extends JavaPlugin {
                 npcListener = new NPCListener(this, npcManager, npcConfig);
                 getServer().getPluginManager().registerEvents(npcListener, this);
 
-                int viewDistance = serverCoreConfig.getNpcViewDistance();
+                int rawViewDistance = serverCoreConfig.getNpcViewDistance();
+                int viewDistance;
+                if (rawViewDistance < 1 || rawViewDistance > 256) {
+                    getLogger().warning("[ServerCore] systems.npcs.view-distance value '"
+                            + rawViewDistance + "' is out of bounds [1-256], clamping to 48");
+                    viewDistance = 48;
+                } else {
+                    viewDistance = rawViewDistance;
+                }
                 initNpcPacketSystem(viewDistance);
 
                 PluginCommand npcCmd = getCommand("npc");
@@ -276,9 +284,14 @@ public final class ServerCore extends JavaPlugin {
 
         // --- Quest System ---
         if (serverCoreConfig.isSystemEnabled("quests")) {
+            // CORR-04: QuestManager may have been created early in the NPC block (above) to support
+            // inline NPC quests. This null guard prevents double-initialization, which would overwrite
+            // any quests already registered during npcConfig.loadAll(). DO NOT remove this guard.
             if (questManager == null) {
+                getLogger().info("[ServerCore] Initializing QuestManager (standalone — NPC system not active)");
                 questManager = new QuestManager();
             }
+            // If questManager was already created by the NPC block, it is reused here unchanged.
 
             // Load standalone quest files
             questConfig = new QuestConfig(this);

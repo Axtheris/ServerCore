@@ -114,7 +114,9 @@ public class QuestManager {
             int current = progress.getProgress(i);
 
             if (obj.getType() == QuestObjective.Type.FETCH) {
-                // Check inventory on-demand
+                // CORR-06: FETCH objectives use on-demand inventory check — intentional design.
+                // Progress is never stored for FETCH; areObjectivesComplete() always reads live inventory.
+                // This ensures the player actually holds the items at completion time.
                 current = countMaterial(player, obj.getTarget());
             }
 
@@ -246,6 +248,9 @@ public class QuestManager {
         }
     }
 
+    // CORR-05 VERIFIED: getFirstIncompleteIndex() is the single source of truth for sequential
+    // objective progression. Called from 3 sites: incrementObjective() (line 229), handleTalk()
+    // (line 278), handleExplore() (line 334). Logic is not duplicated anywhere in the codebase.
     private int getFirstIncompleteIndex(QuestProgress progress, List<QuestObjective> objectives) {
         for (int i = 0; i < objectives.size(); i++) {
             if (progress.getProgress(i) < objectives.get(i).getAmount()) return i;

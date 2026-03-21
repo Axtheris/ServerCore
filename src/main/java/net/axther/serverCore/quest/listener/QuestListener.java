@@ -151,6 +151,9 @@ public class QuestListener implements Listener {
                 QuestObjective obj = objectives.get(i);
                 int current = progress.getProgress(i);
                 if (obj.getType() == QuestObjective.Type.FETCH) {
+                    // CORR-06 VERIFIED: FETCH objectives never write to QuestProgress (always 0).
+                    // Live inventory count is read here so the action bar shows accurate progress
+                    // after abandon/re-accept cycles. This is the only FETCH display path.
                     current = manager.countMaterial(player, obj.getTarget());
                 }
                 if (current < obj.getAmount()) {

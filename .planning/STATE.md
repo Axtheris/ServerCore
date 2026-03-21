@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-03-21T22:57:59.974Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-03-21T23:22:18.012Z"
 progress:
   total_phases: 4
-  completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  completed_phases: 2
+  total_plans: 6
+  completed_plans: 6
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-21)
 
 **Core value:** Every system must work correctly under real server conditions — no silent failures, no entity leaks, no data corruption, no crashes.
-**Current focus:** Phase 01 — correctness-and-stability
+**Current focus:** Phase 02 — memory-and-logic-correctness
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
+Phase: 02 (memory-and-logic-correctness) — EXECUTING
+Plan: 3 of 3
 
 ## Performance Metrics
 
@@ -49,6 +49,9 @@ Plan: Not started
 | Phase 01-correctness-and-stability P01 | 15 | 4 tasks | 8 files |
 | Phase 01 P02 | 12 | 4 tasks | 2 files |
 | Phase 01 P03 | 8m | 3 tasks | 6 files |
+| Phase 02-memory-and-logic-correctness P02 | 5 | 2 tasks | 2 files |
+| Phase 02-memory-and-logic-correctness P03 | 8 | 2 tasks | 3 files |
+| Phase 02-memory-and-logic-correctness P01 | 1 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -67,6 +70,11 @@ Recent decisions affecting current work:
 - [Phase 01]: Absent soft-dep logs at INFO level per D-08; PacketEvents absent WARNING unchanged
 - [Phase 01]: EmitterConfig world-existence guard matches HologramConfig/NPCConfig pattern (D-05)
 - [Phase 01]: CORR-01/CORR-04/LIFE comments added inline with code as permanent invariant markers, not in external docs
+- [Phase 02-02]: Use ++sweepCounter >= 12000 with explicit reset to avoid integer overflow edge case in both CosmeticManager and PetManager standIndex audit sweeps (MEM-02)
+- [Phase 02-memory-and-logic-correctness]: No logic changes for MEM-03/CORR-05/CORR-06 — all three requirements already satisfied by existing code; verification is documentation-only via inline comments
+- [Phase 02-01]: sweepCooldowns takes tickCount from caller rather than maintaining own counter — listener stays stateless, task layer owns the tick clock
+- [Phase 02-01]: MEM-01 pattern: periodic map eviction via removeIf on entrySet, modulo-gated by tickCount, driven by existing tick task
+- [Phase 02-02]: Evictions logged at Level.FINE not WARNING — stale standIndex entries from plugin conflicts are expected edge cases, not operational errors
 
 ### Pending Todos
 
@@ -79,6 +87,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T22:50:30.625Z
-Stopped at: Completed 01-03-PLAN.md
+Last session: 2026-03-21T23:22:18.010Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None

@@ -48,9 +48,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Hologram cooldown eviction: sweepCooldowns() on HologramInteractListener, field promotion in ServerCore, wired into HologramTickTask (MEM-01)
-- [ ] 02-02-PLAN.md — standIndex safety-net audit sweep: sweepCounter + Bukkit.getEntity() check in CosmeticManager and PetManager tickAll() (MEM-02)
-- [ ] 02-03-PLAN.md — Verification comments: MEM-03 on HologramVisibilityTracker, CORR-05/CORR-06 on QuestManager, CORR-06 on QuestListener (MEM-03, CORR-05, CORR-06)
+- [x] 02-01-PLAN.md — Hologram cooldown eviction: sweepCooldowns() on HologramInteractListener, field promotion in ServerCore, wired into HologramTickTask (MEM-01)
+- [x] 02-02-PLAN.md — standIndex safety-net audit sweep: sweepCounter + Bukkit.getEntity() check in CosmeticManager and PetManager tickAll() (MEM-02)
+- [x] 02-03-PLAN.md — Verification comments: MEM-03 on HologramVisibilityTracker, CORR-05/CORR-06 on QuestManager, CORR-06 on QuestListener (MEM-03, CORR-05, CORR-06)
 
 ### Phase 3: Async Persistence and Performance
 **Goal**: Data saves never block the main thread during play and quest explore checks allocate no garbage per tick

@@ -2,6 +2,7 @@ package net.axther.serverCore.particle.config;
 
 import net.axther.serverCore.particle.*;
 import net.axther.serverCore.particle.script.ParticleScript;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -36,6 +37,12 @@ public class EmitterConfig {
 
             try {
                 String worldName = sec.getString("world", "world");
+                // D-05: Check world existence at load time — do not register emitters for missing worlds
+                if (Bukkit.getWorld(worldName) == null) {
+                    plugin.getLogger().warning("[ServerCore] Emitter '" + id
+                            + "' references unknown world '" + worldName + "', skipping");
+                    continue;
+                }
                 int x = sec.getInt("x");
                 int y = sec.getInt("y");
                 int z = sec.getInt("z");

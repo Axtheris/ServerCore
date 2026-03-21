@@ -76,7 +76,7 @@ public class CosmeticManager {
         standIndex.put(stand.getUniqueId(), instance);
 
         if (store != null) {
-            store.save(this);
+            store.markDirty();
         }
 
         return true;
@@ -94,7 +94,7 @@ public class CosmeticManager {
         }
 
         if (store != null) {
-            store.save(this);
+            store.markDirty();
         }
     }
 

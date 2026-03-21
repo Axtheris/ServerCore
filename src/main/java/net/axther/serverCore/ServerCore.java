@@ -53,6 +53,7 @@ import net.axther.serverCore.gui.MenuConfig;
 import net.axther.serverCore.gui.MenuListener;
 import net.axther.serverCore.gui.MenuManager;
 import net.axther.serverCore.gui.command.MenuCommand;
+import net.axther.serverCore.task.SaveFlushTask;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -88,6 +89,7 @@ public final class ServerCore extends JavaPlugin {
     private MenuManager menuManager;
     private MenuConfig menuConfig;
     private net.axther.serverCore.gui.task.MenuTickTask menuTickTask;
+    private SaveFlushTask saveFlushTask;
 
     @Override
     public void onEnable() {
@@ -389,6 +391,10 @@ public final class ServerCore extends JavaPlugin {
                 hologramManager, npcManager, timelineManager, reactiveManager, menuManager,
                 questManager, menuConfig);
 
+        // PERS-01: Start periodic save flush task — runs every 6000 ticks (~5 minutes)
+        saveFlushTask = new SaveFlushTask(cosmeticStore, cosmeticManager, petStore, questStore, questManager);
+        saveFlushTask.runTaskTimer(this, 6000L, 6000L);
+
         // Build startup summary
         StringBuilder summary = new StringBuilder("ServerCore enabled");
         if (cosmeticManager != null) {
@@ -456,11 +462,14 @@ public final class ServerCore extends JavaPlugin {
         // LIFE-02: null guards on every block below ensure this method is safe in partial-init
         // state (e.g., if a system failed to load, its manager/task fields remain null).
         ServerCoreAPI.shutdown();
+        if (saveFlushTask != null) {
+            saveFlushTask.cancel();
+        }
         if (tickTask != null) {
             tickTask.cancel();
         }
         if (cosmeticStore != null && cosmeticManager != null) {
-            cosmeticStore.save(cosmeticManager);
+            cosmeticStore.saveSync(cosmeticManager);
         }
         if (cosmeticManager != null) {
             cosmeticManager.destroyAll();
@@ -478,7 +487,7 @@ public final class ServerCore extends JavaPlugin {
             petTickTask.cancel();
         }
         if (petStore != null) {
-            petStore.save();
+            petStore.saveSync();
         }
         if (petManager != null) {
             petManager.destroyAll();
@@ -493,7 +502,7 @@ public final class ServerCore extends JavaPlugin {
             hologramManager.destroyAll();
         }
         if (questStore != null && questManager != null) {
-            questStore.save(questManager);
+            questStore.saveSync(questManager);
         }
         if (npcTickTask != null) {
             npcTickTask.cancel();

@@ -12,7 +12,7 @@ Four phases attack the plugin's production bugs in dependency order: crash-causi
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Correctness and Stability** - Eliminate crashes, null-dereferences, lifecycle failures, and silent config errors
+- [x] **Phase 1: Correctness and Stability** - Eliminate crashes, null-dereferences, lifecycle failures, and silent config errors (completed 2026-03-21)
 - [ ] **Phase 2: Memory and Logic Correctness** - Bound all unbounded maps; fix quest objective progression to a single source of truth
 - [ ] **Phase 3: Async Persistence and Performance** - Debounce saves with snapshot-then-async; eliminate per-tick allocations
 - [ ] **Phase 4: Security and Observability** - Enforce hologram action permissions, validate NPC skin Base64, add live debug command
@@ -34,7 +34,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 01-01-PLAN.md — Tick loop hardening: per-instance try-catch in CosmeticManager/PetManager + world-null guards in tick() methods (CORR-02, CORR-03)
 - [x] 01-02-PLAN.md — Config validation and soft-dep logging: NPC/hologram view-distance bounds + absent-dependency INFO logs (CONF-01, CONF-03, CONF-04)
-- [ ] 01-03-PLAN.md — Lifecycle audit: fix onDisable() task-cancel ordering for emitter/pet + verify and document already-correct patterns (CORR-01, CORR-04, LIFE-01, LIFE-02, LIFE-03, LIFE-04)
+- [x] 01-03-PLAN.md — Lifecycle audit: fix onDisable() task-cancel ordering for emitter/pet + verify and document already-correct patterns (CORR-01, CORR-04, LIFE-01, LIFE-02, LIFE-03, LIFE-04)
 
 ### Phase 2: Memory and Logic Correctness
 **Goal**: Memory usage stays bounded over server lifetime and quest objective progression is always consistent
@@ -75,7 +75,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Correctness and Stability | 2/3 | In Progress|  |
+| 1. Correctness and Stability | 3/3 | Complete   | 2026-03-21 |
 | 2. Memory and Logic Correctness | 0/? | Not started | - |
 | 3. Async Persistence and Performance | 0/? | Not started | - |
 | 4. Security and Observability | 0/? | Not started | - |

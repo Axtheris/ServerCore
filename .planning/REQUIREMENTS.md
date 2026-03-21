@@ -9,19 +9,19 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Correctness
 
-- [ ] **CORR-01**: Cosmetic armor stand is not spawned until after CosmeticApplyEvent cancellation check passes — no orphan entity leaks on event cancellation
-- [ ] **CORR-02**: All entity access follows canonical null-check order: `entity != null` → `entity.isDead()` → `entity.getWorld() != null` — no NPE from reversed checks
-- [ ] **CORR-03**: All tick task `tickAll()` loops use try-catch per instance so one failed instance does not skip cleanup of subsequent instances
-- [ ] **CORR-04**: QuestManager is initialized exactly once regardless of NPC system enabled/disabled state — no double-initialization overwrite
+- [x] **CORR-01**: Cosmetic armor stand is not spawned until after CosmeticApplyEvent cancellation check passes — no orphan entity leaks on event cancellation
+- [x] **CORR-02**: All entity access follows canonical null-check order: `entity != null` → `entity.isDead()` → `entity.getWorld() != null` — no NPE from reversed checks
+- [x] **CORR-03**: All tick task `tickAll()` loops use try-catch per instance so one failed instance does not skip cleanup of subsequent instances
+- [x] **CORR-04**: QuestManager is initialized exactly once regardless of NPC system enabled/disabled state — no double-initialization overwrite
 - [ ] **CORR-05**: Quest `getFirstIncompleteIndex()` logic extracted to single method on QuestProgress — single source of truth for objective progression
 - [ ] **CORR-06**: Quest FETCH objective tracks consistent progress — inventory count at completion check time, not stale cached values from a prior accept
 
 ### Lifecycle
 
-- [ ] **LIFE-01**: All BukkitRunnable tick tasks store task references and are cancelled in `onDisable()` before manager state is cleared
-- [ ] **LIFE-02**: `onDisable()` cleanup is idempotent — safe to call in partial-init state, on crash, or after reload
-- [ ] **LIFE-03**: All lifecycle listeners (death, chunk unload) handle double-fire safely — removing an already-removed entity does not throw or corrupt state
-- [ ] **LIFE-04**: `onDisable()` performs synchronous final data flush for all stores (cosmetics, pets, quests) — no data loss on shutdown
+- [x] **LIFE-01**: All BukkitRunnable tick tasks store task references and are cancelled in `onDisable()` before manager state is cleared
+- [x] **LIFE-02**: `onDisable()` cleanup is idempotent — safe to call in partial-init state, on crash, or after reload
+- [x] **LIFE-03**: All lifecycle listeners (death, chunk unload) handle double-fire safely — removing an already-removed entity does not throw or corrupt state
+- [x] **LIFE-04**: `onDisable()` performs synchronous final data flush for all stores (cosmetics, pets, quests) — no data loss on shutdown
 
 ### Memory
 
@@ -31,10 +31,10 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Config Validation
 
-- [ ] **CONF-01**: NPC view-distance config value is validated to minimum 1 at load time — invalid values logged with WARNING and clamped to default
+- [x] **CONF-01**: NPC view-distance config value is validated to minimum 1 at load time — invalid values logged with WARNING and clamped to default
 - [ ] **CONF-02**: NPC skin texture and signature fields are validated as proper Base64 format at load time — malformed values logged and skin skipped
-- [ ] **CONF-03**: Config values with numeric bounds (distances, intervals, counts) are validated at load time with logged warnings for out-of-range values
-- [ ] **CONF-04**: Soft dependency detection centralized in single DependencyChecker pass in `onEnable()` — each present/absent dependency logged at INFO level
+- [x] **CONF-03**: Config values with numeric bounds (distances, intervals, counts) are validated at load time with logged warnings for out-of-range values
+- [x] **CONF-04**: Soft dependency detection centralized in single DependencyChecker pass in `onEnable()` — each present/absent dependency logged at INFO level
 
 ### Persistence
 
@@ -91,23 +91,23 @@ Deferred to future milestone. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CORR-01 | Phase 1 | Pending |
-| CORR-02 | Phase 1 | Pending |
-| CORR-03 | Phase 1 | Pending |
-| CORR-04 | Phase 1 | Pending |
+| CORR-01 | Phase 1 | Complete |
+| CORR-02 | Phase 1 | Complete |
+| CORR-03 | Phase 1 | Complete |
+| CORR-04 | Phase 1 | Complete |
 | CORR-05 | Phase 2 | Pending |
 | CORR-06 | Phase 2 | Pending |
-| LIFE-01 | Phase 1 | Pending |
-| LIFE-02 | Phase 1 | Pending |
-| LIFE-03 | Phase 1 | Pending |
-| LIFE-04 | Phase 1 | Pending |
+| LIFE-01 | Phase 1 | Complete |
+| LIFE-02 | Phase 1 | Complete |
+| LIFE-03 | Phase 1 | Complete |
+| LIFE-04 | Phase 1 | Complete |
 | MEM-01 | Phase 2 | Pending |
 | MEM-02 | Phase 2 | Pending |
 | MEM-03 | Phase 2 | Pending |
-| CONF-01 | Phase 1 | Pending |
+| CONF-01 | Phase 1 | Complete |
 | CONF-02 | Phase 4 | Pending |
-| CONF-03 | Phase 1 | Pending |
-| CONF-04 | Phase 1 | Pending |
+| CONF-03 | Phase 1 | Complete |
+| CONF-04 | Phase 1 | Complete |
 | PERS-01 | Phase 3 | Pending |
 | PERS-02 | Phase 3 | Pending |
 | PERS-03 | Phase 3 | Pending |

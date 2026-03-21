@@ -72,6 +72,7 @@ public final class ServerCore extends JavaPlugin {
     private HologramManager hologramManager;
     private HologramConfig hologramConfig;
     private HologramTickTask hologramTickTask;
+    private net.axther.serverCore.hologram.listener.HologramInteractListener hologramInteractListener;
     private NPCManager npcManager;
     private NPCConfig npcConfig;
     private NPCTickTask npcTickTask;
@@ -231,8 +232,8 @@ public final class ServerCore extends JavaPlugin {
             hologramManager.setVisibilityTracker(visibilityTracker);
 
             // Click interaction listener
-            var interactListener = new net.axther.serverCore.hologram.listener.HologramInteractListener(hologramManager);
-            getServer().getPluginManager().registerEvents(interactListener, this);
+            hologramInteractListener = new net.axther.serverCore.hologram.listener.HologramInteractListener(hologramManager);
+            getServer().getPluginManager().registerEvents(hologramInteractListener, this);
 
             getServer().getPluginManager().registerEvents(new HologramLifecycleListener(hologramManager, visibilityTracker), this);
 
@@ -243,7 +244,7 @@ public final class ServerCore extends JavaPlugin {
                 hologramCmd.setTabCompleter(hologramCommand);
             }
 
-            hologramTickTask = new HologramTickTask(hologramManager);
+            hologramTickTask = new HologramTickTask(hologramManager, hologramInteractListener);
             hologramTickTask.runTaskTimer(this, 0L, 1L);
 
             hologramManager.spawnAll();

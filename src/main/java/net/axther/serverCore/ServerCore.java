@@ -178,7 +178,9 @@ public final class ServerCore extends JavaPlugin {
         if (serverCoreConfig.isSystemEnabled("pets")) {
             boolean megEnabled = getServer().getPluginManager().getPlugin("ModelEngine") != null;
             if (megEnabled) {
-                getLogger().info("Model Engine detected -- pet models enabled");
+                getLogger().info("[ServerCore] ModelEngine detected -- pet models enabled");
+            } else {
+                getLogger().info("[ServerCore] ModelEngine not found -- pet models disabled, using head items");
             }
             petManager = new PetManager(megEnabled, getLogger());
 
@@ -334,6 +336,8 @@ public final class ServerCore extends JavaPlugin {
             boolean vaultPresent = getServer().getPluginManager().getPlugin("Vault") != null;
             if (vaultPresent) {
                 setupVault();
+            } else {
+                getLogger().info("[ServerCore] Vault not found -- economy rewards disabled");
             }
 
             getLogger().info("Quest system loaded with " + questManager.getAllQuests().size() + " quests");
@@ -374,7 +378,9 @@ public final class ServerCore extends JavaPlugin {
         // --- PlaceholderAPI Hook ---
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             registerPlaceholderHook();
-            getLogger().info("PlaceholderAPI detected -- placeholders registered");
+            getLogger().info("[ServerCore] PlaceholderAPI detected -- placeholders registered");
+        } else {
+            getLogger().info("[ServerCore] PlaceholderAPI not found -- placeholders disabled");
         }
 
         // --- Public API ---

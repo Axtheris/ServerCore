@@ -98,6 +98,7 @@ public class QuestManager {
 
         QuestProgress progress = new QuestProgress(questId, quest.getObjectives().size());
         activeQuests.computeIfAbsent(player.getUniqueId(), k -> new ArrayList<>()).add(progress);
+        if (store != null) store.markDirty();
         return true;
     }
 
@@ -162,6 +163,7 @@ public class QuestManager {
         removeActiveProgress(player.getUniqueId(), questId);
         completedQuests.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>())
                 .put(questId, System.currentTimeMillis());
+        if (store != null) store.markDirty();
 
         // Fire event
         Bukkit.getPluginManager().callEvent(new QuestCompleteEvent(player, questId));
@@ -177,6 +179,7 @@ public class QuestManager {
             if (event.isCancelled()) return;
         }
         removeActiveProgress(playerId, questId);
+        if (store != null) store.markDirty();
     }
 
     // --- Progress helpers ---
@@ -339,25 +342,26 @@ public class QuestManager {
                 if (quest.isSequentialObjectives() && i > getFirstIncompleteIndex(progress, objectives)) continue;
                 if (progress.getProgress(i) >= 1) continue;
 
-                String[] parts = obj.getTarget().split(",");
-                if (parts.length != 4) continue;
-                String world = parts[0];
-                if (location.getWorld() == null || !location.getWorld().getName().equalsIgnoreCase(world)) continue;
+                // PERF-01: Use pre-parsed ExploreTarget — no String.split() or Double.parseDouble() per tick.
+                QuestObjective.ExploreTarget target = obj.getExploreTarget();
+                if (target == null) continue; // malformed or non-EXPLORE — skipped at load time
 
-                try {
-                    double tx = Double.parseDouble(parts[1]);
-                    double ty = Double.parseDouble(parts[2]);
-                    double tz = Double.parseDouble(parts[3]);
-                    double distSq = Math.pow(location.getX() - tx, 2) + Math.pow(location.getY() - ty, 2) + Math.pow(location.getZ() - tz, 2);
-                    if (distSq <= obj.getRadius() * obj.getRadius()) {
-                        progress.setProgress(i, 1);
-                        Player player = Bukkit.getPlayer(playerId);
-                        if (player != null) {
-                            Bukkit.getPluginManager().callEvent(
-                                    new QuestProgressEvent(player, progress.getQuestId(), i, 1));
-                        }
+                // D-19: World lookup at check time (worlds may not be loaded at config parse time)
+                if (location.getWorld() == null || !location.getWorld().getName().equalsIgnoreCase(target.worldName())) continue;
+
+                // Use multiplication instead of Math.pow for micro-optimization (no autoboxing)
+                double dx = location.getX() - target.x();
+                double dy = location.getY() - target.y();
+                double dz = location.getZ() - target.z();
+                double distSq = dx * dx + dy * dy + dz * dz;
+                if (distSq <= obj.getRadius() * obj.getRadius()) {
+                    progress.setProgress(i, 1);
+                    Player player = Bukkit.getPlayer(playerId);
+                    if (player != null) {
+                        Bukkit.getPluginManager().callEvent(
+                                new QuestProgressEvent(player, progress.getQuestId(), i, 1));
                     }
-                } catch (NumberFormatException ignored) {}
+                }
             }
         }
     }

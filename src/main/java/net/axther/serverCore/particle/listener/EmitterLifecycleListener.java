@@ -12,6 +12,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+// LIFE-03: Emitter system has no entity lifecycle (holograms/pets). Block events are inherently unique per block.
 public class EmitterLifecycleListener implements Listener {
 
     private final EmitterManager manager;

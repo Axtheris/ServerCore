@@ -27,17 +27,20 @@ public class PetLifecycleListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+        // LIFE-03: dismissAll() is safe for unknown UUIDs — activePets.remove() returns null and method returns early
         manager.dismissAll(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
     public void onPlayerChangeWorld(PlayerChangedWorldEvent event) {
+        // LIFE-03: dismissAll() is safe for unknown UUIDs — activePets.remove() returns null and method returns early
         manager.dismissAll(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
     public void onEntitiesUnload(EntitiesUnloadEvent event) {
         for (Entity entity : event.getEntities()) {
+            // LIFE-03 VERIFIED: isPetStand() guard ensures removeStandFromIndex() is only called for tracked stands
             if (manager.isPetStand(entity.getUniqueId())) {
                 manager.removeStandFromIndex(entity.getUniqueId());
             }

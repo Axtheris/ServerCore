@@ -40,6 +40,7 @@ public class HologramLifecycleListener implements Listener {
         long chunkKey = ((long) chunkX << 32) | (chunkZ & 0xFFFFFFFFL);
 
         for (Hologram hologram : manager.getAll()) {
+            // LIFE-03 VERIFIED: isSpawned() guard prevents double-despawn
             if (hologram.getChunkKey() == chunkKey && hologram.isSpawned()) {
                 hologram.despawn();
             }

@@ -28,6 +28,7 @@ public class CosmeticLifecycleListener implements Listener {
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         LivingEntity entity = event.getEntity();
+        // LIFE-03 VERIFIED: hasCosmetics() guard makes double-fire a no-op — safe for concurrent events
         if (manager.hasCosmetics(entity.getUniqueId())) {
             manager.removeCosmetics(entity.getUniqueId());
         }
@@ -36,6 +37,7 @@ public class CosmeticLifecycleListener implements Listener {
     @EventHandler
     public void onEntitiesUnload(EntitiesUnloadEvent event) {
         for (Entity entity : event.getEntities()) {
+            // LIFE-03 VERIFIED: hasCosmetics() guard makes double-fire a no-op — safe for concurrent events
             if (manager.hasCosmetics(entity.getUniqueId())) {
                 manager.removeCosmetics(entity.getUniqueId());
             }

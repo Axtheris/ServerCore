@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-03-21T22:48:15.114Z"
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-03-21T22:48:26.421Z"
 progress:
   total_phases: 4
   completed_phases: 0
@@ -62,6 +62,9 @@ Recent decisions affecting current work:
 - [Phase 01-01]: Logger injected via constructor for CosmeticManager and PetManager; EmitterManager and TimelineManager use static Logger.getLogger to avoid out-of-scope refactoring
 - [Phase 01-01]: WARNING level chosen for tick failures — SEVERE reserved for startup/shutdown I/O failures per D-01/D-02
 - [Phase 01-01]: Canonical null-check order established: null -> isDead() -> getWorld() == null for all entity tick guards (CORR-02)
+- [Phase 01]: NPC view-distance clamped to [1-256] default 48; hologram to [1.0-512.0] default 48.0 (D-03/D-04)
+- [Phase 01]: Absent soft-dep logs at INFO level per D-08; PacketEvents absent WARNING unchanged
+- [Phase 01]: EmitterConfig world-existence guard matches HologramConfig/NPCConfig pattern (D-05)
 
 ### Pending Todos
 
@@ -74,6 +77,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T22:47:56.365Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-03-21T22:48:26.418Z
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None

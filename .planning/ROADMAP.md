@@ -61,7 +61,11 @@ Plans:
   2. A server shutdown with pending unsaved changes writes all dirty data to disk before the process exits
   3. Quest explore objectives check player proximity without allocating String arrays — per-tick allocation profile is flat for explore-type quests
   4. An async save interrupted by crash or power loss never produces a partially-written YAML file that fails to parse on next startup
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Async persistence: dirty-flag + snapshot-then-async writes for CosmeticStore/PetStore/QuestStore, SaveFlushTask every 6000 ticks, atomic file swap, onDisable sync path (PERS-01, PERS-02, PERS-03)
+- [ ] 03-02-PLAN.md — Explore target pre-parsing: ExploreTarget record in QuestObjective, pre-parsed at config load, zero-allocation handleExplore (PERF-01)
 
 ### Phase 4: Security and Observability
 **Goal**: Hologram actions enforce permissions, NPC skins are validated before packet send, and operators can inspect live plugin state
@@ -82,5 +86,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Correctness and Stability | 3/3 | Complete   | 2026-03-21 |
 | 2. Memory and Logic Correctness | 0/3 | Not started | - |
-| 3. Async Persistence and Performance | 0/? | Not started | - |
+| 3. Async Persistence and Performance | 0/2 | Not started | - |
 | 4. Security and Observability | 0/? | Not started | - |

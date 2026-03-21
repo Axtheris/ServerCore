@@ -23,6 +23,17 @@ public class HologramInteractListener implements Listener {
         this.manager = manager;
     }
 
+    /**
+     * MEM-01: Periodic eviction of expired cooldown entries.
+     * Called from HologramTickTask every 6000 ticks (~5 minutes).
+     * Runs on the main thread — HashMap is safe here (D-03).
+     */
+    public void sweepCooldowns(int tickCount) {
+        if (tickCount % 6000 != 0) return;
+        long now = System.currentTimeMillis();
+        cooldowns.entrySet().removeIf(e -> now > e.getValue());
+    }
+
     @EventHandler
     public void onInteract(PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();

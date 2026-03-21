@@ -13,8 +13,8 @@ Requirements for this milestone. Each maps to roadmap phases.
 - [x] **CORR-02**: All entity access follows canonical null-check order: `entity != null` → `entity.isDead()` → `entity.getWorld() != null` — no NPE from reversed checks
 - [x] **CORR-03**: All tick task `tickAll()` loops use try-catch per instance so one failed instance does not skip cleanup of subsequent instances
 - [x] **CORR-04**: QuestManager is initialized exactly once regardless of NPC system enabled/disabled state — no double-initialization overwrite
-- [ ] **CORR-05**: Quest `getFirstIncompleteIndex()` logic extracted to single method on QuestProgress — single source of truth for objective progression
-- [ ] **CORR-06**: Quest FETCH objective tracks consistent progress — inventory count at completion check time, not stale cached values from a prior accept
+- [x] **CORR-05**: Quest `getFirstIncompleteIndex()` logic extracted to single method on QuestProgress — single source of truth for objective progression
+- [x] **CORR-06**: Quest FETCH objective tracks consistent progress — inventory count at completion check time, not stale cached values from a prior accept
 
 ### Lifecycle
 
@@ -25,9 +25,9 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Memory
 
-- [ ] **MEM-01**: HologramInteractListener cooldown map has periodic eviction — expired entries are removed, map does not grow unbounded
-- [ ] **MEM-02**: Cosmetic and pet stand UUID index maps purge entries for dead/despawned entities — no unbounded growth over server lifetime
-- [ ] **MEM-03**: Hologram visibility tracker guards against null world before distance calculations — no NPE on world unload
+- [x] **MEM-01**: HologramInteractListener cooldown map has periodic eviction — expired entries are removed, map does not grow unbounded
+- [x] **MEM-02**: Cosmetic and pet stand UUID index maps purge entries for dead/despawned entities — no unbounded growth over server lifetime
+- [x] **MEM-03**: Hologram visibility tracker guards against null world before distance calculations — no NPE on world unload
 
 ### Config Validation
 
@@ -95,15 +95,15 @@ Deferred to future milestone. Tracked but not in current roadmap.
 | CORR-02 | Phase 1 | Complete |
 | CORR-03 | Phase 1 | Complete |
 | CORR-04 | Phase 1 | Complete |
-| CORR-05 | Phase 2 | Pending |
-| CORR-06 | Phase 2 | Pending |
+| CORR-05 | Phase 2 | Complete |
+| CORR-06 | Phase 2 | Complete |
 | LIFE-01 | Phase 1 | Complete |
 | LIFE-02 | Phase 1 | Complete |
 | LIFE-03 | Phase 1 | Complete |
 | LIFE-04 | Phase 1 | Complete |
-| MEM-01 | Phase 2 | Pending |
-| MEM-02 | Phase 2 | Pending |
-| MEM-03 | Phase 2 | Pending |
+| MEM-01 | Phase 2 | Complete |
+| MEM-02 | Phase 2 | Complete |
+| MEM-03 | Phase 2 | Complete |
 | CONF-01 | Phase 1 | Complete |
 | CONF-02 | Phase 4 | Pending |
 | CONF-03 | Phase 1 | Complete |

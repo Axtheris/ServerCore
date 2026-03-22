@@ -44,6 +44,14 @@ public class ReactiveManager {
     }
 
     /**
+     * Returns the number of players with active reactive effects.
+     * Used by the debug command for live state reporting.
+     */
+    public int getActiveEffectCount() {
+        return activeEffects.size();
+    }
+
+    /**
      * Evaluates all rules for all online players.
      * For each player, tests conditions and applies/removes effects
      * to their active pets and nearby cosmetics.

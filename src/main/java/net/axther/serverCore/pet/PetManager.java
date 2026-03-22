@@ -180,6 +180,14 @@ public class PetManager {
         return activePets.containsKey(playerUuid);
     }
 
+    /**
+     * Returns the number of players with active pets.
+     * Used by the debug command for live state reporting.
+     */
+    public int getActivePetOwnerCount() {
+        return activePets.size();
+    }
+
     public boolean hasPetType(UUID playerUuid, String petId) {
         List<PetInstance> pets = activePets.get(playerUuid);
         if (pets == null) return false;

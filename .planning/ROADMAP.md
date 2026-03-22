@@ -75,7 +75,11 @@ Plans:
   1. A player without the required permission who clicks a hologram action receives no effect — the action is silently skipped
   2. A YAML NPC skin entry with a malformed Base64 texture field is rejected at load time with a WARNING log naming the NPC — no malformed packet is ever sent to clients
   3. Running `/servercore debug` prints active instance counts for all nine systems, pending save flags, registered soft-dependency hooks, and tick task status — all in one console output
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Hologram action permission gating and NPC skin Base64 validation (SEC-01, CONF-02, SEC-02)
+- [ ] 04-02-PLAN.md — Live debug command: DebugContext record, /servercore debug subcommand, plugin.yml permission (OBS-01)
 
 ## Progress
 
@@ -87,4 +91,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Correctness and Stability | 3/3 | Complete   | 2026-03-21 |
 | 2. Memory and Logic Correctness | 0/3 | Not started | - |
 | 3. Async Persistence and Performance | 2/2 | Complete   | 2026-03-21 |
-| 4. Security and Observability | 0/? | Not started | - |
+| 4. Security and Observability | 0/2 | Not started | - |

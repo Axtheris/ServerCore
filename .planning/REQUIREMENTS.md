@@ -53,7 +53,7 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Observability
 
-- [ ] **OBS-01**: `/servercore debug` subcommand prints live plugin state: active instance counts per system, pending save flags, registered hooks, tick task status
+- [x] **OBS-01**: `/servercore debug` subcommand prints live plugin state: active instance counts per system, pending save flags, registered hooks, tick task status
 
 ## v2 Requirements
 
@@ -114,7 +114,7 @@ Deferred to future milestone. Tracked but not in current roadmap.
 | PERF-01 | Phase 3 | Complete |
 | SEC-01 | Phase 4 | Complete |
 | SEC-02 | Phase 4 | Complete |
-| OBS-01 | Phase 4 | Pending |
+| OBS-01 | Phase 4 | Complete |
 
 **Coverage:**
 - v1 requirements: 24 total

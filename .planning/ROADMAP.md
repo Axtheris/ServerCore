@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Correctness and Stability** - Eliminate crashes, null-dereferences, lifecycle failures, and silent config errors (completed 2026-03-21)
 - [ ] **Phase 2: Memory and Logic Correctness** - Bound all unbounded maps; fix quest objective progression to a single source of truth
 - [x] **Phase 3: Async Persistence and Performance** - Debounce saves with snapshot-then-async; eliminate per-tick allocations (completed 2026-03-21)
-- [ ] **Phase 4: Security and Observability** - Enforce hologram action permissions, validate NPC skin Base64, add live debug command
+- [x] **Phase 4: Security and Observability** - Enforce hologram action permissions, validate NPC skin Base64, add live debug command (completed 2026-03-22)
 
 ## Phase Details
 
@@ -79,7 +79,7 @@ Plans:
 
 Plans:
 - [x] 04-01-PLAN.md — Hologram action permission gating and NPC skin Base64 validation (SEC-01, CONF-02, SEC-02)
-- [ ] 04-02-PLAN.md — Live debug command: DebugContext record, /servercore debug subcommand, plugin.yml permission (OBS-01)
+- [x] 04-02-PLAN.md — Live debug command: DebugContext record, /servercore debug subcommand, plugin.yml permission (OBS-01)
 
 ## Progress
 
@@ -91,4 +91,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Correctness and Stability | 3/3 | Complete   | 2026-03-21 |
 | 2. Memory and Logic Correctness | 0/3 | Not started | - |
 | 3. Async Persistence and Performance | 2/2 | Complete   | 2026-03-21 |
-| 4. Security and Observability | 1/2 | In Progress|  |
+| 4. Security and Observability | 2/2 | Complete   | 2026-03-22 |

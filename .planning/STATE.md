@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-03-22T00:16:38.867Z"
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-03-22T00:17:22.176Z"
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 10
-  completed_plans: 9
+  completed_plans: 10
 ---
 
 # Project State
@@ -55,6 +55,7 @@ Plan: 2 of 2
 | Phase 03-async-persistence-and-performance P02 | 3 | 2 tasks | 2 files |
 | Phase 03-async-persistence-and-performance P01 | 4 | 2 tasks | 7 files |
 | Phase 04-security-and-observability P01 | 2 | 2 tasks | 5 files |
+| Phase 04-security-and-observability P02 | 3 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,9 @@ Recent decisions affecting current work:
 - [Phase 04-01]: Permission check placed in listener loop (not in execute()) — action object stays dumb, gate is responsibility of the caller
 - [Phase 04-01]: HologramClickEvent fires unconditionally before permission filtering — external plugins see every click (D-03 invariant)
 - [Phase 04-01]: Base64 validation inline in loadNPC() using JDK stdlib; malformed texture nulls both fields; malformed signature only nulls signature
+- [Phase 04-security-and-observability]: DebugContext constructed after all systems init — guarantees all manager/store/task references are non-null when /servercore debug runs
+- [Phase 04-security-and-observability]: ServerCoreCommand construction moved from top of onEnable() to after ServerCoreAPI.init() — only safe position for full DebugContext wiring
+- [Phase 04-security-and-observability]: storeState() uses pattern-matching instanceof for three stores (no common Dirty interface) — extending store hierarchy would be out of scope for a diagnostics feature
 
 ### Pending Todos
 
@@ -99,6 +103,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-22T00:16:38.865Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-03-22T00:17:22.174Z
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None

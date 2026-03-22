@@ -20,20 +20,20 @@ Every system must work correctly under real server conditions — no silent fail
 - ✓ Optional soft-dependency hooks (PacketEvents, PlaceholderAPI, ModelEngine, Vault) — existing
 - ✓ Per-system commands with permissions — existing
 - ✓ YAML data persistence for cosmetics, pets, quests — existing
-- ✓ Fix all known bugs identified in codebase audit — v1.0
-- ✓ Resolve null-safety inconsistencies across all managers — v1.0
-- ✓ Fix hologram cooldown map unbounded growth (memory leak) — v1.0
-- ✓ Fix event cancellation cleanup (orphan entity leak) — v1.0
-- ✓ Fix quest FETCH objective progress tracking — v1.0
-- ✓ Fix NPC view tracker bounds validation — v1.0
-- ✓ Address thread-safety concerns in manager collections — v1.0
-- ✓ Improve hologram visibility tracker performance (spatial indexing) — v1.0 (world-null guard added)
-- ✓ Add data persistence debouncing (batch writes instead of per-action saves) — v1.0
-- ✓ Pre-parse quest explore target coordinates at load time — v1.0
-- ✓ Validate NPC skin textures before sending to clients — v1.0
-- ✓ Add permission checks to hologram action execution — v1.0
-- ✓ Ensure all systems handle edge cases (death during tick, chunk unload during operation, null worlds) — v1.0
-- ✓ Verify build compiles clean with no warnings — v1.0
+- ✓ Fix all known bugs identified in codebase audit — v2.4.0
+- ✓ Resolve null-safety inconsistencies across all managers — v2.4.0
+- ✓ Fix hologram cooldown map unbounded growth (memory leak) — v2.4.0
+- ✓ Fix event cancellation cleanup (orphan entity leak) — v2.4.0
+- ✓ Fix quest FETCH objective progress tracking — v2.4.0
+- ✓ Fix NPC view tracker bounds validation — v2.4.0
+- ✓ Address thread-safety concerns in manager collections — v2.4.0
+- ✓ Improve hologram visibility tracker performance (spatial indexing) — v2.4.0 (world-null guard added)
+- ✓ Add data persistence debouncing (batch writes instead of per-action saves) — v2.4.0
+- ✓ Pre-parse quest explore target coordinates at load time — v2.4.0
+- ✓ Validate NPC skin textures before sending to clients — v2.4.0
+- ✓ Add permission checks to hologram action execution — v2.4.0
+- ✓ Ensure all systems handle edge cases (death during tick, chunk unload during operation, null worlds) — v2.4.0
+- ✓ Verify build compiles clean with no warnings — v2.4.0
 
 ### Active
 
@@ -53,7 +53,7 @@ Every system must work correctly under real server conditions — no silent fail
 ## Context
 
 - **Tech stack:** Java 21, Gradle 8.8, Paper 1.21, PacketEvents, PlaceholderAPI, ModelEngine, Vault (soft deps)
-- **Shipped:** v1.0 — 16,250 LOC Java, 4 phases, 10 plans, 24 requirements satisfied
+- **Shipped:** v2.4.0 — 16,250 LOC Java, 4 phases, 10 plans, 24 requirements satisfied
 - **Codebase map:** `.planning/codebase/` with ARCHITECTURE, CONCERNS, STRUCTURE, CONVENTIONS, STACK, INTEGRATIONS, TESTING docs
 - **Known tech debt:** Quest/NPC shutdown ordering defect (low risk), 6 runtime items for manual testing, debug command lacks sweep counter exposure
 
@@ -94,4 +94,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-22 after v1.0 milestone*
+*Last updated: 2026-03-22 after v2.4.0 milestone*

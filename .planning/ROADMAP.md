@@ -2,12 +2,12 @@
 
 ## Milestones
 
-- ✅ **v1.0 Debug & Verification Sweep** — Phases 1-4 (shipped 2026-03-22) — [archive](milestones/v1.0-ROADMAP.md)
+- ✅ **v2.4.0 Debug & Verification Sweep** — Phases 1-4 (shipped 2026-03-22) — [archive](milestones/v2.4.0-ROADMAP.md)
 
 ## Phases
 
 <details>
-<summary>✅ v1.0 Debug & Verification Sweep (Phases 1-4) — SHIPPED 2026-03-22</summary>
+<summary>✅ v2.4.0 Debug & Verification Sweep (Phases 1-4) — SHIPPED 2026-03-22</summary>
 
 - [x] Phase 1: Correctness and Stability (3/3 plans) — completed 2026-03-21
 - [x] Phase 2: Memory and Logic Correctness (3/3 plans) — completed 2026-03-21
@@ -20,7 +20,7 @@
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 1. Correctness and Stability | v1.0 | 3/3 | Complete | 2026-03-21 |
-| 2. Memory and Logic Correctness | v1.0 | 3/3 | Complete | 2026-03-21 |
-| 3. Async Persistence and Performance | v1.0 | 2/2 | Complete | 2026-03-21 |
-| 4. Security and Observability | v1.0 | 2/2 | Complete | 2026-03-22 |
+| 1. Correctness and Stability | v2.4.0 | 3/3 | Complete | 2026-03-21 |
+| 2. Memory and Logic Correctness | v2.4.0 | 3/3 | Complete | 2026-03-21 |
+| 3. Async Persistence and Performance | v2.4.0 | 2/2 | Complete | 2026-03-21 |
+| 4. Security and Observability | v2.4.0 | 2/2 | Complete | 2026-03-22 |

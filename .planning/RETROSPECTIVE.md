@@ -2,7 +2,7 @@
 
 Living document capturing lessons learned across milestones.
 
-## Milestone: v1.0 — ServerCore Debug & Verification Sweep
+## Milestone: v2.4.0 — ServerCore Debug & Verification Sweep
 
 **Shipped:** 2026-03-22
 **Phases:** 4 | **Plans:** 10
@@ -48,4 +48,4 @@ Living document capturing lessons learned across milestones.
 
 | Milestone | Phases | Plans | Requirements | Duration |
 |-----------|--------|-------|-------------|----------|
-| v1.0 | 4 | 10 | 24/24 | 1 day |
+| v2.4.0 | 4 | 10 | 24/24 | 1 day |

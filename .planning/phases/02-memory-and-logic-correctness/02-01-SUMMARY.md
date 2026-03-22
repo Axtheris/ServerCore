@@ -68,7 +68,7 @@ Each task was committed atomically:
 1. **Task 1: Add sweepCooldowns() to HologramInteractListener** - `f84053d` (fix)
 2. **Task 2: Promote interactListener to field and wire into HologramTickTask** - `c86f8ad` (fix)
 
-**Plan metadata:** _(to be added by final commit)_
+**Plan metadata:** `682eaa1` (docs: complete plan)
 
 ## Files Created/Modified
 

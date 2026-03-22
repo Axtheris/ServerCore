@@ -32,7 +32,7 @@ commands:
     usage: /menu <id>
   servercore:
     description: ServerCore admin commands
-    usage: /servercore reload
+    usage: /servercore <reload|debug>
 
 permissions:
   # --- Wildcard parent permissions ---
@@ -41,6 +41,7 @@ permissions:
     default: op
     children:
       servercore.admin.reload: true
+      servercore.admin.debug: true
   servercore.cosmetic.*:
     description: Grants all cosmetic permissions
     default: op
@@ -118,6 +119,9 @@ permissions:
   # --- Individual permissions ---
   servercore.admin.reload:
     description: Reload central config
+    default: op
+  servercore.admin.debug:
+    description: View live plugin debug information
     default: op
   servercore.cosmetic.apply:
     description: Apply cosmetics to mobs

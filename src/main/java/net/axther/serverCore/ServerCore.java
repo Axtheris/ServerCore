@@ -1,5 +1,6 @@
 package net.axther.serverCore;
 
+import net.axther.serverCore.command.DebugContext;
 import net.axther.serverCore.command.ServerCoreCommand;
 import net.axther.serverCore.config.ServerCoreConfig;
 import net.axther.serverCore.cosmetic.CosmeticManager;
@@ -95,14 +96,6 @@ public final class ServerCore extends JavaPlugin {
     public void onEnable() {
         // --- Central Config ---
         serverCoreConfig = new ServerCoreConfig(this);
-
-        // --- ServerCore admin command ---
-        PluginCommand scCmd = getCommand("servercore");
-        if (scCmd != null) {
-            ServerCoreCommand scCommand = new ServerCoreCommand(serverCoreConfig);
-            scCmd.setExecutor(scCommand);
-            scCmd.setTabCompleter(scCommand);
-        }
 
         // --- GUI Framework ---
         if (serverCoreConfig.isSystemEnabled("gui")) {
@@ -394,6 +387,29 @@ public final class ServerCore extends JavaPlugin {
         // PERS-01: Start periodic save flush task — runs every 6000 ticks (~5 minutes)
         saveFlushTask = new SaveFlushTask(cosmeticStore, cosmeticManager, petStore, questStore, questManager);
         saveFlushTask.runTaskTimer(this, 6000L, 6000L);
+
+        // --- ServerCore admin command (with debug context) ---
+        // Constructed after all systems are initialized so DebugContext has all references.
+        boolean packetEventsDetected = getServer().getPluginManager().getPlugin("packetevents") != null;
+        boolean modelEngineDetected = getServer().getPluginManager().getPlugin("ModelEngine") != null;
+        boolean placeholderApiDetected = getServer().getPluginManager().getPlugin("PlaceholderAPI") != null;
+        boolean vaultDetected = getServer().getPluginManager().getPlugin("Vault") != null;
+
+        DebugContext debugContext = new DebugContext(
+            cosmeticManager, emitterManager, petManager, hologramManager, npcManager,
+            questManager, timelineManager, reactiveManager, menuManager,
+            cosmeticStore, petStore, questStore,
+            tickTask, emitterTickTask, petTickTask, hologramTickTask, npcTickTask,
+            timelineTickTask, reactiveTickTask, menuTickTask, saveFlushTask,
+            packetEventsDetected, modelEngineDetected, placeholderApiDetected, vaultDetected
+        );
+
+        PluginCommand scCmd = getCommand("servercore");
+        if (scCmd != null) {
+            ServerCoreCommand scCommand = new ServerCoreCommand(serverCoreConfig, debugContext);
+            scCmd.setExecutor(scCommand);
+            scCmd.setTabCompleter(scCommand);
+        }
 
         // Build startup summary
         StringBuilder summary = new StringBuilder("ServerCore enabled");

@@ -62,6 +62,25 @@ public class NPCConfig {
         String displayName = yaml.getString("display-name", "<white>" + id);
         String skinTexture = yaml.getString("skin-texture");
         String skinSignature = yaml.getString("skin-signature");
+        // CONF-02 / SEC-02: Validate Base64 skin data at load time (D-05, D-07)
+        if (skinTexture != null && !skinTexture.isBlank()) {
+            try {
+                java.util.Base64.getDecoder().decode(skinTexture);
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().warning("NPC \"" + id + "\" has malformed Base64 skin texture — skin skipped");
+                skinTexture = null;
+                skinSignature = null;
+            }
+        }
+        // D-06: Validate signature if present (optional field)
+        if (skinSignature != null && !skinSignature.isBlank()) {
+            try {
+                java.util.Base64.getDecoder().decode(skinSignature);
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().warning("NPC \"" + id + "\" has malformed Base64 skin signature — signature ignored");
+                skinSignature = null;
+            }
+        }
         String worldName = yaml.getString("world", "world");
         double x = yaml.getDouble("x");
         double y = yaml.getDouble("y");

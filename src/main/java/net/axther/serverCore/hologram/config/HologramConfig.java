@@ -110,8 +110,9 @@ public class HologramConfig {
                         if (obj instanceof java.util.Map<?, ?> map) {
                             String actType = map.get("type") != null ? String.valueOf(map.get("type")) : "";
                             String actValue = map.get("value") != null ? String.valueOf(map.get("value")) : "";
+                            String actPerm = map.get("permission") != null ? String.valueOf(map.get("permission")) : null;
                             hologram.getActions().add(
-                                    net.axther.serverCore.hologram.action.HologramAction.parse(actType, actValue));
+                                    net.axther.serverCore.hologram.action.HologramAction.parse(actType, actValue, actPerm));
                         }
                     }
                 }
@@ -177,6 +178,7 @@ public class HologramConfig {
                     java.util.Map<String, Object> m = new java.util.LinkedHashMap<>();
                     m.put("type", act.getType());
                     m.put("value", act.getValue());
+                    if (act.getPermission() != null) { m.put("permission", act.getPermission()); }
                     actMaps.add(m);
                 }
                 sec.set("actions", actMaps);

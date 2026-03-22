@@ -56,6 +56,10 @@ public class HologramInteractListener implements Listener {
         if (clickEvent.isCancelled()) return;
 
         for (HologramAction action : hologram.getActions()) {
+            // SEC-01: skip action if player lacks required permission (D-02)
+            if (action.getPermission() != null && !player.hasPermission(action.getPermission())) {
+                continue;  // silent skip — other actions still execute
+            }
             action.execute(player);
         }
 

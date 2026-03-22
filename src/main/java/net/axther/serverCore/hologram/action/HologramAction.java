@@ -9,14 +9,16 @@ public class HologramAction {
 
     private final String type;
     private final String value;
+    private final String permission;
 
-    private HologramAction(String type, String value) {
+    private HologramAction(String type, String value, String permission) {
         this.type = type;
         this.value = value;
+        this.permission = permission;
     }
 
-    public static HologramAction parse(String type, String value) {
-        return new HologramAction(type, value);
+    public static HologramAction parse(String type, String value, String permission) {
+        return new HologramAction(type, value, permission);
     }
 
     public void execute(Player player) {
@@ -43,4 +45,5 @@ public class HologramAction {
 
     public String getType() { return type; }
     public String getValue() { return value; }
+    public String getPermission() { return permission; }
 }

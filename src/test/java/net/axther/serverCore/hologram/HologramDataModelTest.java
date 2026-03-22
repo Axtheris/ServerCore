@@ -193,7 +193,7 @@ class HologramDataModelTest {
     class HologramActionTests {
         @Test
         void parseCommandAction() {
-            var action = HologramAction.parse("command", "say Hello %player%");
+            var action = HologramAction.parse("command", "say Hello %player%", null);
             assertNotNull(action);
             assertEquals("command", action.getType());
             assertEquals("say Hello %player%", action.getValue());
@@ -201,19 +201,19 @@ class HologramDataModelTest {
 
         @Test
         void parsePlayerCommandAction() {
-            var action = HologramAction.parse("player_command", "spawn");
+            var action = HologramAction.parse("player_command", "spawn", null);
             assertEquals("player_command", action.getType());
         }
 
         @Test
         void parseMessageAction() {
-            var action = HologramAction.parse("message", "<gold>Welcome!");
+            var action = HologramAction.parse("message", "<gold>Welcome!", null);
             assertEquals("message", action.getType());
         }
 
         @Test
         void parseSoundAction() {
-            var action = HologramAction.parse("sound", "ENTITY_EXPERIENCE_ORB_PICKUP");
+            var action = HologramAction.parse("sound", "ENTITY_EXPERIENCE_ORB_PICKUP", null);
             assertEquals("sound", action.getType());
         }
 
@@ -232,8 +232,8 @@ class HologramDataModelTest {
         @Test
         void addingActionsToHologram() {
             Hologram h = new Hologram("test", null, List.of("hi"));
-            h.getActions().add(HologramAction.parse("command", "say hi"));
-            h.getActions().add(HologramAction.parse("sound", "ENTITY_EXPERIENCE_ORB_PICKUP"));
+            h.getActions().add(HologramAction.parse("command", "say hi", null));
+            h.getActions().add(HologramAction.parse("sound", "ENTITY_EXPERIENCE_ORB_PICKUP", null));
             assertEquals(2, h.getActions().size());
         }
 
@@ -267,7 +267,7 @@ class HologramDataModelTest {
             h.setUpdateInterval(40);
             h.setClickCooldown(60);
             h.getConditions().add(HologramCondition.parse("permission", "vip", null, null));
-            h.getActions().add(HologramAction.parse("command", "say hi"));
+            h.getActions().add(HologramAction.parse("command", "say hi", null));
 
             // Verify all fields
             assertEquals("HORIZONTAL", h.getBillboard());

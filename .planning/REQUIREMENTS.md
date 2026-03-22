@@ -32,7 +32,7 @@ Requirements for this milestone. Each maps to roadmap phases.
 ### Config Validation
 
 - [x] **CONF-01**: NPC view-distance config value is validated to minimum 1 at load time — invalid values logged with WARNING and clamped to default
-- [ ] **CONF-02**: NPC skin texture and signature fields are validated as proper Base64 format at load time — malformed values logged and skin skipped
+- [x] **CONF-02**: NPC skin texture and signature fields are validated as proper Base64 format at load time — malformed values logged and skin skipped
 - [x] **CONF-03**: Config values with numeric bounds (distances, intervals, counts) are validated at load time with logged warnings for out-of-range values
 - [x] **CONF-04**: Soft dependency detection centralized in single DependencyChecker pass in `onEnable()` — each present/absent dependency logged at INFO level
 
@@ -48,8 +48,8 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Security
 
-- [ ] **SEC-01**: Hologram actions support optional `permission` field in YAML config — HologramInteractListener checks player permission before executing action
-- [ ] **SEC-02**: NPC skin texture Base64 validation rejects malformed data before sending to clients via PacketEvents
+- [x] **SEC-01**: Hologram actions support optional `permission` field in YAML config — HologramInteractListener checks player permission before executing action
+- [x] **SEC-02**: NPC skin texture Base64 validation rejects malformed data before sending to clients via PacketEvents
 
 ### Observability
 
@@ -105,15 +105,15 @@ Deferred to future milestone. Tracked but not in current roadmap.
 | MEM-02 | Phase 2 | Complete |
 | MEM-03 | Phase 2 | Complete |
 | CONF-01 | Phase 1 | Complete |
-| CONF-02 | Phase 4 | Pending |
+| CONF-02 | Phase 4 | Complete |
 | CONF-03 | Phase 1 | Complete |
 | CONF-04 | Phase 1 | Complete |
 | PERS-01 | Phase 3 | Complete |
 | PERS-02 | Phase 3 | Complete |
 | PERS-03 | Phase 3 | Complete |
 | PERF-01 | Phase 3 | Complete |
-| SEC-01 | Phase 4 | Pending |
-| SEC-02 | Phase 4 | Pending |
+| SEC-01 | Phase 4 | Complete |
+| SEC-02 | Phase 4 | Complete |
 | OBS-01 | Phase 4 | Pending |
 
 **Coverage:**

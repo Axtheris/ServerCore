@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-03-21T23:53:48.787Z"
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-22T00:16:38.867Z"
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 8
-  completed_plans: 8
+  total_plans: 10
+  completed_plans: 9
 ---
 
 # Project State
@@ -19,11 +19,11 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-21)
 
 **Core value:** Every system must work correctly under real server conditions — no silent failures, no entity leaks, no data corruption, no crashes.
-**Current focus:** Phase 03 — async-persistence-and-performance
+**Current focus:** Phase 04 — security-and-observability
 
 ## Current Position
 
-Phase: 03 (async-persistence-and-performance) — EXECUTING
+Phase: 04 (security-and-observability) — EXECUTING
 Plan: 2 of 2
 
 ## Performance Metrics
@@ -54,6 +54,7 @@ Plan: 2 of 2
 | Phase 02-memory-and-logic-correctness P01 | 1 | 2 tasks | 3 files |
 | Phase 03-async-persistence-and-performance P02 | 3 | 2 tasks | 2 files |
 | Phase 03-async-persistence-and-performance P01 | 4 | 2 tasks | 7 files |
+| Phase 04-security-and-observability P01 | 2 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -83,6 +84,9 @@ Recent decisions affecting current work:
 - [Phase 03-01]: buildSnapshot() on main thread (Bukkit API safe); writeSnapshot() async-only touching detached YamlConfiguration
 - [Phase 03-01]: dirty cleared BEFORE dispatch so mutations during snapshot window correctly re-set dirty for next flush cycle
 - [Phase 03-01]: saving flag is volatile (not synchronized): safe pattern where main thread sets true before dispatch, async sets false in finally
+- [Phase 04-01]: Permission check placed in listener loop (not in execute()) — action object stays dumb, gate is responsibility of the caller
+- [Phase 04-01]: HologramClickEvent fires unconditionally before permission filtering — external plugins see every click (D-03 invariant)
+- [Phase 04-01]: Base64 validation inline in loadNPC() using JDK stdlib; malformed texture nulls both fields; malformed signature only nulls signature
 
 ### Pending Todos
 
@@ -95,6 +99,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T23:53:48.785Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-03-22T00:16:38.865Z
+Stopped at: Completed 04-01-PLAN.md
 Resume file: None

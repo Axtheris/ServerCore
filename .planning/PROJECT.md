@@ -33,8 +33,8 @@ Every system must work correctly under real server conditions — no silent fail
 - [ ] Improve hologram visibility tracker performance (spatial indexing)
 - [x] Add data persistence debouncing (batch writes instead of per-action saves) — Validated in Phase 3
 - [x] Pre-parse quest explore target coordinates at load time — Validated in Phase 3
-- [ ] Validate NPC skin textures before sending to clients
-- [ ] Add permission checks to hologram action execution
+- [x] Validate NPC skin textures before sending to clients — Validated in Phase 4
+- [x] Add permission checks to hologram action execution — Validated in Phase 4
 - [ ] Ensure all systems handle edge cases (death during tick, chunk unload during operation, null worlds)
 - [ ] Verify build compiles clean with no warnings
 
@@ -85,4 +85,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-21 after Phase 3 completion*
+*Last updated: 2026-03-22 after Phase 4 completion (all phases complete)*
